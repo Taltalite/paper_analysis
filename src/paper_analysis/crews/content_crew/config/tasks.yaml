@@ -1,50 +1,54 @@
-planning_task:
+extract_paper_notes_task:
   description: >
-    Create a detailed outline for a blog post about {topic}.
+    Read the following academic paper text for "{paper_title}".
 
-    The outline should include:
-    - A compelling title
-    - An introduction hook
-    - 3-5 main sections with key points to cover in each
-    - A conclusion with a call to action
+    PAPER TEXT:
+    {paper_text}
 
-    Make the outline detailed enough that a writer can produce
-    a full blog post from it without additional research.
+    Extract only source-grounded notes.
+    When the paper is long, use the section extractor tool to inspect likely sections such as:
+    abstract, introduction, method, experiment, results, and conclusion.
+
+    Produce a concise markdown note sheet with these exact headings:
+    1. Metadata
+    2. Research Problem
+    3. Core Method
+    4. Datasets
+    5. Experimental Setup
+    6. Main Results
+
+    Rules:
+    - Do not fabricate authors, venue, year, datasets, or numeric results.
+    - If some information is missing, explicitly write "Not clearly stated".
+    - Prefer short factual sentences over long prose.
   expected_output: >
-    A structured blog post outline with a title, introduction notes,
-    detailed section breakdowns, and conclusion notes.
-  agent: planner
+    A compact markdown note sheet with the six required headings and only source-grounded content.
+  agent: reader
 
-writing_task:
+synthesize_analysis_task:
   description: >
-    Using the outline provided, write a full blog post about {topic}.
+    Use the previous task's note sheet and the same paper text for "{paper_title}" to produce the final analysis.
 
-    Requirements:
-    - Follow the outline structure closely
-    - Write in a clear, engaging, and conversational tone
-    - Each section should be 2-3 paragraphs
-    - Include a strong introduction and conclusion
-    - Target around 800-1200 words
+    PAPER TEXT:
+    {paper_text}
+
+    Before making uncertain claims, use the keyword search tool to verify evidence in the paper text.
+
+    You must produce a final structured analysis with these fields:
+    - metadata: title, authors, venue, year
+    - extracted_notes: research_problem, core_method, datasets, experimental_setup, main_results
+    - novelty
+    - strengths
+    - limitations
+    - reproducibility
+    - interview_pitch
+
+    Rules:
+    - Keep all judgments grounded in the paper.
+    - For missing metadata or uncertain items, use empty strings or empty lists rather than inventing content.
+    - "strengths" and "limitations" must be short bullet-style phrases.
+    - "interview_pitch" should be 3 to 5 sentences and suitable for talking about this paper in an interview or project demo.
   expected_output: >
-    A complete blog post in markdown format, ready for editing.
-    The post should follow the outline and be well-written with
-    clear transitions between sections.
-  agent: writer
-
-editing_task:
-  description: >
-    Review and edit the blog post about {topic}.
-
-    Focus on:
-    - Fixing any grammar or spelling errors
-    - Improving sentence clarity and flow
-    - Ensuring consistent tone throughout
-    - Strengthening the introduction and conclusion
-    - Removing any redundancy
-
-    Do not rewrite the post — refine and polish it.
-  expected_output: >
-    The final, polished blog post in markdown format without '```'.
-    Publication-ready with clean formatting and professional prose.
-  agent: editor
-  output_file: output/post.md
+    A structured paper analysis object with metadata, extracted notes, novelty, strengths, limitations,
+    reproducibility, and interview_pitch.
+  agent: analyst
