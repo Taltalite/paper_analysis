@@ -1,0 +1,21 @@
+{
+  "name": "paper-analysis-web",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Minimal React/Vite UI for paper analysis jobs.",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview --host 127.0.0.1 --port 4173"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-markdown": "^9.0.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.1",
+    "vite": "^5.4.10"
+  }
+}

@@ -1,12 +1,15 @@
 [project]
 name = "paper_analysis"
 version = "0.1.0"
-description = "paper_analysis using crewAI"
+description = "CrewAI-based general text analysis base with a research-paper starter profile"
 authors = [{ name = "Your Name", email = "you@example.com" }]
 requires-python = ">=3.12,<3.14"
 dependencies = [
     "crewai[tools]==1.14.1",
-    "httpx[socks]>=0.27,<1.0"
+    "fastapi>=0.115,<1.0",
+    "httpx[socks]>=0.27,<1.0",
+    "python-multipart>=0.0.9,<1.0",
+    "uvicorn>=0.30,<1.0"
 ]
 
 [project.scripts]
@@ -14,6 +17,7 @@ kickoff = "paper_analysis.main:kickoff"
 run_crew = "paper_analysis.main:kickoff"
 plot = "paper_analysis.main:plot"
 run_with_trigger = "paper_analysis.main:run_with_trigger"
+serve_api = "paper_analysis.api.app:run"
 
 [build-system]
 requires = ["hatchling"]

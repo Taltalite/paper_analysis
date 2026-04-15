@@ -1,15 +1,23 @@
-import json
+import asyncio
 from pathlib import Path
-from typing import Any
 
 from crewai.flow import Flow, listen, start
 
-from paper_analysis.crews.content_crew.content_crew import ContentCrew
-from paper_analysis.state import PaperAnalysisOutput, PaperAnalysisState
+from paper_analysis.domain.enums import AnalysisMode
+from paper_analysis.domain.models import PaperAnalysis
+from paper_analysis.domain.schemas import FileAnalysisRequest
+from paper_analysis.services import (
+    build_default_analysis_service,
+    build_default_artifact_service,
+)
+from paper_analysis.state import PaperAnalysisState
+
+_ANALYSIS_SERVICE = build_default_analysis_service()
+_ARTIFACT_SERVICE = build_default_artifact_service()
 
 
 class PaperAnalysisFlow(Flow[PaperAnalysisState]):
-    """Flow for analyzing one academic paper from a local txt/md file."""
+    """Thin CrewAI flow wrapper for the Phase 1 text-analysis application service."""
 
     @start()
     def prepare_input(self, crewai_trigger_payload: dict | None = None):
@@ -22,140 +30,69 @@ class PaperAnalysisFlow(Flow[PaperAnalysisState]):
         self.state.output_json_path = payload.get(
             "output_json_path", self.state.output_json_path
         )
+        mode = payload.get("mode")
+        if mode:
+            self.state.mode = AnalysisMode(mode)
 
         self.state.status = "input_prepared"
         print(f"Input path: {self.state.input_path}")
-        return self.state.input_path
-
-    @listen(prepare_input)
-    def load_paper(self, input_path: str):
-        path = Path(input_path)
-        if not path.exists():
-            raise FileNotFoundError(f"Paper file not found: {path}")
-
-        raw_text = path.read_text(encoding="utf-8").strip()
-        if not raw_text:
-            raise ValueError(f"Paper file is empty: {path}")
-
-        self.state.raw_text = raw_text
-        self.state.paper_title_hint = self._infer_title_from_text(raw_text)
-        self.state.status = "paper_loaded"
-
-        print(f"Loaded paper. Title hint: {self.state.paper_title_hint}")
-        return raw_text
-
-    @listen(load_paper)
-    def run_analysis(self, paper_text: str):
-        result = ContentCrew().crew().kickoff(
-            inputs={
-                "paper_text": paper_text,
-                "paper_title": self.state.paper_title_hint or "Unknown Paper",
-            }
+        return FileAnalysisRequest(
+            input_path=self.state.input_path,
+            output_markdown_path=self.state.output_markdown_path,
+            output_json_path=self.state.output_json_path,
+            mode=self.state.mode,
         )
 
-        structured = getattr(result, "pydantic", None)
+    @listen(prepare_input)
+    def run_analysis(self, request: FileAnalysisRequest):
+        execution = asyncio.run(
+            _ANALYSIS_SERVICE.analyze_file(
+                path=Path(request.input_path),
+                mode=request.mode,
+            )
+        )
 
-        if structured is None:
-            maybe_dict: Any = None
-            if hasattr(result, "to_dict"):
-                maybe_dict = result.to_dict()
-
-            if isinstance(maybe_dict, dict):
-                structured = PaperAnalysisOutput(**maybe_dict)
-            else:
-                raise ValueError(
-                    "Crew did not return a structured Pydantic output. "
-                    "Check the final task's output_pydantic wiring."
-                )
-
-        if isinstance(structured, dict):
-            structured = PaperAnalysisOutput(**structured)
-
-        self.state.analysis = structured
-        self.state.json_report = structured.model_dump()
-        self.state.markdown_report = self._build_markdown_report(structured)
+        self.state.raw_text = execution.document.raw_text
+        self.state.parsed_document = execution.document
+        self.state.paper_title_hint = execution.document.title
+        self.state.analysis = execution.result
+        self.state.json_report = execution.result.model_dump()
+        self.state.markdown_report = execution.result.markdown_report
+        try:
+            self.state.legacy_paper_analysis = PaperAnalysis.model_validate(
+                execution.result.structured_data
+            )
+        except Exception:
+            self.state.legacy_paper_analysis = None
         self.state.status = "analysis_completed"
 
-        print("Paper analysis completed.")
+        print(f"Loaded text. Title hint: {self.state.paper_title_hint}")
+        print("Text analysis completed.")
         return self.state.markdown_report
 
     @listen(run_analysis)
     def save_outputs(self, _: str):
-        md_path = Path(self.state.output_markdown_path)
-        json_path = Path(self.state.output_json_path)
-
-        md_path.parent.mkdir(parents=True, exist_ok=True)
-        json_path.parent.mkdir(parents=True, exist_ok=True)
-
-        md_path.write_text(self.state.markdown_report, encoding="utf-8")
-        json_path.write_text(
-            json.dumps(self.state.json_report, ensure_ascii=False, indent=2),
-            encoding="utf-8",
+        artifact = asyncio.run(
+            _ARTIFACT_SERVICE.save_analysis_result(
+                markdown_path=Path(self.state.output_markdown_path),
+                json_path=Path(self.state.output_json_path),
+                result=self.state.analysis,
+                document=self.state.parsed_document,
+            )
         )
 
         self.state.status = "done"
 
-        print(f"Markdown report saved to: {md_path}")
-        print(f"JSON report saved to: {json_path}")
+        print(f"Markdown report saved to: {artifact.markdown_report_path}")
+        print(f"JSON report saved to: {artifact.json_report_path}")
+        if artifact.parsed_markdown_path:
+            print(f"Parsed markdown saved to: {artifact.parsed_markdown_path}")
 
         return {
-            "markdown_path": str(md_path),
-            "json_path": str(json_path),
+            "markdown_path": artifact.markdown_report_path,
+            "json_path": artifact.json_report_path,
+            "parsed_markdown_path": artifact.parsed_markdown_path,
         }
-
-    @staticmethod
-    def _infer_title_from_text(raw_text: str) -> str:
-        for line in raw_text.splitlines():
-            clean = line.strip()
-            if clean:
-                return clean[:200]
-        return "Unknown Paper"
-
-    @staticmethod
-    def _build_markdown_report(analysis: PaperAnalysisOutput) -> str:
-        authors = ", ".join(analysis.metadata.authors) if analysis.metadata.authors else "N/A"
-        datasets = ", ".join(analysis.extracted_notes.datasets) if analysis.extracted_notes.datasets else "N/A"
-        strengths = "\n".join(f"- {item}" for item in analysis.strengths) if analysis.strengths else "- N/A"
-        limitations = "\n".join(f"- {item}" for item in analysis.limitations) if analysis.limitations else "- N/A"
-
-        return f"""# Paper Analysis Report
-
-## Metadata
-- **Title:** {analysis.metadata.title or 'N/A'}
-- **Authors:** {authors}
-- **Venue:** {analysis.metadata.venue or 'N/A'}
-- **Year:** {analysis.metadata.year or 'N/A'}
-
-## Research Problem
-{analysis.extracted_notes.research_problem or 'N/A'}
-
-## Core Method
-{analysis.extracted_notes.core_method or 'N/A'}
-
-## Datasets
-{datasets}
-
-## Experimental Setup
-{analysis.extracted_notes.experimental_setup or 'N/A'}
-
-## Main Results
-{analysis.extracted_notes.main_results or 'N/A'}
-
-## Novelty
-{analysis.novelty or 'N/A'}
-
-## Strengths
-{strengths}
-
-## Limitations
-{limitations}
-
-## Reproducibility
-{analysis.reproducibility or 'N/A'}
-
-## Interview Pitch
-{analysis.interview_pitch or 'N/A'}
-"""
 
 
 def kickoff():

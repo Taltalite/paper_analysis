@@ -1,45 +1,27 @@
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from pydantic import BaseModel, Field
 
-
-class PaperMetadata(BaseModel):
-    title: str = ""
-    authors: List[str] = Field(default_factory=list)
-    venue: str = ""
-    year: str = ""
-
-
-class ExtractedNotes(BaseModel):
-    research_problem: str = ""
-    core_method: str = ""
-    datasets: List[str] = Field(default_factory=list)
-    experimental_setup: str = ""
-    main_results: str = ""
-
-
-class PaperAnalysisOutput(BaseModel):
-    metadata: PaperMetadata = Field(default_factory=PaperMetadata)
-    extracted_notes: ExtractedNotes = Field(default_factory=ExtractedNotes)
-    novelty: str = ""
-    strengths: List[str] = Field(default_factory=list)
-    limitations: List[str] = Field(default_factory=list)
-    reproducibility: str = ""
-    interview_pitch: str = ""
+from paper_analysis.domain.enums import AnalysisMode
+from paper_analysis.domain.models import PaperAnalysis as PaperAnalysisOutput
+from paper_analysis.domain.schemas import AnalysisResult, ParsedDocument
 
 
 class PaperAnalysisState(BaseModel):
     input_path: str = "input/sample_paper.txt"
+    mode: AnalysisMode = AnalysisMode.RESEARCH_PAPER
     paper_title_hint: str = ""
     raw_text: str = ""
+    parsed_document: ParsedDocument | None = None
 
-    analysis: Optional[PaperAnalysisOutput] = None
+    analysis: AnalysisResult | None = None
+    legacy_paper_analysis: PaperAnalysisOutput | None = None
 
     markdown_report: str = ""
-    json_report: Dict[str, Any] = Field(default_factory=dict)
+    json_report: dict[str, Any] = Field(default_factory=dict)
 
     output_markdown_path: str = "output/report.md"
     output_json_path: str = "output/report.json"
 
     status: str = "initialized"
-    error_message: Optional[str] = None
+    error_message: str | None = None

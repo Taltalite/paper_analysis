@@ -1,5 +1,13 @@
 .env
 __pycache__/
+*.pyc
 lib/
 .DS_Store
 .venv
+.uv-cache/
+.cache/
+.data/
+web/node_modules/
+web/dist/
+
+*.pdf
