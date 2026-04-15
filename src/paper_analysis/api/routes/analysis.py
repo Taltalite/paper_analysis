@@ -23,7 +23,7 @@ async def create_job(
     document_kind = _document_kind_for(filename)
     content = await file.read()
     if not content:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Uploaded file is empty.")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="上传文件不能为空。")
 
     job = await job_service.create_job_from_upload(
         filename=filename,
@@ -80,5 +80,5 @@ def _document_kind_for(filename: str) -> DocumentKind:
         return DocumentKind.PLAIN_TEXT
     raise HTTPException(
         status_code=status.HTTP_400_BAD_REQUEST,
-        detail="Unsupported file type. Use .pdf, .txt, or .md.",
+        detail="暂不支持该文件类型，请使用 .pdf、.txt 或 .md。",
     )

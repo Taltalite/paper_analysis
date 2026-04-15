@@ -33,7 +33,7 @@ class GeneralTextPipelineTest(unittest.TestCase):
         )
 
         self.assertEqual(result.title, "Document Title")
-        self.assertIn("# Text Analysis Report", result.markdown_report)
+        self.assertIn("# 通用文本分析报告", result.markdown_report)
         self.assertIn("Grounded overview", result.markdown_report)
 
     def test_builds_paper_markdown_when_structured_data_matches_paper_shape(self) -> None:
@@ -70,8 +70,8 @@ class GeneralTextPipelineTest(unittest.TestCase):
             pipeline.run(ParsedDocument(title="Paper Title", raw_text="Body text"))
         )
 
-        self.assertIn("# Paper Analysis Report", result.markdown_report)
-        self.assertIn("## Research Problem", result.markdown_report)
+        self.assertIn("# 论文分析报告", result.markdown_report)
+        self.assertIn("## 研究问题", result.markdown_report)
         self.assertIn("Strong point", result.markdown_report)
 
 

@@ -176,3 +176,29 @@ A phase is done only if:
 - tests cover the critical path
 - README is updated
 - the next phase has a clear starting point
+
+---
+
+## Output language policy
+
+User-facing outputs must use Simplified Chinese as the primary explanatory language.
+
+Keep original language only for:
+- direct quotations from source material
+- paper titles
+- author names, affiliations, venue names
+- technical terms, proper nouns, model names, dataset names, metric names, repository names, API names
+- phrases whose translation would reduce technical precision
+
+Preferred style:
+- use natural, professional Simplified Chinese
+- for first occurrence of important terms, prefer: 中文解释（Original Term）
+- do not produce fully English reports except for required preserved terms or quotations
+
+Apply this policy consistently to:
+- agent prompts
+- task prompts
+- markdown templates
+- backend response wording
+- frontend UI copy
+- README examples

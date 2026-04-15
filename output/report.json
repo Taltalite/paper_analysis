@@ -1,50 +1,53 @@
 {
   "title": "Scalable and robust DNA-based storage via coding theory and deep learning",
-  "summary": "This work presents a modular, holistic pipeline for DNA-based data storage that combines deep neural networks trained on simulated data, tensor-product-based error-correcting codes, and a safety margin mechanism. The authors demonstrate the approach on 3.1 MB of information using two sequencing technologies, reporting a 3,200× speedup, a 40% improvement in accuracy, and a code rate of 1.6 bits per base in high-noise conditions. The method aims to address the scalability–retrieval accuracy tradeoff in DNA storage by integrating encoding, synthesis constraints, unordered storage, and retrieval via PCR amplification and sequencing within a unified framework.",
+  "summary": "本研究提出一个模块化、整体化的管线，将深度神经网络、基于张量积的纠错编码和安全裕度机制结合，以提升DNA存储信息检索过程中的可扩展性与准确性。在3.1 MB信息量的数据上，通过两种测序技术进行演示，显示在速度、准确性与高噪声环境下的码率方面的改进，探索实现商业化DNA存储解决方案的可行路径。",
   "key_points": [
-    "Proposes a modular pipeline that fuses deep learning, tensor-product error-correcting codes, and safety margins for DNA storage.",
-    "Demonstrates the approach on 3.1 MB of data using two sequencing technologies.",
-    "Reports substantial performance gains: 3,200× speed increase and 40% accuracy improvement over leading solutions.",
-    "Achieves a code rate of 1.6 bits per base under high-noise conditions.",
-    "Describes end-to-end workflow: binary data -> DNA sequences -> synthesis into multiple oligos -> unordered storage -> retrieval via PCR and sequencing -> decoding."
+    "提出一个模块化且整体化的管线，整合三个核心组件：深度神经网络、基于张量积的纠错编码、以及安全裕度机制。",
+    "通过单一管线将上述组件结合在一起，应用于DNA存储信息检索。",
+    "在3.1 MB信息量上使用两种不同测序技术进行演示。",
+    "相对当前领先方案，速度提升约3200×，准确性提升约40%，在高噪声环境下码率达到1.6位/碱基。",
+    "广义结论指向DNA存储的商业化可行性，缓解信息检索瓶颈。"
   ],
   "limitations": [
-    "Details on datasets, data generation, and sequencing technologies are not fully specified in the excerpt.",
-    "Reproducibility hinges on access to the specific neural network models, tensor-product code constructions, and safety-margin mechanisms used, which are not described in the text provided.",
-    "Performance claims (speedup, accuracy, code rate) are relative to current leading solutions but lack explicit baselines and context in the excerpt."
+    "未给出具体数据集名称、来源或采集方式。",
+    "具体实现细节、超参数、对比基线、重复次数、统计检验等未公开。",
+    "关于数据可重复性与外部验证的描述未明确。"
   ],
-  "markdown_report": "# Research Paper Analysis Report\n\n## Source Document\n- **Title:** Scalable and robust DNA-based storage via coding theory and deep learning\n- **Authors:** Not clearly stated\n- **DOI:** N/A\n- **Venue:** Not clearly stated\n- **Year:** Not clearly stated\n- **Pages:** N/A\n\n## Selected Sections Used For Analysis\n- Fallback raw text\n\n## Structured Parse Preview\nN/A\n\n## Research Problem\nThe global data sphere is growing rapidly (projected 180 zettabytes by 2025). Current storage technologies do not scale at the required pace. Need scalable, accurate, and robust data storage in DNA, addressing the tradeoff between storage scalability and retrieval accuracy. Goal: develop a modular pipeline combining deep learning, tensor-product error-correcting codes, and safety margins to enable scalable, robust DNA-based storage.\n\n## Core Method\nA modular, holistic pipeline that integrates: Deep neural networks trained on simulated data; Tensor-product-based error-correcting codes; A safety margin mechanism. Pipeline demonstrated on DNA data storage using sequencing technologies. Encoding: binary data -> DNA alphabet sequences (A, C, G, T) forming encoded sequences. Synthesis yields multiple oligos per sequence; strand lengths ~200–300 nt. Storage is unordered; retrieval involves sampling, PCR, sequencing, and decoding.\n\n## Datasets\nNot clearly stated. Abstract mentions demonstration on 3.1 MB of information and two sequencing technologies, but no detailed dataset sources or synthetic data generation specifics.\n\n## Experimental Setup\nDemonstration on 3.1 MB of information using two sequencing technologies. Encoding into DNA sequences, synthesis of multiple oligos per sequence, unordered storage, retrieval via PCR amplification and sequencing, then decoding via the proposed pipeline.\n\n## Main Results\n3,200× speedup and 40% accuracy improvement relative to leading solutions. Code rate of 1.6 bits per base in a high-noise regime. Demonstrated viability of a holistic approach for scalable and robust DNA storage; suggests potential path toward commercial DNA storage solutions.\n\n## Novelty\nJoint integration of deep learning with tensor-product error-correcting codes and a safety margin in a single DNA storage pipeline. Empirical demonstration achieving substantial speed and accuracy gains over existing solutions within a high-noise context. Evidence toward practical DNA storage deployment by addressing retrieval bottlenecks via a holistic design.\n\n## Strengths\n- Holistic integration of multiple components (DL, codes, safety margins) rather than isolated improvements.\n- Demonstrated end-to-end workflow from data encoding to decoding in a storage-and-retrieval cycle.\n- Reported quantitative improvements (speedup, accuracy, code rate) suggesting strong performance gains.\n\n## Limitations\n- Incomplete disclosure of datasets, data generation methods, and exact sequencing technologies used, limiting reproducibility from the text provided.\n- Lack of explicit baselines, experimental conditions, and statistical measures in the excerpt.\n- Unclear details on model architectures, code constructions, and safety-margin mechanisms required for replication.\n\n## Reproducibility\nRequires access to the specific deep learning models and tensor-product code designs used, which are not detailed here. End-to-end pipeline steps are described at a high level; exact parameter settings, data encodings, and software implementations are not provided.\n\n## Summary\nThis work presents a modular, holistic pipeline for DNA-based data storage that combines deep neural networks trained on simulated data, tensor-product-based error-correcting codes, and a safety margin mechanism. The authors demonstrate the approach on 3.1 MB of information using two sequencing technologies, reporting a 3,200× speedup, a 40% improvement in accuracy, and a code rate of 1.6 bits per base in high-noise conditions. The method aims to address the scalability–retrieval accuracy tradeoff in DNA storage by integrating encoding, synthesis constraints, unordered storage, and retrieval via PCR amplification and sequencing within a unified framework.\n\n## Interview Pitch\nA modular, end-to-end DNA storage pipeline that combines deep learning, tensor-product error-correcting codes, and safety margins to achieve dramatic improvements in speed and reliability, demonstrated on 3.1 MB of data with two sequencing technologies. The approach is positioned as a viable path toward commercial DNA storage by addressing retrieval bottlenecks without sacrificing scalability.\n",
+  "markdown_report": "# 研究型文献分析报告\n\n## 来源文档\n- **标题：** Scalable and robust DNA-based storage via coding theory and deep learning\n- **作者：** Daniella Bar-Lev, Itai Orr, Omer Sabary, Tuvi Etzion, Eitan Yaakobi\n- **DOI：** 未明确说明\n- **期刊/会议：** 未明确说明\n- **年份：** 未明确说明\n- **页数：** 未明确说明\n\n## 参与分析的重点章节\n- 回退到原始文本片段\n\n## 结构化解析预览\n未明确说明\n\n## 研究问题\n提升DNA存储在信息检索过程中的可扩展性与准确性之间的平衡。\n\n## 核心方法\n模块化且整体化的管线，结合深度神经网络（在模拟数据上训练）、基于张量积的纠错编码、以及安全裕度机制。\n\n## 数据集\n3.1 MB的信息量；两种测序技术；未提供具体数据集名称或来源。\n\n## 实验设置\n在模拟数据上训练深度学习模型，结合纠错编码与安全裕度机制的管线用于DNA存储信息检索；评估维度包括速度、准确性以及高噪声环境下的码率。\n\n## 主要结果\n相较于当前领先解决方案，速度提升约3200×；准确性提升约40%；在高噪声环境下码率为1.6位/碱基；展示商业化DNA存储的可能路径。\n\n## 创新点\n将深度学习、纠错编码与安全裕度整合到一个管线中，并在DNA存储信息检索场景下实现显著的速度与准确性提升。\n\n## 优点\n- 显著提升检索速度\n- 提高在高噪声环境下的准确性\n- 提供可行的商业化路径的论证\n\n## 局限性\n- 缺乏具体数据集与实验细节披露\n- 未给出重复性与外部验证的信息\n\n## 复现建议\n论文未给出完整的实现细节、超参数和实验设置的公开信息，可能影响复现性。\n\n## 总结\n本研究提出一个模块化、整体化的管线，将深度神经网络、基于张量积的纠错编码和安全裕度机制结合，以提升DNA存储信息检索过程中的可扩展性与准确性。在3.1 MB信息量的数据上，通过两种测序技术进行演示，显示在速度、准确性与高噪声环境下的码率方面的改进，探索实现商业化DNA存储解决方案的可行路径。\n",
   "structured_data": {
     "metadata": {
       "title": "Scalable and robust DNA-based storage via coding theory and deep learning",
       "authors": [
-        "Not clearly stated"
+        "Daniella Bar-Lev",
+        "Itai Orr",
+        "Omer Sabary",
+        "Tuvi Etzion",
+        "Eitan Yaakobi"
       ],
-      "venue": "Not clearly stated",
-      "year": "Not clearly stated"
+      "venue": "",
+      "year": ""
     },
     "extracted_notes": {
-      "research_problem": "The global data sphere is growing rapidly (projected 180 zettabytes by 2025). Current storage technologies do not scale at the required pace. Need scalable, accurate, and robust data storage in DNA, addressing the tradeoff between storage scalability and retrieval accuracy. Goal: develop a modular pipeline combining deep learning, tensor-product error-correcting codes, and safety margins to enable scalable, robust DNA-based storage.",
-      "core_method": "A modular, holistic pipeline that integrates: Deep neural networks trained on simulated data; Tensor-product-based error-correcting codes; A safety margin mechanism. Pipeline demonstrated on DNA data storage using sequencing technologies. Encoding: binary data -> DNA alphabet sequences (A, C, G, T) forming encoded sequences. Synthesis yields multiple oligos per sequence; strand lengths ~200–300 nt. Storage is unordered; retrieval involves sampling, PCR, sequencing, and decoding.",
+      "research_problem": "提升DNA存储在信息检索过程中的可扩展性与准确性之间的平衡。",
+      "core_method": "模块化且整体化的管线，结合深度神经网络（在模拟数据上训练）、基于张量积的纠错编码、以及安全裕度机制。",
       "datasets": [
-        "Not clearly stated. Abstract mentions demonstration on 3.1 MB of information and two sequencing technologies, but no detailed dataset sources or synthetic data generation specifics."
+        "3.1 MB的信息量；两种测序技术；未提供具体数据集名称或来源。"
       ],
-      "experimental_setup": "Demonstration on 3.1 MB of information using two sequencing technologies. Encoding into DNA sequences, synthesis of multiple oligos per sequence, unordered storage, retrieval via PCR amplification and sequencing, then decoding via the proposed pipeline.",
-      "main_results": "3,200× speedup and 40% accuracy improvement relative to leading solutions. Code rate of 1.6 bits per base in a high-noise regime. Demonstrated viability of a holistic approach for scalable and robust DNA storage; suggests potential path toward commercial DNA storage solutions."
+      "experimental_setup": "在模拟数据上训练深度学习模型，结合纠错编码与安全裕度机制的管线用于DNA存储信息检索；评估维度包括速度、准确性以及高噪声环境下的码率。",
+      "main_results": "相较于当前领先解决方案，速度提升约3200×；准确性提升约40%；在高噪声环境下码率为1.6位/碱基；展示商业化DNA存储的可能路径。"
     },
-    "novelty": "Joint integration of deep learning with tensor-product error-correcting codes and a safety margin in a single DNA storage pipeline. Empirical demonstration achieving substantial speed and accuracy gains over existing solutions within a high-noise context. Evidence toward practical DNA storage deployment by addressing retrieval bottlenecks via a holistic design.",
+    "novelty": "将深度学习、纠错编码与安全裕度整合到一个管线中，并在DNA存储信息检索场景下实现显著的速度与准确性提升。",
     "strengths": [
-      "Holistic integration of multiple components (DL, codes, safety margins) rather than isolated improvements.",
-      "Demonstrated end-to-end workflow from data encoding to decoding in a storage-and-retrieval cycle.",
-      "Reported quantitative improvements (speedup, accuracy, code rate) suggesting strong performance gains."
+      "显著提升检索速度",
+      "提高在高噪声环境下的准确性",
+      "提供可行的商业化路径的论证"
     ],
     "limitations": [
-      "Incomplete disclosure of datasets, data generation methods, and exact sequencing technologies used, limiting reproducibility from the text provided.",
-      "Lack of explicit baselines, experimental conditions, and statistical measures in the excerpt.",
-      "Unclear details on model architectures, code constructions, and safety-margin mechanisms required for replication."
+      "缺乏具体数据集与实验细节披露",
+      "未给出重复性与外部验证的信息"
     ],
-    "reproducibility": "Requires access to the specific deep learning models and tensor-product code designs used, which are not detailed here. End-to-end pipeline steps are described at a high level; exact parameter settings, data encodings, and software implementations are not provided.",
-    "interview_pitch": "A modular, end-to-end DNA storage pipeline that combines deep learning, tensor-product error-correcting codes, and safety margins to achieve dramatic improvements in speed and reliability, demonstrated on 3.1 MB of data with two sequencing technologies. The approach is positioned as a viable path toward commercial DNA storage by addressing retrieval bottlenecks without sacrificing scalability.",
+    "reproducibility": "论文未给出完整的实现细节、超参数和实验设置的公开信息，可能影响复现性。",
+    "interview_pitch": "通过一个统一的管线，将深度学习、张量积纠错编码与安全裕度结合，在DNA存储信息检索中显著提升速度与准确性，且在高噪声环境下维持较高码率，展示向商业化落地的潜力。",
     "selected_sections": [],
     "source_structure": {
       "parser_kind": "plain_text",

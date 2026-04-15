@@ -212,25 +212,25 @@ class PdfParser(DocumentParser):
     ) -> str:
         authors = metadata.get("authors", [])
         if isinstance(authors, list):
-            author_text = ", ".join(authors) if authors else "N/A"
+            author_text = ", ".join(authors) if authors else "未明确说明"
         else:
-            author_text = str(authors) if authors else "N/A"
+            author_text = str(authors) if authors else "未明确说明"
 
         meta_lines = [
-            f"- **Title:** {title or 'N/A'}",
-            f"- **Authors:** {author_text}",
-            f"- **DOI:** {metadata.get('doi') or 'N/A'}",
-            f"- **Venue:** {metadata.get('venue') or 'N/A'}",
-            f"- **Year:** {metadata.get('year') or 'N/A'}",
-            f"- **Pages:** {metadata.get('page_count') or 'N/A'}",
+            f"- **标题：** {title or '未明确说明'}",
+            f"- **作者：** {author_text}",
+            f"- **DOI：** {metadata.get('doi') or '未明确说明'}",
+            f"- **期刊/会议：** {metadata.get('venue') or '未明确说明'}",
+            f"- **年份：** {metadata.get('year') or '未明确说明'}",
+            f"- **页数：** {metadata.get('page_count') or '未明确说明'}",
         ]
 
-        body: list[str] = ["# Parsed PDF Structure", "", "## Metadata", *meta_lines]
+        body: list[str] = ["# PDF 结构化解析", "", "## 基础信息", *meta_lines]
         for key, value in sections.items():
             if key == "title":
                 continue
-            heading = key.replace("_", " ").title()
-            body.extend(["", f"## {heading}", value or "N/A"])
+            heading = self._localized_section_name(key)
+            body.extend(["", f"## {heading}", value or "未明确说明"])
         return "\n".join(body).strip() + "\n"
 
     @staticmethod
@@ -281,3 +281,16 @@ class PdfParser(DocumentParser):
         text = re.sub(r"\s+([,.;:])", r"\1", text)
         text = re.sub(r"(?<=\w)- (?=\w)", "", text)
         return text.strip()
+
+    @staticmethod
+    def _localized_section_name(section_name: str) -> str:
+        mapping = {
+            "abstract": "摘要（Abstract）",
+            "introduction": "引言（Introduction）",
+            "figures": "图示（Figures）",
+            "method": "方法（Method）",
+            "experimental_setup": "实验设置（Experimental Setup）",
+            "results": "结果（Results）",
+            "conclusion": "结论（Conclusion）",
+        }
+        return mapping.get(section_name, section_name.replace("_", " ").title())

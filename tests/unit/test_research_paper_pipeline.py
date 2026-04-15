@@ -64,8 +64,8 @@ class ResearchPaperPipelineTest(unittest.TestCase):
         assert runner.received_document is not None
         self.assertIn("## Abstract", runner.received_document.raw_text)
         self.assertNotIn("RAW RAW RAW RAW RAW", runner.received_document.raw_text)
-        self.assertIn("# Research Paper Analysis Report", result.markdown_report)
-        self.assertIn("## Structured Parse Preview", result.markdown_report)
+        self.assertIn("# 研究型文献分析报告", result.markdown_report)
+        self.assertIn("## 结构化解析预览", result.markdown_report)
         self.assertIn("selected_sections", result.structured_data)
 
 

@@ -14,8 +14,8 @@ class PdfParserTest(unittest.TestCase):
         self.assertEqual(parsed.metadata["page_count"], 2)
         self.assertIn("abstract", parsed.sections)
         self.assertIn("method", parsed.sections)
-        self.assertIn("# Parsed PDF Structure", parsed.markdown)
-        self.assertIn("## Abstract", parsed.markdown)
+        self.assertIn("# PDF 结构化解析", parsed.markdown)
+        self.assertIn("## 摘要（Abstract）", parsed.markdown)
 
 
 if __name__ == "__main__":

@@ -1,40 +1,41 @@
 extract_paper_notes_task:
   description: >
-    Read the following academic paper text for "{paper_title}".
+    请阅读题为“{paper_title}”的以下学术论文文本。
 
-    PAPER TEXT:
+    论文内容：
     {paper_text}
 
-    Extract only source-grounded notes.
-    When the paper is long, use the section extractor tool to inspect likely sections such as:
-    abstract, introduction, method, experiment, results, and conclusion.
+    只提取能够回到原文定位的要点。
+    当论文较长时，优先使用 section extractor 工具查看摘要、引言、方法、实验、结果与结论等关键章节。
 
-    Produce a concise markdown note sheet with these exact headings:
-    1. Metadata
-    2. Research Problem
-    3. Core Method
-    4. Datasets
-    5. Experimental Setup
-    6. Main Results
+    请输出一份精炼的 markdown 笔记，并严格使用以下标题：
+    1. 基础信息
+    2. 研究问题
+    3. 核心方法
+    4. 数据集
+    5. 实验设置
+    6. 主要结果
 
-    Rules:
-    - Do not fabricate authors, venue, year, datasets, or numeric results.
-    - If some information is missing, explicitly write "Not clearly stated".
-    - Prefer short factual sentences over long prose.
+    规则：
+    - 不要虚构作者、期刊/会议、年份、数据集或数值结果。
+    - 如果信息缺失，请明确写“未明确说明”。
+    - 说明性内容统一使用简体中文；只有直接引用、标题、作者名、机构名、期刊/会议名、专业术语、模型名、数据集名、方法名、指标名等保留原文。
+    - 重要术语首次出现时，优先采用“中文解释（原文术语）”格式。
+    - 优先使用简洁、事实性的中文表达。
   expected_output: >
-    A compact markdown note sheet with the six required headings and only source-grounded content.
+    一份包含六个指定标题、且仅含原文可追溯内容的精炼中文 markdown 笔记。
   agent: reader
 
 synthesize_analysis_task:
   description: >
-    Use the previous task's note sheet and the same paper text for "{paper_title}" to produce the final analysis.
+    请基于上一任务生成的笔记，以及题为“{paper_title}”的同一份论文文本，生成最终分析结果。
 
-    PAPER TEXT:
+    论文内容：
     {paper_text}
 
-    Before making uncertain claims, use the keyword search tool to verify evidence in the paper text.
+    在做不确定判断前，先使用 keyword search 工具回到论文原文核验证据。
 
-    You must produce a final structured analysis with these fields:
+    你必须输出最终结构化分析，字段键名保持以下英文名称：
     - metadata: title, authors, venue, year
     - extracted_notes: research_problem, core_method, datasets, experimental_setup, main_results
     - novelty
@@ -43,12 +44,13 @@ synthesize_analysis_task:
     - reproducibility
     - interview_pitch
 
-    Rules:
-    - Keep all judgments grounded in the paper.
-    - For missing metadata or uncertain items, use empty strings or empty lists rather than inventing content.
-    - "strengths" and "limitations" must be short bullet-style phrases.
-    - "interview_pitch" should be 3 to 5 sentences and suitable for talking about this paper in an interview or project demo.
+    规则：
+    - 所有判断都必须以论文内容为依据。
+    - 缺失信息或不确定项请使用空字符串或空列表，不要虚构内容。
+    - 字段值中的说明性文本统一使用简体中文；仅在直接引用、标题、作者名、机构名、期刊/会议名、术语名、模型名、数据集名、方法名、指标名等场景下保留原文。
+    - “strengths”和“limitations”必须是简短的中文列表短语。
+    - “interview_pitch”应为 3 到 5 句，适合在面试或项目演示中介绍该论文。
   expected_output: >
-    A structured paper analysis object with metadata, extracted notes, novelty, strengths, limitations,
-    reproducibility, and interview_pitch.
+    一个结构化的论文分析对象，字段键名保持兼容，字段值说明主要使用简体中文，
+    包含 metadata、extracted_notes、novelty、strengths、limitations、reproducibility 和 interview_pitch。
   agent: analyst

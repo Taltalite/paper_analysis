@@ -51,7 +51,7 @@ class JobService:
     async def run_job(self, job_id: UUID) -> AnalysisJob:
         job = await self._job_store.get(job_id)
         if not job.input_path:
-            return await self._fail_job(job, "Input file is missing.")
+            return await self._fail_job(job, "输入文件缺失。")
 
         input_path = Path(job.input_path)
         try:
@@ -151,10 +151,10 @@ class JobService:
     @staticmethod
     def _ensure_completed(job: AnalysisJob) -> None:
         if job.status != JobStatus.COMPLETED:
-            raise FileNotFoundError(f"Artifacts are not ready for job {job.id}")
+            raise FileNotFoundError(f"任务 {job.id} 的产物尚未准备完成。")
 
     @staticmethod
     def _required_path(path: str | None, label: str) -> Path:
         if not path:
-            raise FileNotFoundError(f"{label} is not available.")
+            raise FileNotFoundError(f"{label}尚不可用。")
         return Path(path)

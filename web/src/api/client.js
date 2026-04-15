@@ -4,7 +4,7 @@ async function parseJsonResponse(response) {
   const payload = await response.json().catch(() => null);
   if (!response.ok) {
     const detail = payload && typeof payload.detail === "string" ? payload.detail : response.statusText;
-    throw new Error(detail || "Request failed.");
+    throw new Error(detail || "请求失败。");
   }
   return payload;
 }

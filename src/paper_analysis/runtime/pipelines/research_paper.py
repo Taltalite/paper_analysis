@@ -89,66 +89,63 @@ class ResearchPaperPipeline(AnalysisPipeline):
         paper_analysis = self._coerce_paper_analysis(result)
         source_section_preview = self._render_source_section_preview(source_document, selected_sections)
         selected_text = "\n".join(
-            f"- {section.replace('_', ' ').title()}" for section in selected_sections
-        ) or "- Fallback raw text"
+            f"- {self._localized_section_name(section)}" for section in selected_sections
+        ) or "- 回退到原始文本片段"
         parser_authors = source_document.metadata.get("authors", [])
         if isinstance(parser_authors, list):
             fallback_authors = parser_authors
         else:
             fallback_authors = [str(parser_authors)] if parser_authors else []
-        authors = ", ".join(paper_analysis.metadata.authors or fallback_authors) or "N/A"
-        strengths = "\n".join(f"- {item}" for item in paper_analysis.strengths) or "- N/A"
-        limitations = "\n".join(f"- {item}" for item in paper_analysis.limitations) or "- N/A"
-        datasets = ", ".join(paper_analysis.extracted_notes.datasets) or "N/A"
+        authors = ", ".join(paper_analysis.metadata.authors or fallback_authors) or self._missing_text()
+        strengths = "\n".join(f"- {item}" for item in paper_analysis.strengths) or f"- {self._missing_text()}"
+        limitations = "\n".join(f"- {item}" for item in paper_analysis.limitations) or f"- {self._missing_text()}"
+        datasets = ", ".join(paper_analysis.extracted_notes.datasets) or self._missing_text()
 
-        return f"""# Research Paper Analysis Report
+        return f"""# 研究型文献分析报告
 
-## Source Document
-- **Title:** {paper_analysis.metadata.title or source_document.title or 'N/A'}
-- **Authors:** {authors}
-- **DOI:** {source_document.metadata.get('doi') or 'N/A'}
-- **Venue:** {paper_analysis.metadata.venue or source_document.metadata.get('venue') or 'N/A'}
-- **Year:** {paper_analysis.metadata.year or source_document.metadata.get('year') or 'N/A'}
-- **Pages:** {source_document.metadata.get('page_count') or 'N/A'}
+## 来源文档
+- **标题：** {paper_analysis.metadata.title or source_document.title or self._missing_text()}
+- **作者：** {authors}
+- **DOI：** {source_document.metadata.get('doi') or self._missing_text()}
+- **期刊/会议：** {paper_analysis.metadata.venue or source_document.metadata.get('venue') or self._missing_text()}
+- **年份：** {paper_analysis.metadata.year or source_document.metadata.get('year') or self._missing_text()}
+- **页数：** {source_document.metadata.get('page_count') or self._missing_text()}
 
-## Selected Sections Used For Analysis
+## 参与分析的重点章节
 {selected_text}
 
-## Structured Parse Preview
+## 结构化解析预览
 {source_section_preview}
 
-## Research Problem
-{paper_analysis.extracted_notes.research_problem or 'N/A'}
+## 研究问题
+{paper_analysis.extracted_notes.research_problem or self._missing_text()}
 
-## Core Method
-{paper_analysis.extracted_notes.core_method or 'N/A'}
+## 核心方法
+{paper_analysis.extracted_notes.core_method or self._missing_text()}
 
-## Datasets
+## 数据集
 {datasets}
 
-## Experimental Setup
-{paper_analysis.extracted_notes.experimental_setup or 'N/A'}
+## 实验设置
+{paper_analysis.extracted_notes.experimental_setup or self._missing_text()}
 
-## Main Results
-{paper_analysis.extracted_notes.main_results or 'N/A'}
+## 主要结果
+{paper_analysis.extracted_notes.main_results or self._missing_text()}
 
-## Novelty
-{paper_analysis.novelty or 'N/A'}
+## 创新点
+{paper_analysis.novelty or self._missing_text()}
 
-## Strengths
+## 优点
 {strengths}
 
-## Limitations
+## 局限性
 {limitations}
 
-## Reproducibility
-{paper_analysis.reproducibility or 'N/A'}
+## 复现建议
+{paper_analysis.reproducibility or self._missing_text()}
 
-## Summary
-{result.summary or 'N/A'}
-
-## Interview Pitch
-{paper_analysis.interview_pitch or result.summary or 'N/A'}
+## 总结
+{result.summary or self._missing_text()}
 """
 
     @staticmethod
@@ -157,7 +154,7 @@ class ResearchPaperPipeline(AnalysisPipeline):
         selected_sections: list[str],
     ) -> str:
         if not selected_sections:
-            return "N/A"
+            return ResearchPaperPipeline._missing_text()
 
         blocks: list[str] = []
         for section_name in selected_sections:
@@ -165,9 +162,9 @@ class ResearchPaperPipeline(AnalysisPipeline):
             if not content:
                 continue
             preview = content[:700].strip()
-            heading = section_name.replace("_", " ").title()
+            heading = ResearchPaperPipeline._localized_section_name(section_name)
             blocks.append(f"### {heading}\n{preview}")
-        return "\n\n".join(blocks) if blocks else "N/A"
+        return "\n\n".join(blocks) if blocks else ResearchPaperPipeline._missing_text()
 
     @staticmethod
     def _coerce_paper_analysis(result: AnalysisResult) -> PaperAnalysis:
@@ -215,3 +212,20 @@ class ResearchPaperPipeline(AnalysisPipeline):
             **structured_data,
             "metadata": metadata,
         }
+
+    @staticmethod
+    def _localized_section_name(section_name: str) -> str:
+        mapping = {
+            "abstract": "摘要（Abstract）",
+            "introduction": "引言（Introduction）",
+            "method": "方法（Method）",
+            "experimental_setup": "实验设置（Experimental Setup）",
+            "results": "结果（Results）",
+            "conclusion": "结论（Conclusion）",
+            "figures": "图示（Figures）",
+        }
+        return mapping.get(section_name, section_name.replace("_", " ").title())
+
+    @staticmethod
+    def _missing_text() -> str:
+        return "未明确说明"
