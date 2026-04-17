@@ -10,6 +10,7 @@ from paper_analysis.adapters.storage.job_store import LocalFilesystemJobStore
 from paper_analysis.adapters.storage.local_fs import LocalFilesystemArtifactStorage
 from paper_analysis.api.app import create_app
 from paper_analysis.api.deps import get_job_service
+from paper_analysis.domain.models import FigureMetadata
 from paper_analysis.domain.enums import AnalysisMode
 from paper_analysis.domain.schemas import AnalysisResult, ParsedDocument
 from paper_analysis.services.artifact_service import ArtifactService
@@ -26,6 +27,14 @@ class FakeAnalysisService:
                 markdown="# Parsed PDF Structure\n\n## Abstract\nSynthetic abstract",
                 sections={"abstract": "Synthetic abstract", "results": "Synthetic results"},
                 section_order=["abstract", "results"],
+                figures=[
+                    FigureMetadata(
+                        figure_id="Figure 1",
+                        caption="Synthetic figure caption",
+                        page_number=1,
+                        referenced_text_spans=["Synthetic figure reference"],
+                    )
+                ],
                 metadata={"parser_kind": "pdf", "page_count": 1, "authors": ["Tester"]},
             )
         return ParsedDocument(
@@ -44,7 +53,10 @@ class FakeAnalysisService:
             key_points=["Synthetic key point"],
             limitations=["Synthetic limitation"],
             markdown_report="# Report\n\nSynthetic report body",
-            structured_data={"metadata": {"title": document.title}},
+            structured_data={
+                "metadata": {"title": document.title},
+                "figure_analyses": [{"figure_id": "Figure 1", "claimed_conclusion": "Synthetic claim"}],
+            },
         )
 
 
@@ -98,7 +110,11 @@ class ApiIntegrationTests(unittest.TestCase):
         artifact_payload = artifact_response.json()
         self.assertEqual(artifact_payload["status"], "completed")
         self.assertIn("structured_data", artifact_payload["json_report"])
+        self.assertIn("figure_analyses", artifact_payload["json_report"]["structured_data"])
         self.assertIn("# Report", artifact_payload["markdown_report"])
+        log_path = Path(artifact_payload["artifact"]["log_path"])
+        self.assertTrue(log_path.exists())
+        self.assertIn("任务开始执行", log_path.read_text(encoding="utf-8"))
 
 
 if __name__ == "__main__":

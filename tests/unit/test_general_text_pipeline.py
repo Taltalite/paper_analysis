@@ -41,7 +41,7 @@ class GeneralTextPipelineTest(unittest.TestCase):
             profile=RESEARCH_PAPER_PROFILE,
             crew_runner=FakeCrewRunner(
                 AnalysisResult(
-                    summary="Interview summary",
+                    summary="Paper summary",
                     structured_data={
                         "metadata": {
                             "title": "Paper Title",
@@ -60,7 +60,6 @@ class GeneralTextPipelineTest(unittest.TestCase):
                         "strengths": ["Strong point"],
                         "limitations": ["Weak point"],
                         "reproducibility": "Medium",
-                        "interview_pitch": "Pitch",
                     },
                 )
             ),

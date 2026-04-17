@@ -26,10 +26,6 @@ class GeneralTextPipeline(AnalysisPipeline):
         result = self._crew_runner.run(document=document, profile=self._profile)
         if self._looks_like_paper_result(result):
             result.structured_data = self._normalize_paper_structured_data(result.structured_data)
-            if not result.summary:
-                interview_pitch = result.structured_data.get("interview_pitch")
-                if isinstance(interview_pitch, str) and interview_pitch:
-                    result.summary = interview_pitch
         if not result.title:
             result.title = document.title
         if not result.markdown_report:
@@ -69,8 +65,6 @@ class GeneralTextPipeline(AnalysisPipeline):
 
         blocks: list[str] = []
         for key, value in payload.items():
-            if key == "interview_pitch":
-                continue
             heading = cls._localized_heading(key)
             if isinstance(value, list):
                 rendered = "\n".join(f"- {item}" for item in value) or f"- {cls._missing_text()}"
@@ -93,7 +87,6 @@ class GeneralTextPipeline(AnalysisPipeline):
             "strengths",
             "limitations",
             "reproducibility",
-            "interview_pitch",
         }
         return required_keys.issubset(result.structured_data)
 
@@ -186,7 +179,6 @@ class GeneralTextPipeline(AnalysisPipeline):
             "strengths": GeneralTextPipeline._list_value(payload.get("strengths")),
             "limitations": GeneralTextPipeline._list_value(payload.get("limitations")),
             "reproducibility": GeneralTextPipeline._string_value(payload.get("reproducibility")),
-            "interview_pitch": GeneralTextPipeline._string_value(payload.get("interview_pitch")),
         }
 
     @staticmethod
@@ -228,14 +220,25 @@ class GeneralTextPipeline(AnalysisPipeline):
             "strengths": "优点",
             "limitations": "局限性",
             "reproducibility": "复现建议",
-            "interview_pitch": "面试表达",
+            "discussion": "讨论",
             "sections": "章节信息",
             "selected_sections": "重点章节",
             "source_structure": "源文档结构",
+            "figure_analyses": "图表分析",
+            "figure_id": "图号",
+            "figure_title_or_caption": "图注",
+            "experiment_focus": "实验焦点",
+            "compared_items": "比较对象",
+            "metrics_or_axes": "指标/坐标",
+            "main_observations": "主要观察",
+            "claimed_conclusion": "作者结论",
+            "consistency_check": "图文一致性检查",
+            "confidence": "置信度",
             "parser_kind": "解析器类型",
             "page_count": "页数",
             "doi": "DOI",
             "section_order": "章节顺序",
+            "figure_count": "图表数量",
             "summary": "摘要",
             "key_points": "要点",
             "markdown_report": "Markdown 报告",

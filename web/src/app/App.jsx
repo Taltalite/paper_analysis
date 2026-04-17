@@ -4,7 +4,7 @@ import { createAnalysisJob, getAnalysisJob, getArtifactContent, getMarkdownRepor
 import ReportPanel from "../components/ReportPanel";
 import StatusPanel from "../components/StatusPanel";
 
-const POLL_INTERVAL_MS = 2000;
+const POLL_INTERVAL_MS = 1000;
 const MODE = "research_paper";
 
 function downloadTextFile(filename, content, mimeType) {
@@ -33,6 +33,7 @@ export default function App() {
   const [report, setReport] = useState(null);
   const [artifacts, setArtifacts] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+  const [syncingStatus, setSyncingStatus] = useState(false);
   const [error, setError] = useState("");
   const pollRef = useRef(null);
 
@@ -55,30 +56,54 @@ export default function App() {
 
   function stopPolling() {
     if (pollRef.current) {
-      window.clearInterval(pollRef.current);
+      window.clearTimeout(pollRef.current);
       pollRef.current = null;
     }
+    setSyncingStatus(false);
   }
 
-  function startPolling(jobId) {
-    stopPolling();
-    pollRef.current = window.setInterval(async () => {
+  async function syncJob(jobId) {
+    const latest = await getAnalysisJob(jobId);
+    setJob(latest);
+    if (latest.status === "completed") {
+      stopPolling();
+      await refreshCompletedArtifacts(jobId);
+      return true;
+    }
+    if (latest.status === "failed") {
+      stopPolling();
+      setError(latest.error_message || "分析任务失败。");
+      return true;
+    }
+    return false;
+  }
+
+  function schedulePolling(jobId, delayMs = POLL_INTERVAL_MS) {
+    pollRef.current = window.setTimeout(async () => {
       try {
-        const latest = await getAnalysisJob(jobId);
-        setJob(latest);
-        if (latest.status === "completed") {
-          stopPolling();
-          await refreshCompletedArtifacts(jobId);
-        }
-        if (latest.status === "failed") {
-          stopPolling();
-          setError(latest.error_message || "分析任务失败。");
+        const finished = await syncJob(jobId);
+        if (!finished) {
+          schedulePolling(jobId, POLL_INTERVAL_MS);
         }
       } catch (requestError) {
         stopPolling();
         setError(requestError.message);
       }
-    }, POLL_INTERVAL_MS);
+    }, delayMs);
+  }
+
+  async function startPolling(jobId) {
+    stopPolling();
+    setSyncingStatus(true);
+    try {
+      const finished = await syncJob(jobId);
+      if (!finished) {
+        schedulePolling(jobId, POLL_INTERVAL_MS);
+      }
+    } catch (requestError) {
+      stopPolling();
+      setError(requestError.message);
+    }
   }
 
   async function handleSubmit(event) {
@@ -97,7 +122,7 @@ export default function App() {
     try {
       const createdJob = await createAnalysisJob(selectedFile, MODE);
       setJob(createdJob);
-      startPolling(createdJob.id);
+      await startPolling(createdJob.id);
     } catch (requestError) {
       setError(requestError.message);
     } finally {
@@ -129,7 +154,13 @@ export default function App() {
         </form>
       </section>
 
-      <StatusPanel job={job} error={error} modeLabel={modeLabel} />
+      <StatusPanel
+        job={job}
+        error={error}
+        modeLabel={modeLabel}
+        submitting={submitting}
+        syncingStatus={syncingStatus}
+      />
 
       <section className="panel">
         <div className="panel-header">

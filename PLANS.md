@@ -144,6 +144,11 @@ Status:
 - added a research-paper pipeline that narrows agent input to selected sections instead of repeatedly sending the whole document
 - preserved the existing txt/md workflow while adding PDF support through the same service/runtime path
 - verified the bundled PDF example through `scripts/codex_run.sh`
+- 2026-04-17 hardening update:
+  replaced the earlier font-size-heavy PDF heuristics with a more stable path:
+  sequential block extraction -> rule-based coarse structure draft -> document-structuring agent for semantic correction -> downstream text/figure analysis agents
+- 2026-04-17 hardening update:
+  parser now persists ordered text/image blocks plus a coarse structure draft into `ParsedDocument.metadata`, and the research pipeline consumes the refined structure before running the existing analysis agents
 
 Rollback point:
 - existing plain-text path remains available while PDF support is introduced
@@ -188,7 +193,8 @@ Rollback point:
 
 Next implementation loop can focus on hardening, not architecture reshaping:
 
-1. improve PDF structure extraction on more varied layouts
-2. add richer job error reporting and optional retry semantics
-3. add backend integration coverage with the real analysis service behind feature flags or fakes for provider calls
-4. refine the frontend UX without moving business logic out of the backend
+1. improve PDF structure extraction on more varied publisher layouts and multi-column figure/table pages
+2. strengthen document-structuring prompts and fallbacks using more real-paper samples
+3. add richer job error reporting and optional retry semantics
+4. add backend integration coverage with the real analysis service behind feature flags or fakes for provider calls
+5. refine the frontend UX without moving business logic out of the backend

@@ -33,20 +33,27 @@
 
 ## 运行时分析链路
 
-当前可复用基座仍然是 2-agent 模式：
+当前通用文本基座仍然是 2-agent 模式：
 
 - `reader`
   从原文中提取可追溯的结构化要点
 - `analyst`
   将要点整理为最终结构化分析结果
 
-在研究型文献分析场景下，后端 pipeline 会执行：
+在研究型文献分析场景下，会在这条 2-agent 文本链路之上额外启用第 3 个专用 agent：
+
+- `figure_analyst`
+  专门分析 figure / chart / plot / diagram，对 caption、正文引用与图页上下文做结构化提取和一致性检查
+
+研究型文献分析 pipeline 会执行：
 
 1. 通过 parser 抽象解析源文件。
-2. 抽取摘要、引言、方法、实验设置、结果、结论、图示等结构。
-3. 将 token 重点集中在高价值章节，而不是反复发送全文。
-4. 使用 CrewAI 2-agent runtime 完成重点分析。
-5. 持久化最终 markdown、JSON 与 PDF 结构化 markdown 中间产物。
+2. 按阅读顺序提取 PDF text/image block，并输出粗规则切分结果。
+3. 使用 document-structuring agent 对标题、作者、摘要、章节边界和 `figure -> caption -> 正文引用` 做语义校正。
+4. 将 token 重点集中在高价值章节，而不是反复发送全文。
+5. 使用 CrewAI 2-agent runtime 完成正文重点分析。
+6. 使用 figure-analysis agent 对关键图表进行实验结果、对比结论和图文一致性分析。
+7. 持久化最终 markdown、JSON 与 PDF 结构化 markdown 中间产物。
 
 ## API 接口
 
@@ -64,6 +71,8 @@
 - markdown 报告
 - JSON 结果
 - PDF 结构化 markdown 中间产物
+
+前端在任务创建后会立即向后端同步一次状态，再进入短轮询，因此不会长时间停留在过期的 `pending` 展示。
 
 ## 运行配置
 
@@ -241,6 +250,28 @@ PDF 输入：
 - 结构化 markdown 中间产物
 - 研究型文献 markdown 分析报告
 - 结构化 JSON 结果
+- figure metadata（图号、caption、页码、正文引用、可选页截图路径）
+- ordered block 与 coarse structure 中间结构（保存在解析结果 metadata 中，用于结构校正）
+- 按时间戳落盘的任务日志文件
+
+研究型文献 markdown 会额外包含：
+
+- `图像实验结果分析`
+- `关键图表结论`
+- `图文一致性检查`
+
+## 任务日志
+
+后端 API 在每次接受分析请求后，会将该任务的执行日志落到对应 job 工作目录下，路径形如：
+
+- `.data/jobs/workspace/<job_id>/logs/analysis_YYYYMMDD_HHMMSS.log`
+
+日志会记录：
+
+- 解析阶段与分析阶段的状态变化
+- CrewAI 运行输出
+- figure-analysis agent 的执行与失败回退信息
+- 产物保存路径
 
 ## 当前说明
 

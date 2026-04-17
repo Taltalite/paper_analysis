@@ -7,6 +7,7 @@ from uuid import UUID, uuid4
 from pydantic import BaseModel, Field
 
 from paper_analysis.domain.enums import AnalysisMode, DocumentKind, JobStatus
+from paper_analysis.domain.models import FigureMetadata
 
 
 class UploadAnalysisRequest(BaseModel):
@@ -31,6 +32,7 @@ class ParsedDocument(BaseModel):
     markdown: str = ""
     sections: dict[str, str] = Field(default_factory=dict)
     section_order: list[str] = Field(default_factory=list)
+    figures: list[FigureMetadata] = Field(default_factory=list)
     metadata: dict[str, Any] = Field(default_factory=dict)
 
 
@@ -38,6 +40,7 @@ class AnalysisArtifact(BaseModel):
     markdown_report_path: str | None = None
     json_report_path: str | None = None
     parsed_markdown_path: str | None = None
+    log_path: str | None = None
 
 
 class AnalysisJob(BaseModel):

@@ -63,7 +63,7 @@ RESEARCH_PAPER_PROFILE = TextAnalysisProfile(
     reader_goal="认真阅读论文，提取忠实、可追溯、基于原文的要点，不补造缺失信息。",
     reader_backstory="你是一名细致的研究助理，擅长按章节阅读学术论文，重点关注研究问题、方法、数据集、实验设计与主要结果。",
     analyst_role="研究分析助手",
-    analyst_goal="将提取出的论文要点整理为简洁的结构化分析，突出创新点、优点、局限性、复现建议与适合面试表达的总结。",
+    analyst_goal="将提取出的论文要点整理为简洁的结构化分析，突出创新点、优点、局限性、复现建议与总体结论。",
     analyst_backstory="你是一名有经验的机器学习与学术评审助手，不夸大结论，能够明确区分事实、推断与评价。",
     note_headings=(
         "基础信息",
@@ -90,6 +90,6 @@ RESEARCH_PAPER_PROFILE = TextAnalysisProfile(
     structured_data_requirements=(
         "包含 `metadata`，键为 `title`、`authors`、`venue`、`year`。",
         "包含 `extracted_notes`，键为 `research_problem`、`core_method`、`datasets`、`experimental_setup`、`main_results`。",
-        "包含 `novelty`、`strengths`、`limitations`、`reproducibility` 和 `interview_pitch`。",
+        "包含 `novelty`、`strengths`、`limitations` 和 `reproducibility`。",
     ),
 )

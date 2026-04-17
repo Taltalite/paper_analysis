@@ -6,7 +6,7 @@ const STATUS_LABELS = {
   failed: "失败",
 };
 
-export default function StatusPanel({ job, error, modeLabel }) {
+export default function StatusPanel({ job, error, modeLabel, submitting, syncingStatus }) {
   return (
     <section className="panel">
       <div className="panel-header">
@@ -42,6 +42,14 @@ export default function StatusPanel({ job, error, modeLabel }) {
       ) : (
         <p className="muted">尚未提交任务。</p>
       )}
+      {!job && submitting ? (
+        <p className="muted">正在提交任务到后端，请稍候。</p>
+      ) : null}
+      {job && job.status !== "completed" && job.status !== "failed" ? (
+        <p className="muted">
+          {syncingStatus ? "前端正在同步后端状态，状态会在解析和分析阶段实时更新。" : "任务已提交，等待下一次状态同步。"}
+        </p>
+      ) : null}
       {error ? <p className="error-text">{error}</p> : null}
     </section>
   );

@@ -42,15 +42,13 @@ synthesize_analysis_task:
     - strengths
     - limitations
     - reproducibility
-    - interview_pitch
 
     规则：
     - 所有判断都必须以论文内容为依据。
     - 缺失信息或不确定项请使用空字符串或空列表，不要虚构内容。
     - 字段值中的说明性文本统一使用简体中文；仅在直接引用、标题、作者名、机构名、期刊/会议名、术语名、模型名、数据集名、方法名、指标名等场景下保留原文。
     - “strengths”和“limitations”必须是简短的中文列表短语。
-    - “interview_pitch”应为 3 到 5 句，适合在面试或项目演示中介绍该论文。
   expected_output: >
     一个结构化的论文分析对象，字段键名保持兼容，字段值说明主要使用简体中文，
-    包含 metadata、extracted_notes、novelty、strengths、limitations、reproducibility 和 interview_pitch。
+    包含 metadata、extracted_notes、novelty、strengths、limitations 和 reproducibility。
   agent: analyst

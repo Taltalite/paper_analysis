@@ -1,23 +1,11 @@
 {
-  "title": "Scalable and robust DNA-based storage via coding theory and deep learning",
-  "summary": "本研究提出一个端到端的信息检索管线，用以提升DNA存储的速度与准确性。通过在模拟数据上训练的深度神经网络、基于张量积的纠错编码，以及一个安全余量机制，将这些组件整合为一个统一流程，在3.1 MB数据量和两种测序技术的条件下演示。相比当前领先方案，实现了约3200倍的速度提升、约40%的准确性提升，并在高噪声环境下达到1.6比特/碱基的码率，指示该方法具备向商业化DNA存储解决方案演进的潜力，缓解现有信息检索环节的瓶颈。",
-  "key_points": [
-    "提出一个模块化、端到端的信息检索管线，结合深度神经网络、张量积纠错编码和安全余量机制",
-    "在模拟数据上训练的DNN与实际测序数据的整合用于提高编码/解码的鲁棒性和速度",
-    "实验在3.1 MB数据量、两种测序技术条件下进行演示，展示对现有方案的显著改进",
-    "结果包括速度提升、准确性提升以及在高噪声条件下的码率表现（1.6比特/碱基）",
-    "工作凸显DNA存储在实现商业化过程中的可行路径，聚焦信息检索阶段的瓶颈缓解"
-  ],
-  "limitations": [
-    "未给出具体数据集名称或公开数据源信息",
-    "实验仅在3.1 MB规模下演示，规模外的鲁棒性与扩展性需进一步验证",
-    "关于实际部署的成本、合成与测序的商业化可行性未给出定量分析",
-    "缺少对比实验的细节描述（如基线方法、评估指标的具体实现）以便独立复现"
-  ],
-  "markdown_report": "# 研究型文献分析报告\n\n## 来源文档\n- **标题：** Scalable and robust DNA-based storage via coding theory and deep learning\n- **作者：** Daniella Bar-Lev, Itai Orr, Omer Sabary, Tuvi Etzion, Eitan Yaakobi\n- **DOI：** 10.1038/s42256-025-01003-z\n- **期刊/会议：** Nature Machine Intelligence | Volume 7 | April 2025 | 639–649 639\n- **年份：** 2025\n- **页数：** 2\n\n## 参与分析的重点章节\n- 摘要（Abstract）\n- 引言（Introduction）\n- 方法（Method）\n- 实验设置（Experimental Setup）\n- 结果（Results）\n- 结论（Conclusion）\n- 图示（Figures）\n\n## 结构化解析预览\n### 摘要（Abstract）\nThe global data sphere is expanding exponentially, projected to hit 180 zettabytes by 2025, whereas current technologies are not anticipated to scale at nearly the same rate. DNA-based storage emerges as a crucial solution to this gap, enabling digital information to be archived in DNA molecules. This method enjoys major advantages over magnetic and optical storage solutions such as exceptional information density, enhanced data durability and negligible power consumption to maintain data integrity. To access the data, an information retrieval process is employed, where some of the main bottlenecks are the scalability and accuracy, which have a natural tradeoff between the two. Here we show\n\n### 引言（Introduction）\nThere is unsustainable growth in the global data sphere, fuelled by the proliferation of digital technologies such as artificial intelligence, the Internet of Things, widespread internet connectivity and the growing number of interconnected devices. While the global data sphere is anticipated to reach 180 zettabytes by 2025, current storage solutions are not expected to scale at nearly the same pace owing to capacity limitations1. To address this urgent need of the digital age, researchers are turning to innovative solutions such as DNA-based storage, recognizing its potential to revolutionize long-term data storage capabilities by offering extraordinary data density and durability2,3. A DNA\n\n### 方法（Method）\nThis method enjoys major advantages over magnetic and optical storage solutions such as exceptional information density, enhanced data durability and negligible power consumption to maintain data integrity. Here we show a modular and holistic approach that combines deep neural networks trained on simulated data, tensor product-based error-correcting codes and a safety margin mechanism into a single coherent pipeline. The standard in vitro DNA-based storage pipeline consists of sev- eral steps and is shown in Fig. a, A schematic description of our solution for the DNA-based storage pipeline.\n\n### 实验设置（Experimental Setup）\nWe demonstrated our solution on 3.1 MB of information using two different sequencing technologies. The standard in vitro DNA-based storage pipeline consists of sev- eral steps and is shown in Fig. The sequencer processes the strands and generates\n\nNature Machine Intelligence | Volume 7 | April 2025 | 639–649 640\n\n001010 110100 010011 111011 110010\n\n1 Encoding of the binary information using an ECC and a constraint code\n\n2 Synthetic DNA strands are synthesized using a DNA synthesis technology\n\nMultipel copies for each DNA strand\n\n3 Sequencing an amplified sample from the DNA storage container using a DNA sequencer\n\nThe number of reads for each encoded sequence can vary, and some encoded seque\n\n### 结果（Results）\nTo access the data, an information retrieval process is employed, where some of the main bottlenecks are the scalability and accuracy, which have a natural tradeoff between the two. Our work improves upon the current leading solutions with a 3,200× increase in speed and a 40% improvement in accuracy and offers a code rate of 1.6 bits per base in a high-noise regime.\n\n### 结论（Conclusion）\nIn a broader sense, our work shows a viable path to commercial DNA storage solutions hindered by current information retrieval processes.\n\n### 图示（Figures）\nFig. 1 | End-to-end solution for DNA information retrieval. a, A schematic description of our solution for the DNA-based storage pipeline. The different stages through the process are labelled 1–6 and steps that are part of the training\n\n## 研究问题\n解决DNA存储中可扩展性与准确性之间的权衡，通过端到端信息检索管线提升读取速度与准确性。\n\n## 核心方法\n将深度神经网络（在模拟数据上训练）、张量积纠错编码、以及安全余量机制整合到一个统一管线；涉及的DNA存储流程包括：将二进制数据编码为DNA 4碱基符号、合成、存储、PCR扩增、测序、读数分箱、解码纠错并检索原始二进制数据。\n\n## 数据集\n未公开指明具体数据集名称或来源；实验在3.1 MB信息量上进行演示。\n\n## 实验设置\n演示规模为3.1 MB信息量，使用两种测序技术；流程包括ECC与约束编码、合成、同一序列的多拷贝、测序、读数分箱、解码等阶段；涉及组件如NCI aligner、Embedding模块、Transformer模块，及训练数据生成与DNN训练。\n\n## 主要结果\n相较于当前领先方案，速度提升约3200×，准确性提升约40%，在高噪声条件下码率达到1.6比特/碱基；提出方法被视为商业DNA存储解决方案的可行路径。\n\n## 创新点\n端到端信息检索管线的整合，结合深度学习、张量积纠错编码与安全余量机制 在实际DNA存储管道中实现对读取误差的显著鲁棒性提升与更高吞吐 在高噪声场景下保持较高码率的能力\n\n## 优点\n- 显著的速度提升与准确性提高\n- 提供了一个整体框架，将多个技术组件协同工作以解决信息检索瓶颈\n- 在实际测序条件下给出可观的码率与鲁棒性结果\n\n## 局限性\n- 缺乏公开数据集和可重复性细节\n- 规模与场景受限，需验证大规模部署的鲁棒性\n- 成本与商业化可行性分析不足\n\n## 复现建议\n论文未提供详细的数据集信息与实现细节，复现实验需额外获取测试数据与配置参数\n\n## 总结\n本研究提出一个端到端的信息检索管线，用以提升DNA存储的速度与准确性。通过在模拟数据上训练的深度神经网络、基于张量积的纠错编码，以及一个安全余量机制，将这些组件整合为一个统一流程，在3.1 MB数据量和两种测序技术的条件下演示。相比当前领先方案，实现了约3200倍的速度提升、约40%的准确性提升，并在高噪声环境下达到1.6比特/碱基的码率，指示该方法具备向商业化DNA存储解决方案演进的潜力，缓解现有信息检索环节的瓶颈。\n",
+  "title": "AnalysisResult",
+  "summary": "",
+  "key_points": [],
+  "limitations": [],
+  "markdown_report": "# 研究型文献分析报告\n\n## 来源文档\n- **标题：** Scalable and robust DNA-based storage via coding theory and deep learning\n- **作者：** Daniella Bar-Lev, Itai Orr, Omer Sabary, Tuvi Etzion, Eitan Yaakobi\n- **DOI：** 10.1038/s42256-025-01003-z\n- **期刊/会议：** Nature Machine Intelligence | Volume 7 | April 2025 | 639–649 639\n- **年份：** 2025\n- **页数：** 2\n\n## 参与分析的重点章节\n- 摘要（Abstract）\n- 引言（Introduction）\n- 方法（Method）\n- 实验设置（Experimental Setup）\n- 结果（Results）\n- 结论（Conclusion）\n- 图示（Figures）\n\n## 结构化解析预览\n### 摘要（Abstract）\nThe global data sphere is expanding exponentially, projected to hit 180 zettabytes by 2025, whereas current technologies are not anticipated to scale at nearly the same rate. DNA-based storage emerges as a crucial solution to this gap, enabling digital information to be archived in DNA molecules. This method enjoys major advantages over magnetic and optical storage solutions such as exceptional information density, enhanced data durability and negligible power consumption to maintain data integrity. To access the data, an information retrieval process is employed, where some of the main bottlenecks are the scalability and accuracy, which have a natural tradeoff between the two. Here we show\n\n### 引言（Introduction）\nThere is unsustainable growth in the global data sphere, fuelled by the proliferation of digital technologies such as artificial intelligence, the Internet of Things, widespread internet connectivity and the growing number of interconnected devices. While the global data sphere is anticipated to reach 180 zettabytes by 2025, current storage solutions are not expected to scale at nearly the same pace owing to capacity limitations1. To address this urgent need of the digital age, researchers are turning to innovative solutions such as DNA-based storage, recognizing its potential to revolutionize long-term data storage capabilities by offering extraordinary data density and durability2,3. A DNA\n\n### 方法（Method）\nThis method enjoys major advantages over magnetic and optical storage solutions such as exceptional information density, enhanced data durability and negligible power consumption to maintain data integrity. Here we show a modular and holistic approach that combines deep neural networks trained on simulated data, tensor product-based error-correcting codes and a safety margin mechanism into a single coherent pipeline. The standard in vitro DNA-based storage pipeline consists of sev- eral steps and is shown in Fig. a, A schematic description of our solution for the DNA-based storage pipeline.\n\n### 实验设置（Experimental Setup）\nWe demonstrated our solution on 3.1 MB of information using two different sequencing technologies. The standard in vitro DNA-based storage pipeline consists of sev- eral steps and is shown in Fig. The sequencer processes the strands and generates\n\nNature Machine Intelligence | Volume 7 | April 2025 | 639–649 640\n\n001010 110100 010011 111011 110010\n\n1 Encoding of the binary information using an ECC and a constraint code\n\n2 Synthetic DNA strands are synthesized using a DNA synthesis technology\n\nMultipel copies for each DNA strand\n\n3 Sequencing an amplified sample from the DNA storage container using a DNA sequencer\n\nThe number of reads for each encoded sequence can vary, and some encoded seque\n\n### 结果（Results）\nTo access the data, an information retrieval process is employed, where some of the main bottlenecks are the scalability and accuracy, which have a natural tradeoff between the two. Our work improves upon the current leading solutions with a 3,200× increase in speed and a 40% improvement in accuracy and offers a code rate of 1.6 bits per base in a high-noise regime.\n\n### 结论（Conclusion）\nIn a broader sense, our work shows a viable path to commercial DNA storage solutions hindered by current information retrieval processes.\n\n### 图示（Figures）\n### Figure 1\nFig. 1 | End-to-end solution for DNA information retrieval. a, A schematic description of our solution for the DNA-based storage pipeline. The different stages through the process are labelled 1–6 and steps that are part of the training\n\n正文引用：\n- The reconstruction algorithm is applied on each cluster of reads\n- pipeline are labelled iv–vi. b, A detailed view of the information retrieval process showing the DNN architecture, confidence filer, CPL and the input to the decoder. Figure created with BioRender.com.\n\n## 研究问题\n未明确说明\n\n## 核心方法\n未明确说明\n\n## 数据集\n未明确说明\n\n## 实验设置\n未明确说明\n\n## 主要结果\n未明确说明\n\n## 创新点\n未明确说明\n\n## 优点\n- 未明确说明\n\n## 局限性\n- 未明确说明\n\n## 复现建议\n未明确说明\n\n## 图像实验结果分析\n### Figure 1\n- **图注：** Fig. 1 | End-to-end solution for DNA information retrieval. a, A schematic description of our solution for the DNA-based storage pipeline. The different stages through the process are labelled 1–6 and steps that are part of the training pipeline are labelled iv–vi. b, A detailed view of the information retrieval process showing the DNN architecture, confidence filer, CPL and the input to the decoder. Figure created with BioRender.com.\n- **实验焦点：** 端到端的DNA信息检索解决方案及信息检索过程的DNN架构与解码输入\n- **比较对象：** 未明确说明\n- **指标 / 坐标：** 1–6 标注的存储管道阶段, iv–vi 标注的训练流程步骤, DNN 架构、置信度筛选器、CPL、解码器输入\n- **主要观察：**\n- 图1a给出一个DNA信息存储管道的端到端示意，流程分为若干阶段并标注为1–6，训练流程标注为iv–vi。\n- 图1b给出信息检索过程的详细视图，显示了DNN架构、置信度筛选器、CPL以及解码器输入。\n- **作者结论：** 通过端到端的解决方案和DNN信息检索架构，实现DNA信息的存储、检索及解码流程的协同工作，提升信息检索过程的准确性与鲁棒性（通过训练阶段的标注及DNN组件的组合）。\n- **置信度：** 不足以判断\n\n## 关键图表结论\n- Figure 1：通过端到端的解决方案和DNN信息检索架构，实现DNA信息的存储、检索及解码流程的协同工作，提升信息检索过程的准确性与鲁棒性（通过训练阶段的标注及DNN组件的组合）。\n\n## 图文一致性检查\n- Figure 1： caption 与正文引用的描述一致，图1a/1b的内容与文本中对端到端流程及DNN架构的描述一致；图像质量未知，未提供具体的性能指标或定量结果，仅是结构性示意。（置信度：不足以判断）\n\n## 总结\n未明确说明\n",
   "structured_data": {
     "metadata": {
-      "title": "Scalable and robust DNA-based storage via coding theory and deep learning",
       "authors": [
         "Daniella Bar-Lev",
         "Itai Orr",
@@ -25,31 +13,30 @@
         "Tuvi Etzion",
         "Eitan Yaakobi"
       ],
+      "title": "Scalable and robust DNA-based storage via coding theory and deep learning",
       "venue": "Nature Machine Intelligence | Volume 7 | April 2025 | 639–649 639",
       "year": "2025"
     },
-    "extracted_notes": {
-      "research_problem": "解决DNA存储中可扩展性与准确性之间的权衡，通过端到端信息检索管线提升读取速度与准确性。",
-      "core_method": "将深度神经网络（在模拟数据上训练）、张量积纠错编码、以及安全余量机制整合到一个统一管线；涉及的DNA存储流程包括：将二进制数据编码为DNA 4碱基符号、合成、存储、PCR扩增、测序、读数分箱、解码纠错并检索原始二进制数据。",
-      "datasets": [
-        "未公开指明具体数据集名称或来源；实验在3.1 MB信息量上进行演示。"
-      ],
-      "experimental_setup": "演示规模为3.1 MB信息量，使用两种测序技术；流程包括ECC与约束编码、合成、同一序列的多拷贝、测序、读数分箱、解码等阶段；涉及组件如NCI aligner、Embedding模块、Transformer模块，及训练数据生成与DNN训练。",
-      "main_results": "相较于当前领先方案，速度提升约3200×，准确性提升约40%，在高噪声条件下码率达到1.6比特/碱基；提出方法被视为商业DNA存储解决方案的可行路径。"
-    },
-    "novelty": "端到端信息检索管线的整合，结合深度学习、张量积纠错编码与安全余量机制 在实际DNA存储管道中实现对读取误差的显著鲁棒性提升与更高吞吐 在高噪声场景下保持较高码率的能力",
-    "strengths": [
-      "显著的速度提升与准确性提高",
-      "提供了一个整体框架，将多个技术组件协同工作以解决信息检索瓶颈",
-      "在实际测序条件下给出可观的码率与鲁棒性结果"
+    "figure_analyses": [
+      {
+        "figure_id": "Figure 1",
+        "figure_title_or_caption": "Fig. 1 | End-to-end solution for DNA information retrieval. a, A schematic description of our solution for the DNA-based storage pipeline. The different stages through the process are labelled 1–6 and steps that are part of the training pipeline are labelled iv–vi. b, A detailed view of the information retrieval process showing the DNN architecture, confidence filer, CPL and the input to the decoder. Figure created with BioRender.com.",
+        "experiment_focus": "端到端的DNA信息检索解决方案及信息检索过程的DNN架构与解码输入",
+        "compared_items": [],
+        "metrics_or_axes": [
+          "1–6 标注的存储管道阶段",
+          "iv–vi 标注的训练流程步骤",
+          "DNN 架构、置信度筛选器、CPL、解码器输入"
+        ],
+        "main_observations": [
+          "图1a给出一个DNA信息存储管道的端到端示意，流程分为若干阶段并标注为1–6，训练流程标注为iv–vi。",
+          "图1b给出信息检索过程的详细视图，显示了DNN架构、置信度筛选器、CPL以及解码器输入。"
+        ],
+        "claimed_conclusion": "通过端到端的解决方案和DNN信息检索架构，实现DNA信息的存储、检索及解码流程的协同工作，提升信息检索过程的准确性与鲁棒性（通过训练阶段的标注及DNN组件的组合）。",
+        "consistency_check": " caption 与正文引用的描述一致，图1a/1b的内容与文本中对端到端流程及DNN架构的描述一致；图像质量未知，未提供具体的性能指标或定量结果，仅是结构性示意。",
+        "confidence": "不足以判断"
+      }
     ],
-    "limitations": [
-      "缺乏公开数据集和可重复性细节",
-      "规模与场景受限，需验证大规模部署的鲁棒性",
-      "成本与商业化可行性分析不足"
-    ],
-    "reproducibility": "论文未提供详细的数据集信息与实现细节，复现实验需额外获取测试数据与配置参数",
-    "interview_pitch": "提出一个端到端的DNA存储信息检索管线，通过深度学习与纠错编码的结合提升速度与鲁棒性，在3.1 MB规模下实现3200×加速与40%准确率提升，展现向商业化DNA存储过渡的可行性",
     "selected_sections": [
       "abstract",
       "introduction",
@@ -72,7 +59,8 @@
         "experimental_setup",
         "results",
         "conclusion"
-      ]
+      ],
+      "figure_count": 1
     }
   }
 }

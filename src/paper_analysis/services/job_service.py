@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from datetime import UTC, datetime
 from pathlib import Path
 from uuid import UUID
@@ -14,6 +15,10 @@ from paper_analysis.domain.schemas import (
 )
 from paper_analysis.services.analysis_service import AnalysisService
 from paper_analysis.services.artifact_service import ArtifactService
+from paper_analysis.services.job_logging import capture_job_logs
+
+
+logger = logging.getLogger(__name__)
 
 
 class JobService:
@@ -43,6 +48,7 @@ class JobService:
         input_path.parent.mkdir(parents=True, exist_ok=True)
         input_path.write_bytes(content)
         job.input_path = str(input_path)
+        job.artifact.log_path = str(self._job_log_path(job.id, job.created_at))
         return await self._job_store.save(job)
 
     async def get_job(self, job_id: UUID) -> AnalysisJob:
@@ -54,23 +60,54 @@ class JobService:
             return await self._fail_job(job, "输入文件缺失。")
 
         input_path = Path(job.input_path)
+        if not job.artifact.log_path:
+            job.artifact.log_path = str(self._job_log_path(job.id, datetime.now(UTC)))
+            job = await self._job_store.save(job)
+        log_path = Path(job.artifact.log_path)
         try:
-            await self._update_job(job, status=JobStatus.PARSING)
-            parsed_document = await self._analysis_service.parse_file(input_path)
+            with capture_job_logs(log_path):
+                try:
+                    logger.info("任务开始执行。job_id=%s filename=%s", job.id, job.filename)
+                    await self._update_job(job, status=JobStatus.PARSING)
+                    logger.info("开始解析输入文件：%s", input_path)
+                    parsed_document = await self._analysis_service.parse_file(input_path)
+                    logger.info(
+                        "解析完成。parser_kind=%s section_count=%s figure_count=%s",
+                        parsed_document.metadata.get("parser_kind"),
+                        len(parsed_document.sections),
+                        len(parsed_document.figures),
+                    )
 
-            await self._update_job(job, status=JobStatus.ANALYZING)
-            result = await self._analysis_service.analyze_document(parsed_document, job.mode)
+                    await self._update_job(job, status=JobStatus.ANALYZING)
+                    logger.info("开始执行分析。mode=%s", job.mode.value)
+                    result = await self._analysis_service.analyze_document(parsed_document, job.mode)
+                    logger.info(
+                        "分析完成。summary_length=%s structured_keys=%s",
+                        len(result.summary),
+                        sorted(result.structured_data.keys()),
+                    )
 
-            markdown_path = self._job_workspace(job.id) / "report.md"
-            json_path = self._job_workspace(job.id) / "report.json"
-            artifact = await self._artifact_service.save_analysis_result(
-                markdown_path=markdown_path,
-                json_path=json_path,
-                result=result,
-                document=parsed_document,
-            )
-            job.artifact = artifact
-            return await self._update_job(job, status=JobStatus.COMPLETED, error_message=None)
+                    markdown_path = self._job_workspace(job.id) / "report.md"
+                    json_path = self._job_workspace(job.id) / "report.json"
+                    artifact = await self._artifact_service.save_analysis_result(
+                        markdown_path=markdown_path,
+                        json_path=json_path,
+                        result=result,
+                        document=parsed_document,
+                    )
+                    artifact.log_path = str(log_path)
+                    job.artifact = artifact
+                    logger.info(
+                        "产物保存完成。markdown=%s json=%s parsed=%s log=%s",
+                        artifact.markdown_report_path,
+                        artifact.json_report_path,
+                        artifact.parsed_markdown_path,
+                        artifact.log_path,
+                    )
+                    return await self._update_job(job, status=JobStatus.COMPLETED, error_message=None)
+                except Exception:
+                    logger.exception("任务执行失败。job_id=%s", job.id)
+                    raise
         except Exception as exc:
             return await self._fail_job(job, str(exc))
 
@@ -127,9 +164,17 @@ class JobService:
         status: JobStatus,
         error_message: str | None = None,
     ) -> AnalysisJob:
+        previous_status = job.status
         job.status = status
         job.error_message = error_message
         job.updated_at = datetime.now(UTC)
+        logger.info(
+            "任务状态更新。job_id=%s from=%s to=%s error=%s",
+            job.id,
+            previous_status.value if hasattr(previous_status, "value") else previous_status,
+            status.value,
+            error_message or "",
+        )
         return await self._job_store.save(job)
 
     async def _fail_job(self, job: AnalysisJob, error_message: str) -> AnalysisJob:
@@ -138,6 +183,10 @@ class JobService:
 
     def _job_workspace(self, job_id: UUID) -> Path:
         return self._workspace_root / str(job_id)
+
+    def _job_log_path(self, job_id: UUID, timestamp: datetime) -> Path:
+        stamp = timestamp.astimezone().strftime("%Y%m%d_%H%M%S")
+        return self._job_workspace(job_id) / "logs" / f"analysis_{stamp}.log"
 
     @staticmethod
     def _suffix_for(filename: str, document_kind: DocumentKind) -> str:

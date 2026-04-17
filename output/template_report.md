@@ -51,38 +51,57 @@ To access the data, an information retrieval process is employed, where some of 
 In a broader sense, our work shows a viable path to commercial DNA storage solutions hindered by current information retrieval processes.
 
 ### 图示（Figures）
+### Figure 1
 Fig. 1 | End-to-end solution for DNA information retrieval. a, A schematic description of our solution for the DNA-based storage pipeline. The different stages through the process are labelled 1–6 and steps that are part of the training
 
+正文引用：
+- The reconstruction algorithm is applied on each cluster of reads
+- pipeline are labelled iv–vi. b, A detailed view of the information retrieval process showing the DNN architecture, confidence filer, CPL and the input to the decoder. Figure created with BioRender.com.
+
 ## 研究问题
-解决DNA存储中可扩展性与准确性之间的权衡，通过端到端信息检索管线提升读取速度与准确性。
+未明确说明
 
 ## 核心方法
-将深度神经网络（在模拟数据上训练）、张量积纠错编码、以及安全余量机制整合到一个统一管线；涉及的DNA存储流程包括：将二进制数据编码为DNA 4碱基符号、合成、存储、PCR扩增、测序、读数分箱、解码纠错并检索原始二进制数据。
+未明确说明
 
 ## 数据集
-未公开指明具体数据集名称或来源；实验在3.1 MB信息量上进行演示。
+未明确说明
 
 ## 实验设置
-演示规模为3.1 MB信息量，使用两种测序技术；流程包括ECC与约束编码、合成、同一序列的多拷贝、测序、读数分箱、解码等阶段；涉及组件如NCI aligner、Embedding模块、Transformer模块，及训练数据生成与DNN训练。
+未明确说明
 
 ## 主要结果
-相较于当前领先方案，速度提升约3200×，准确性提升约40%，在高噪声条件下码率达到1.6比特/碱基；提出方法被视为商业DNA存储解决方案的可行路径。
+未明确说明
 
 ## 创新点
-端到端信息检索管线的整合，结合深度学习、张量积纠错编码与安全余量机制 在实际DNA存储管道中实现对读取误差的显著鲁棒性提升与更高吞吐 在高噪声场景下保持较高码率的能力
+未明确说明
 
 ## 优点
-- 显著的速度提升与准确性提高
-- 提供了一个整体框架，将多个技术组件协同工作以解决信息检索瓶颈
-- 在实际测序条件下给出可观的码率与鲁棒性结果
+- 未明确说明
 
 ## 局限性
-- 缺乏公开数据集和可重复性细节
-- 规模与场景受限，需验证大规模部署的鲁棒性
-- 成本与商业化可行性分析不足
+- 未明确说明
 
 ## 复现建议
-论文未提供详细的数据集信息与实现细节，复现实验需额外获取测试数据与配置参数
+未明确说明
+
+## 图像实验结果分析
+### Figure 1
+- **图注：** Fig. 1 | End-to-end solution for DNA information retrieval. a, A schematic description of our solution for the DNA-based storage pipeline. The different stages through the process are labelled 1–6 and steps that are part of the training pipeline are labelled iv–vi. b, A detailed view of the information retrieval process showing the DNN architecture, confidence filer, CPL and the input to the decoder. Figure created with BioRender.com.
+- **实验焦点：** 端到端的DNA信息检索解决方案及信息检索过程的DNN架构与解码输入
+- **比较对象：** 未明确说明
+- **指标 / 坐标：** 1–6 标注的存储管道阶段, iv–vi 标注的训练流程步骤, DNN 架构、置信度筛选器、CPL、解码器输入
+- **主要观察：**
+- 图1a给出一个DNA信息存储管道的端到端示意，流程分为若干阶段并标注为1–6，训练流程标注为iv–vi。
+- 图1b给出信息检索过程的详细视图，显示了DNN架构、置信度筛选器、CPL以及解码器输入。
+- **作者结论：** 通过端到端的解决方案和DNN信息检索架构，实现DNA信息的存储、检索及解码流程的协同工作，提升信息检索过程的准确性与鲁棒性（通过训练阶段的标注及DNN组件的组合）。
+- **置信度：** 不足以判断
+
+## 关键图表结论
+- Figure 1：通过端到端的解决方案和DNN信息检索架构，实现DNA信息的存储、检索及解码流程的协同工作，提升信息检索过程的准确性与鲁棒性（通过训练阶段的标注及DNN组件的组合）。
+
+## 图文一致性检查
+- Figure 1： caption 与正文引用的描述一致，图1a/1b的内容与文本中对端到端流程及DNN架构的描述一致；图像质量未知，未提供具体的性能指标或定量结果，仅是结构性示意。（置信度：不足以判断）
 
 ## 总结
-本研究提出一个端到端的信息检索管线，用以提升DNA存储的速度与准确性。通过在模拟数据上训练的深度神经网络、基于张量积的纠错编码，以及一个安全余量机制，将这些组件整合为一个统一流程，在3.1 MB数据量和两种测序技术的条件下演示。相比当前领先方案，实现了约3200倍的速度提升、约40%的准确性提升，并在高噪声环境下达到1.6比特/碱基的码率，指示该方法具备向商业化DNA存储解决方案演进的潜力，缓解现有信息检索环节的瓶颈。
+未明确说明
