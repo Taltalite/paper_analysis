@@ -1,9 +1,16 @@
 [project]
 name = "paper_analysis"
 version = "0.1.0"
-description = "CrewAI-based general text analysis base with a research-paper starter profile"
-authors = [{ name = "Your Name", email = "you@example.com" }]
+description = "CrewAI-based research paper analysis system with PDF parsing, multi-agent runtime, FastAPI backend, and lightweight web UI"
+readme = "README.md"
 requires-python = ">=3.12,<3.14"
+keywords = ["CrewAI", "research-paper-analysis", "pdf", "fastapi", "multi-agent"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Framework :: FastAPI",
+    "Operating System :: OS Independent",
+]
 dependencies = [
     "crewai[tools]==1.14.1",
     "fastapi>=0.115,<1.0",

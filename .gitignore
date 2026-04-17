@@ -1,14 +1,48 @@
+# Local secrets and private configuration
 .env
+.env.*
+!.env.example
+*.env
+*.key
+*.pem
+*.p12
+*.pfx
+*.crt
+*.cer
+secrets.*
+config/*.local.json
+config/*secret*.json
+
+# Python caches and virtual environments
 __pycache__/
-*.pyc
+*.py[cod]
+*.pyo
+.venv/
+venv/
 lib/
-.DS_Store
-.venv
+
+# Tooling caches and local runtime data
 .uv-cache/
 .cache/
 .data/
+.codex
+*.log
+*.sqlite
+*.sqlite3
+*.db
+
+# Parser/runtime generated artifacts
+input/.paper_analysis_assets/
+**/.paper_analysis_assets/
+
+# Frontend artifacts
 web/node_modules/
 web/dist/
 
+# OS and editor files
+.DS_Store
+.idea/
+.vscode/
+
+# Large local inputs that often contain private source material
 *.pdf
-.codex
