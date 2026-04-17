@@ -1,7 +1,7 @@
 # AGENTS.md
 
 For any local execution, do not call `uv run kickoff` directly.
-Always use `bash scripts/codex_run.sh` so uv cache, proxy env, and telemetry settings are consistent.
+Always use `bash scripts/run.sh` so uv cache, proxy env, and telemetry settings are consistent.
 
 ## Mission
 

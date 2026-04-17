@@ -353,6 +353,7 @@ class PdfParser(DocumentParser):
     ) -> list[FigureMetadata]:
         figures: list[FigureMetadata] = []
         text_blocks = [block for block in blocks if block.block_type == "text" and block.text]
+        image_blocks = [block for block in blocks if block.block_type == "image" and block.image_path]
         index = 0
         while index < len(text_blocks):
             block = text_blocks[index]
@@ -393,12 +394,18 @@ class PdfParser(DocumentParser):
                 figure_id=figure_id,
                 caption_block_ids=set(caption_block_ids),
             )
+            image_block_paths = [
+                str(candidate.image_path)
+                for candidate in image_blocks
+                if candidate.page_number == block.page_number and candidate.image_path
+            ][:4]
             figures.append(
                 FigureMetadata(
                     figure_id=figure_id,
                     caption=caption_text,
                     page_number=block.page_number,
                     page_snapshot_path=page_snapshot_path,
+                    image_block_paths=image_block_paths,
                     referenced_text_spans=reference_texts,
                     caption_block_ids=caption_block_ids,
                     reference_block_ids=reference_ids,

@@ -1,6 +1,6 @@
 import unittest
 
-from paper_analysis.domain.models import FigureMetadata
+from paper_analysis.domain.models import FigureEvidence
 from paper_analysis.runtime.crews.research.figure_analysis import CrewAIFigureAnalysisRunner
 
 
@@ -26,7 +26,7 @@ class FigureAnalysisRunnerTest(unittest.TestCase):
 ```"""
         batch = CrewAIFigureAnalysisRunner._parse_batch_text(
             raw_text=raw_output,
-            figures=[FigureMetadata(figure_id="Figure 1", caption="caption")],
+            evidences=[FigureEvidence(figure_id="Figure 1", figure_title_or_caption="caption")],
         )
 
         self.assertEqual(len(batch.analyses), 1)
@@ -35,7 +35,7 @@ class FigureAnalysisRunnerTest(unittest.TestCase):
 
     def test_fallback_batch_returns_conservative_result(self) -> None:
         batch = CrewAIFigureAnalysisRunner._fallback_batch(
-            figures=[FigureMetadata(figure_id="Figure 2", caption="Long caption text")],
+            evidences=[FigureEvidence(figure_id="Figure 2", figure_title_or_caption="Long caption text")],
             reason="json parse failed",
         )
 

@@ -5,7 +5,11 @@ from paper_analysis.domain.models import (
     DocumentStructureDraft,
     FigureAnalysis,
     FigureAnalysisBatch,
+    FigureEvidence,
+    FigureEvidenceBatch,
     FigureMetadata,
+    FigureSemanticArtifact,
+    FigureSemanticArtifactBatch,
 )
 from paper_analysis.domain.schemas import AnalysisResult, ParsedDocument
 from paper_analysis.runtime.pipelines.research_paper import ResearchPaperPipeline
@@ -21,17 +25,73 @@ class RecordingCrewRunner:
         return self._result
 
 
-class FakeFigureRunner:
+class FakeFigureGroundingRunner:
     def __init__(self) -> None:
         self.received_figures: list[FigureMetadata] = []
 
-    def run(self, *, document: ParsedDocument, figures: list[FigureMetadata]) -> FigureAnalysisBatch:  # noqa: ANN001
+    def run(self, *, document: ParsedDocument, figures: list[FigureMetadata]) -> FigureSemanticArtifactBatch:  # noqa: ANN001
         self.received_figures = figures
+        return FigureSemanticArtifactBatch(
+            artifacts=[
+                FigureSemanticArtifact(
+                    figure_id=figures[0].figure_id,
+                    page_number=figures[0].page_number,
+                    figure_type="result_figure",
+                    extraction_source="noop",
+                    direct_evidence=["检测到流程图与结果对比语义。"],
+                    axes=["speed", "accuracy"],
+                    confidence="中",
+                )
+            ]
+        )
+
+
+class FakeFigureEvidenceCurator:
+    def __init__(self) -> None:
+        self.received_artifacts: list[FigureSemanticArtifact] = []
+
+    def run(
+        self,
+        *,
+        document: ParsedDocument,
+        figures: list[FigureMetadata],
+        semantic_artifacts: FigureSemanticArtifactBatch,
+    ) -> FigureEvidenceBatch:  # noqa: ANN001
+        self.received_artifacts = semantic_artifacts.artifacts
+        return FigureEvidenceBatch(
+            evidences=[
+                FigureEvidence(
+                    figure_id=figures[0].figure_id,
+                    figure_title_or_caption=figures[0].caption,
+                    page_number=figures[0].page_number,
+                    figure_type="result_figure",
+                    compared_items=["proposed pipeline", "leading solutions"],
+                    metrics_or_axes=["speed", "accuracy"],
+                    direct_evidence=["caption 与 grounding 都指向性能对比。"],
+                    referenced_text_spans=figures[0].referenced_text_spans,
+                    semantic_source="noop",
+                    evidence_quality="中",
+                )
+            ]
+        )
+
+
+class FakeFigureRunner:
+    def __init__(self) -> None:
+        self.received_evidences: list[FigureEvidence] = []
+
+    def run(
+        self,
+        *,
+        document: ParsedDocument,
+        figure_evidences: FigureEvidenceBatch,
+    ) -> FigureAnalysisBatch:  # noqa: ANN001
+        self.received_evidences = figure_evidences.evidences
         return FigureAnalysisBatch(
             analyses=[
                 FigureAnalysis(
-                    figure_id=figures[0].figure_id,
-                    figure_title_or_caption=figures[0].caption,
+                    figure_id=figure_evidences.evidences[0].figure_id,
+                    figure_title_or_caption=figure_evidences.evidences[0].figure_title_or_caption,
                     experiment_focus="比较不同信息检索方案的速度与准确性表现",
                     compared_items=["proposed pipeline", "leading solutions"],
                     metrics_or_axes=["speed", "accuracy"],
@@ -104,10 +164,14 @@ class ResearchPaperPipelineTest(unittest.TestCase):
             )
         )
         structuring_runner = FakeStructuringRunner()
+        figure_grounding_runner = FakeFigureGroundingRunner()
+        figure_evidence_curator = FakeFigureEvidenceCurator()
         figure_runner = FakeFigureRunner()
         pipeline = ResearchPaperPipeline(
             crew_runner=runner,
             structuring_runner=structuring_runner,
+            figure_grounding_runner=figure_grounding_runner,
+            figure_evidence_curator=figure_evidence_curator,
             figure_runner=figure_runner,
         )
         document = ParsedDocument(
@@ -147,10 +211,15 @@ class ResearchPaperPipelineTest(unittest.TestCase):
         self.assertIn("Refined method", runner.received_document.raw_text)
         self.assertNotIn("RAW RAW RAW RAW RAW", runner.received_document.raw_text)
         self.assertEqual(structuring_runner.calls, 1)
-        self.assertEqual(len(figure_runner.received_figures), 1)
+        self.assertEqual(len(figure_grounding_runner.received_figures), 1)
+        self.assertEqual(len(figure_evidence_curator.received_artifacts), 1)
+        self.assertEqual(len(figure_runner.received_evidences), 1)
         self.assertIn("# 研究型文献分析报告", result.markdown_report)
+        self.assertIn("## 图像语义证据摘要", result.markdown_report)
         self.assertIn("## 图像实验结果分析", result.markdown_report)
         self.assertIn("## 图文一致性检查", result.markdown_report)
+        self.assertIn("semantic_artifacts", result.structured_data)
+        self.assertIn("figure_evidence", result.structured_data)
         self.assertIn("figure_analyses", result.structured_data)
         self.assertIn("## 结构化解析预览", result.markdown_report)
         self.assertIn("selected_sections", result.structured_data)

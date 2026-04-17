@@ -31,6 +31,7 @@ class FigureMetadata(BaseModel):
     caption: str = ""
     page_number: int | None = None
     page_snapshot_path: str | None = None
+    image_block_paths: list[str] = Field(default_factory=list)
     referenced_text_spans: list[str] = Field(default_factory=list)
     caption_block_ids: list[str] = Field(default_factory=list)
     reference_block_ids: list[str] = Field(default_factory=list)
@@ -77,10 +78,62 @@ class FigureAnalysisBatch(BaseModel):
     analyses: list[FigureAnalysis] = Field(default_factory=list)
 
 
+class FigurePanel(BaseModel):
+    panel_id: str = ""
+    panel_label: str = ""
+    panel_type: str = ""
+    summary: str = ""
+    visible_text: list[str] = Field(default_factory=list)
+    axes: list[str] = Field(default_factory=list)
+    legend_items: list[str] = Field(default_factory=list)
+    confidence: str = "不足以判断"
+
+
+class FigureSemanticArtifact(BaseModel):
+    figure_id: str = ""
+    page_number: int | None = None
+    figure_type: str = ""
+    extraction_source: str = ""
+    page_snapshot_path: str | None = None
+    image_block_paths: list[str] = Field(default_factory=list)
+    crop_path: str | None = None
+    visible_text: list[str] = Field(default_factory=list)
+    axes: list[str] = Field(default_factory=list)
+    legend_items: list[str] = Field(default_factory=list)
+    panels: list[FigurePanel] = Field(default_factory=list)
+    direct_evidence: list[str] = Field(default_factory=list)
+    uncertainties: list[str] = Field(default_factory=list)
+    confidence: str = "不足以判断"
+
+
+class FigureSemanticArtifactBatch(BaseModel):
+    artifacts: list[FigureSemanticArtifact] = Field(default_factory=list)
+
+
+class FigureEvidence(BaseModel):
+    figure_id: str = ""
+    figure_title_or_caption: str = ""
+    page_number: int | None = None
+    figure_type: str = ""
+    compared_items: list[str] = Field(default_factory=list)
+    metrics_or_axes: list[str] = Field(default_factory=list)
+    direct_evidence: list[str] = Field(default_factory=list)
+    referenced_text_spans: list[str] = Field(default_factory=list)
+    semantic_source: str = ""
+    evidence_quality: str = "不足以判断"
+    uncertainties: list[str] = Field(default_factory=list)
+
+
+class FigureEvidenceBatch(BaseModel):
+    evidences: list[FigureEvidence] = Field(default_factory=list)
+
+
 class TextAnalysisSections(BaseModel):
     sections: dict[str, str | list[str]] = Field(default_factory=dict)
 
 
 PaperAnalysis.model_rebuild()
 FigureAnalysisBatch.model_rebuild()
+FigureSemanticArtifactBatch.model_rebuild()
+FigureEvidenceBatch.model_rebuild()
 DocumentStructureDraft.model_rebuild()

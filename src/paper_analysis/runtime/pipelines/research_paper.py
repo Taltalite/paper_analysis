@@ -8,12 +8,21 @@ from paper_analysis.domain.models import (
     DocumentStructureDraft,
     FigureAnalysis,
     FigureAnalysisBatch,
+    FigureEvidence,
+    FigureEvidenceBatch,
     FigureMetadata,
+    FigureSemanticArtifact,
+    FigureSemanticArtifactBatch,
     PaperAnalysis,
 )
 from paper_analysis.domain.schemas import AnalysisResult, ParsedDocument
 from paper_analysis.runtime.crews.base import TextAnalysisCrewRunner
-from paper_analysis.runtime.crews.research import DocumentStructuringRunner, FigureAnalysisRunner
+from paper_analysis.runtime.crews.research import (
+    DocumentStructuringRunner,
+    FigureAnalysisRunner,
+    FigureEvidenceCuratorRunner,
+    FigureGroundingRunner,
+)
 from paper_analysis.runtime.pipelines.general_text import GeneralTextPipeline
 from paper_analysis.runtime.pipelines.base import AnalysisPipeline
 from paper_analysis.runtime.pipelines.profiles import RESEARCH_PAPER_PROFILE
@@ -25,6 +34,8 @@ class ResearchPaperPipeline(AnalysisPipeline):
         *,
         crew_runner: TextAnalysisCrewRunner | None = None,
         structuring_runner: DocumentStructuringRunner | None = None,
+        figure_grounding_runner: FigureGroundingRunner | None = None,
+        figure_evidence_curator: FigureEvidenceCuratorRunner | None = None,
         figure_runner: FigureAnalysisRunner | None = None,
     ) -> None:
         self._pipeline = GeneralTextPipeline(
@@ -32,13 +43,15 @@ class ResearchPaperPipeline(AnalysisPipeline):
             crew_runner=crew_runner,
         )
         self._structuring_runner = structuring_runner
+        self._figure_grounding_runner = figure_grounding_runner
+        self._figure_evidence_curator = figure_evidence_curator
         self._figure_runner = figure_runner
 
     async def run(self, document: ParsedDocument) -> AnalysisResult:
         source_document = self._refine_document_structure(document)
         focused_document, selected_sections = self._build_focus_document(source_document)
         result = await self._pipeline.run(focused_document)
-        figure_analyses = self._run_figure_analysis(
+        semantic_artifacts, figure_evidence, figure_analyses = self._run_figure_pipeline(
             source_document=source_document,
             selected_sections=selected_sections,
         )
@@ -48,6 +61,8 @@ class ResearchPaperPipeline(AnalysisPipeline):
         )
         result.structured_data = {
             **result.structured_data,
+            "semantic_artifacts": [artifact.model_dump() for artifact in semantic_artifacts],
+            "figure_evidence": [evidence.model_dump() for evidence in figure_evidence],
             "figure_analyses": [analysis.model_dump() for analysis in figure_analyses],
             "selected_sections": selected_sections,
             "source_structure": {
@@ -62,6 +77,7 @@ class ResearchPaperPipeline(AnalysisPipeline):
             source_document=source_document,
             result=result,
             selected_sections=selected_sections,
+            figure_evidence=figure_evidence,
             figure_analyses=figure_analyses,
         )
         return result
@@ -111,10 +127,12 @@ class ResearchPaperPipeline(AnalysisPipeline):
         source_document: ParsedDocument,
         result: AnalysisResult,
         selected_sections: list[str],
+        figure_evidence: list[FigureEvidence],
         figure_analyses: list[FigureAnalysis],
     ) -> str:
         paper_analysis = self._coerce_paper_analysis(result)
         source_section_preview = self._render_source_section_preview(source_document, selected_sections)
+        figure_evidence_section = self._render_figure_evidence_section(figure_evidence)
         figure_analysis_section = self._render_figure_analysis_section(figure_analyses)
         figure_conclusions_section = self._render_figure_conclusions(figure_analyses)
         figure_consistency_section = self._render_figure_consistency_checks(figure_analyses)
@@ -173,6 +191,9 @@ class ResearchPaperPipeline(AnalysisPipeline):
 
 ## 复现建议
 {paper_analysis.reproducibility or self._missing_text()}
+
+## 图像语义证据摘要
+{figure_evidence_section}
 
 ## 图像实验结果分析
 {figure_analysis_section}
@@ -258,26 +279,86 @@ class ResearchPaperPipeline(AnalysisPipeline):
         except ValidationError:
             return PaperAnalysis()
 
-    def _run_figure_analysis(
+    def _run_figure_pipeline(
         self,
         *,
         source_document: ParsedDocument,
         selected_sections: list[str],
-    ) -> list[FigureAnalysis]:
-        if self._figure_runner is None or not source_document.figures:
-            return []
+    ) -> tuple[list[FigureSemanticArtifact], list[FigureEvidence], list[FigureAnalysis]]:
+        if not source_document.figures:
+            return [], [], []
 
         selected_figures = self._select_figures_for_analysis(
             document=source_document,
             selected_sections=selected_sections,
         )
         if not selected_figures:
-            return []
+            return [], [], []
 
-        batch = self._figure_runner.run(document=source_document, figures=selected_figures)
+        semantic_batch = self._run_figure_grounding(
+            source_document=source_document,
+            selected_figures=selected_figures,
+        )
+        evidence_batch = self._run_figure_evidence_curator(
+            source_document=source_document,
+            selected_figures=selected_figures,
+            semantic_batch=semantic_batch,
+        )
+        analysis_batch = self._run_figure_analysis(
+            source_document=source_document,
+            evidence_batch=evidence_batch,
+        )
+        return semantic_batch.artifacts, evidence_batch.evidences, analysis_batch.analyses
+
+    def _run_figure_grounding(
+        self,
+        *,
+        source_document: ParsedDocument,
+        selected_figures: list[FigureMetadata],
+    ) -> FigureSemanticArtifactBatch:
+        if self._figure_grounding_runner is None:
+            return FigureSemanticArtifactBatch()
+        batch = self._figure_grounding_runner.run(
+            document=source_document,
+            figures=selected_figures,
+        )
+        if isinstance(batch, FigureSemanticArtifactBatch):
+            return batch
+        return FigureSemanticArtifactBatch()
+
+    def _run_figure_evidence_curator(
+        self,
+        *,
+        source_document: ParsedDocument,
+        selected_figures: list[FigureMetadata],
+        semantic_batch: FigureSemanticArtifactBatch,
+    ) -> FigureEvidenceBatch:
+        if self._figure_evidence_curator is None:
+            return FigureEvidenceBatch()
+        batch = self._figure_evidence_curator.run(
+            document=source_document,
+            figures=selected_figures,
+            semantic_artifacts=semantic_batch,
+        )
+        if isinstance(batch, FigureEvidenceBatch):
+            return batch
+        return FigureEvidenceBatch()
+
+    def _run_figure_analysis(
+        self,
+        *,
+        source_document: ParsedDocument,
+        evidence_batch: FigureEvidenceBatch,
+    ) -> FigureAnalysisBatch:
+        if self._figure_runner is None or not evidence_batch.evidences:
+            return FigureAnalysisBatch()
+        batch = self._figure_runner.run(
+            document=source_document,
+            figure_evidences=evidence_batch,
+        )
         if isinstance(batch, FigureAnalysisBatch):
-            return batch.analyses
-        return []
+            return batch
+        return FigureAnalysisBatch()
 
     @staticmethod
     def _coarse_structure_draft(document: ParsedDocument) -> DocumentStructureDraft:
@@ -383,6 +464,34 @@ class ResearchPaperPipeline(AnalysisPipeline):
                 for figure in draft.figures
             )
         return sections
+
+    @staticmethod
+    def _render_figure_evidence_section(figure_evidence: list[FigureEvidence]) -> str:
+        if not figure_evidence:
+            return ResearchPaperPipeline._missing_text()
+
+        blocks: list[str] = []
+        for evidence in figure_evidence:
+            metrics = ", ".join(evidence.metrics_or_axes) or ResearchPaperPipeline._missing_text()
+            direct_evidence = (
+                "\n".join(f"- {item}" for item in evidence.direct_evidence)
+                if evidence.direct_evidence
+                else f"- {ResearchPaperPipeline._missing_text()}"
+            )
+            blocks.append(
+                "\n".join(
+                    [
+                        f"### {evidence.figure_id or '未编号图表'}",
+                        f"- **图注摘要：** {evidence.figure_title_or_caption or ResearchPaperPipeline._missing_text()}",
+                        f"- **图类型：** {evidence.figure_type or ResearchPaperPipeline._missing_text()}",
+                        f"- **指标 / 坐标：** {metrics}",
+                        f"- **证据质量：** {evidence.evidence_quality or ResearchPaperPipeline._missing_text()}",
+                        "- **直接证据：**",
+                        direct_evidence,
+                    ]
+                )
+            )
+        return "\n\n".join(blocks)
 
     @staticmethod
     def _render_figure_analysis_section(figure_analyses: list[FigureAnalysis]) -> str:

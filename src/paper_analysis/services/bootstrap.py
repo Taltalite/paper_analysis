@@ -1,4 +1,5 @@
 from paper_analysis.adapters.llm.factory import create_llm_client_from_env
+from paper_analysis.adapters.parser.mcp_figure_semantics import NoopFigureSemanticExtractor
 from paper_analysis.adapters.parser.pdf import PdfParser
 from paper_analysis.adapters.parser.plain_text import PlainTextParser
 from paper_analysis.adapters.storage.local_fs import LocalFilesystemArtifactStorage
@@ -6,7 +7,9 @@ from paper_analysis.runtime.crewai_runtime import CrewAIRuntime
 from paper_analysis.runtime.crews.base import CrewAITwoAgentTextAnalysisRunner
 from paper_analysis.runtime.crews.research import (
     CrewAIDocumentStructuringRunner,
+    CrewAIFigureEvidenceCuratorRunner,
     CrewAIFigureAnalysisRunner,
+    CrewAIFigureGroundingRunner,
 )
 from paper_analysis.runtime.pipelines.general_text import GeneralTextPipeline
 from paper_analysis.runtime.pipelines.research_paper import ResearchPaperPipeline
@@ -18,12 +21,24 @@ def build_default_analysis_service() -> AnalysisService:
     llm_client = create_llm_client_from_env()
     crew_runner = CrewAITwoAgentTextAnalysisRunner(llm_client=llm_client, verbose=True)
     structuring_runner = CrewAIDocumentStructuringRunner(llm_client=llm_client, verbose=True)
+    figure_semantic_extractor = NoopFigureSemanticExtractor()
+    figure_grounding_runner = CrewAIFigureGroundingRunner(
+        extractor=figure_semantic_extractor,
+        llm_client=llm_client,
+        verbose=True,
+    )
+    figure_evidence_curator = CrewAIFigureEvidenceCuratorRunner(
+        llm_client=llm_client,
+        verbose=True,
+    )
     figure_runner = CrewAIFigureAnalysisRunner(llm_client=llm_client, verbose=True)
     runtime = CrewAIRuntime(
         general_text_pipeline=GeneralTextPipeline(crew_runner=crew_runner),
         research_paper_pipeline=ResearchPaperPipeline(
             crew_runner=crew_runner,
             structuring_runner=structuring_runner,
+            figure_grounding_runner=figure_grounding_runner,
+            figure_evidence_curator=figure_evidence_curator,
             figure_runner=figure_runner,
         ),
     )

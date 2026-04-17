@@ -167,6 +167,7 @@ class CrewAIDocumentStructuringRunner:
                     caption=cls._sanitize_text(item.get("caption", ""), max_length=800),
                     page_number=cls._coerce_int(item.get("page_number")),
                     page_snapshot_path=cls._sanitize_text(item.get("page_snapshot_path", ""), max_length=240) or None,
+                    image_block_paths=cls._sanitize_list(item.get("image_block_paths"), max_items=6, max_length=240),
                     referenced_text_spans=cls._sanitize_list(item.get("referenced_text_spans"), max_items=6, max_length=260),
                     caption_block_ids=cls._sanitize_list(item.get("caption_block_ids"), max_items=8, max_length=40),
                     reference_block_ids=cls._sanitize_list(item.get("reference_block_ids"), max_items=12, max_length=40),

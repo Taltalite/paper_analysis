@@ -20,6 +20,7 @@ class PdfParserTest(unittest.TestCase):
         self.assertTrue(parsed.figures)
         self.assertIn("Figure 1", parsed.figures[0].figure_id)
         self.assertTrue(parsed.figures[0].caption)
+        self.assertIsInstance(parsed.figures[0].image_block_paths, list)
         self.assertTrue(parsed.figures[0].referenced_text_spans)
         self.assertIn("# PDF 结构化解析", parsed.markdown)
         self.assertIn("## 图表元数据", parsed.markdown)
