@@ -31,18 +31,8 @@
 
 ### 分析链路
 
-#### 通用文本分析
 
-通用文本链路使用 2-agent 模式：
-
-- `reader`
-  提取可追溯的结构化信息
-- `analyst`
-  汇总分析结论并生成最终报告
-
-#### 研究型文献分析
-
-当前仓库的完整研究论文分析链路已经扩展为 6 个明确分工的 agent / role：
+6  agent / role：
 
 - `reader`
   负责重点章节阅读与事实性笔记提取
@@ -72,8 +62,6 @@ PDF 文献分析的当前执行顺序为：
 8. 使用 `figure_analyst agent` 基于证据对象分析图、表结论与图文一致性。
 9. 输出最终 Markdown、JSON，以及 PDF 的结构化 Markdown 中间产物。
 
-当前已经提供 `FigureSemanticExtractor` 抽象与 `NoopFigureSemanticExtractor` 回退实现。
-这意味着图片链路已经具备独立语义证据层，但真正的 MCP 图片语义工具仍是下一步接入重点。
 
 ### 后端与前端职责
 
@@ -205,12 +193,12 @@ bash scripts/run_api.sh
 
 默认地址：
 
-- `http://127.0.0.1:8010`
+- `http://127.0.0.1:19198`
 
 健康检查：
 
 ```bash
-curl http://127.0.0.1:8010/health
+curl http://127.0.0.1:19198/health
 ```
 
 ### 3. 启动前端
@@ -221,7 +209,7 @@ bash scripts/run_web.sh
 
 默认地址：
 
-- `http://127.0.0.1:5173`
+- `http://127.0.0.1:11451`
 
 前端 dev server 使用固定端口策略；如果端口被占用，会直接报错，而不是自动切换端口。
 
