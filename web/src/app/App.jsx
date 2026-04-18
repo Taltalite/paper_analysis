@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
-import { createAnalysisJob, getAnalysisJob, getArtifactContent, getMarkdownReport } from "../api/client";
+import { createAnalysisJob, getAnalysisProgress, getArtifactContent, getMarkdownReport } from "../api/client";
 import ReportPanel from "../components/ReportPanel";
 import StatusPanel from "../components/StatusPanel";
 
@@ -30,6 +30,7 @@ function modeLabel(mode) {
 export default function App() {
   const [selectedFile, setSelectedFile] = useState(null);
   const [job, setJob] = useState(null);
+  const [progress, setProgress] = useState(null);
   const [report, setReport] = useState(null);
   const [artifacts, setArtifacts] = useState(null);
   const [submitting, setSubmitting] = useState(false);
@@ -63,7 +64,9 @@ export default function App() {
   }
 
   async function syncJob(jobId) {
-    const latest = await getAnalysisJob(jobId);
+    const progressPayload = await getAnalysisProgress(jobId);
+    const latest = progressPayload.job;
+    setProgress(progressPayload);
     setJob(latest);
     if (latest.status === "completed") {
       stopPolling();
@@ -116,16 +119,17 @@ export default function App() {
     setSubmitting(true);
     setError("");
     setJob(null);
+    setProgress(null);
     setReport(null);
     setArtifacts(null);
 
     try {
       const createdJob = await createAnalysisJob(selectedFile, MODE);
       setJob(createdJob);
-      await startPolling(createdJob.id);
+      setSubmitting(false);
+      void startPolling(createdJob.id);
     } catch (requestError) {
       setError(requestError.message);
-    } finally {
       setSubmitting(false);
     }
   }
@@ -156,6 +160,7 @@ export default function App() {
 
       <StatusPanel
         job={job}
+        progress={progress}
         error={error}
         modeLabel={modeLabel}
         submitting={submitting}

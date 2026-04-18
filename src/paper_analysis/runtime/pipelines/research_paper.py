@@ -131,81 +131,92 @@ class ResearchPaperPipeline(AnalysisPipeline):
         figure_analyses: list[FigureAnalysis],
     ) -> str:
         paper_analysis = self._coerce_paper_analysis(result)
-        source_section_preview = self._render_source_section_preview(source_document, selected_sections)
-        figure_evidence_section = self._render_figure_evidence_section(figure_evidence)
-        figure_analysis_section = self._render_figure_analysis_section(figure_analyses)
-        figure_conclusions_section = self._render_figure_conclusions(figure_analyses)
-        figure_consistency_section = self._render_figure_consistency_checks(figure_analyses)
-        selected_text = "\n".join(
-            f"- {self._localized_section_name(section)}" for section in selected_sections
-        ) or "- 回退到原始文本片段"
         parser_authors = source_document.metadata.get("authors", [])
         if isinstance(parser_authors, list):
             fallback_authors = parser_authors
         else:
             fallback_authors = [str(parser_authors)] if parser_authors else []
-        authors = ", ".join(paper_analysis.metadata.authors or fallback_authors) or self._missing_text()
-        strengths = "\n".join(f"- {item}" for item in paper_analysis.strengths) or f"- {self._missing_text()}"
-        limitations = "\n".join(f"- {item}" for item in paper_analysis.limitations) or f"- {self._missing_text()}"
-        datasets = ", ".join(paper_analysis.extracted_notes.datasets) or self._missing_text()
+        authors = ", ".join(
+            self._clean_list(paper_analysis.metadata.authors or fallback_authors)
+        ) or self._missing_text()
 
-        return f"""# 研究型文献分析报告
+        return f"""# 文献分析报告
 
-## 来源文档
-- **标题：** {paper_analysis.metadata.title or source_document.title or self._missing_text()}
-- **作者：** {authors}
-- **DOI：** {source_document.metadata.get('doi') or self._missing_text()}
-- **期刊/会议：** {paper_analysis.metadata.venue or source_document.metadata.get('venue') or self._missing_text()}
-- **年份：** {paper_analysis.metadata.year or source_document.metadata.get('year') or self._missing_text()}
-- **页数：** {source_document.metadata.get('page_count') or self._missing_text()}
+## 1. 基本信息
+- 标题：{self._clean_text(paper_analysis.metadata.title or source_document.title)}
+- 作者：{authors}
+- 发表平台：{self._clean_text(paper_analysis.metadata.venue or source_document.metadata.get('venue'))}
+- 年份：{self._clean_text(paper_analysis.metadata.year or source_document.metadata.get('year'))}
 
-## 参与分析的重点章节
-{selected_text}
+## 2. 摘要式总结
+{self._build_summary_blockquote(paper_analysis=paper_analysis, result=result)}
 
-## 结构化解析预览
-{source_section_preview}
+## 3. 研究问题
+### 3.1 背景
+{self._derive_background(
+    result=result,
+    source_document=source_document,
+    selected_sections=selected_sections,
+)}
 
-## 研究问题
-{paper_analysis.extracted_notes.research_problem or self._missing_text()}
+### 3.2 论文要解决的问题
+{self._clean_text(paper_analysis.extracted_notes.research_problem)}
 
-## 核心方法
-{paper_analysis.extracted_notes.core_method or self._missing_text()}
+## 4. 方法
+### 4.1 方法概述
+{self._clean_text(paper_analysis.extracted_notes.core_method)}
 
-## 数据集
-{datasets}
+### 4.2 关键模块
+{self._render_bullet_list(result.key_points)}
 
-## 实验设置
-{paper_analysis.extracted_notes.experimental_setup or self._missing_text()}
+### 4.3 创新点
+{self._clean_text(paper_analysis.novelty)}
 
-## 主要结果
-{paper_analysis.extracted_notes.main_results or self._missing_text()}
+## 5. 实验与结果
+### 5.1 实验设置
+{self._render_experimental_setup(paper_analysis)}
 
-## 创新点
-{paper_analysis.novelty or self._missing_text()}
+### 5.2 主要结果
+{self._clean_text(paper_analysis.extracted_notes.main_results)}
 
-## 优点
-{strengths}
+### 5.3 与基线对比
+{self._render_baseline_comparison(figure_analyses)}
 
-## 局限性
-{limitations}
+### 5.4 作者结论
+{self._render_author_conclusion(result=result, paper_analysis=paper_analysis)}
 
-## 复现建议
-{paper_analysis.reproducibility or self._missing_text()}
+## 6. 图表分析
+### 6.1 关键图表
+{self._render_key_figures(figure_analyses, figure_evidence)}
 
-## 图像语义证据摘要
-{figure_evidence_section}
+### 6.2 图中结论
+{self._render_figure_conclusions(figure_analyses)}
 
-## 图像实验结果分析
-{figure_analysis_section}
+### 6.3 图文一致性
+{self._render_figure_consistency_checks(figure_analyses)}
 
-## 关键图表结论
-{figure_conclusions_section}
+## 7. 评价
+### 7.1 优点
+{self._render_bullet_list(paper_analysis.strengths)}
 
-## 图文一致性检查
-{figure_consistency_section}
+### 7.2 局限性
+{self._render_bullet_list(paper_analysis.limitations)}
 
-## 总结
-{result.summary or self._missing_text()}
+### 7.3 可复现性
+{self._clean_text(paper_analysis.reproducibility)}
+
+## 8. 启发与参考价值
+### 8.1 适用场景
+{self._render_applicable_scenarios(
+    paper_analysis=paper_analysis,
+    source_document=source_document,
+)}
+
+### 8.2 对当前研究的启发
+{self._render_inspiration(paper_analysis=paper_analysis, result=result)}
+
+## 9. 总结
+{self._clean_text(result.summary)}
 """
 
     def _refine_document_structure(self, document: ParsedDocument) -> ParsedDocument:
@@ -239,24 +250,6 @@ class ResearchPaperPipeline(AnalysisPipeline):
             figures=draft.figures or document.figures,
             metadata=merged_metadata,
         )
-
-    @staticmethod
-    def _render_source_section_preview(
-        source_document: ParsedDocument,
-        selected_sections: list[str],
-    ) -> str:
-        if not selected_sections:
-            return ResearchPaperPipeline._missing_text()
-
-        blocks: list[str] = []
-        for section_name in selected_sections:
-            content = source_document.sections.get(section_name, "").strip()
-            if not content:
-                continue
-            preview = content[:700].strip()
-            heading = ResearchPaperPipeline._localized_section_name(section_name)
-            blocks.append(f"### {heading}\n{preview}")
-        return "\n\n".join(blocks) if blocks else ResearchPaperPipeline._missing_text()
 
     @staticmethod
     def _coerce_paper_analysis(result: AnalysisResult) -> PaperAnalysis:
@@ -527,7 +520,10 @@ class ResearchPaperPipeline(AnalysisPipeline):
     @staticmethod
     def _render_figure_conclusions(figure_analyses: list[FigureAnalysis]) -> str:
         bullets = [
-            f"- {analysis.figure_id or '未编号图表'}：{analysis.claimed_conclusion}"
+            (
+                f"- {ResearchPaperPipeline._clean_text(analysis.figure_id or '未编号图表')}："
+                f"{ResearchPaperPipeline._clean_text(analysis.claimed_conclusion)}"
+            )
             for analysis in figure_analyses
             if analysis.claimed_conclusion
         ]
@@ -536,24 +532,170 @@ class ResearchPaperPipeline(AnalysisPipeline):
     @staticmethod
     def _render_figure_consistency_checks(figure_analyses: list[FigureAnalysis]) -> str:
         bullets = [
-            f"- {analysis.figure_id or '未编号图表'}：{analysis.consistency_check or ResearchPaperPipeline._missing_text()}（置信度：{analysis.confidence or ResearchPaperPipeline._missing_text()}）"
+            (
+                f"- {ResearchPaperPipeline._clean_text(analysis.figure_id or '未编号图表')}："
+                f"{ResearchPaperPipeline._clean_text(analysis.consistency_check)}"
+                f"（置信度：{ResearchPaperPipeline._clean_text(analysis.confidence)}）"
+            )
             for analysis in figure_analyses
         ]
         return "\n".join(bullets) if bullets else ResearchPaperPipeline._missing_text()
 
-    @staticmethod
-    def _localized_section_name(section_name: str) -> str:
-        mapping = {
-            "abstract": "摘要（Abstract）",
-            "introduction": "引言（Introduction）",
-            "method": "方法（Method）",
-            "experimental_setup": "实验设置（Experimental Setup）",
-            "results": "结果（Results）",
-            "discussion": "讨论（Discussion）",
-            "conclusion": "结论（Conclusion）",
-            "figures": "图示（Figures）",
-        }
-        return mapping.get(section_name, section_name.replace("_", " ").title())
+    @classmethod
+    def _build_summary_blockquote(
+        cls,
+        *,
+        paper_analysis: PaperAnalysis,
+        result: AnalysisResult,
+    ) -> str:
+        research_problem = cls._clean_text(paper_analysis.extracted_notes.research_problem)
+        core_method = cls._clean_text(paper_analysis.extracted_notes.core_method)
+        main_results = cls._clean_text(paper_analysis.extracted_notes.main_results)
+        fallback_summary = cls._clean_text(result.summary)
+
+        lines = [
+            f"> 这篇论文主要研究{research_problem}。",
+            f"> 核心方法是{core_method}。",
+            f"> 主要结果表明{main_results}。",
+        ]
+        if research_problem == cls._missing_text() and fallback_summary != cls._missing_text():
+            lines[0] = f"> 这篇论文主要研究内容可概括为：{fallback_summary}"
+        return "\n".join(lines)
+
+    @classmethod
+    def _derive_background(
+        cls,
+        *,
+        result: AnalysisResult,
+        source_document: ParsedDocument,
+        selected_sections: list[str],
+    ) -> str:
+        candidates: list[str] = []
+        if result.key_points:
+            candidates.extend(result.key_points)
+        for section_name in ("abstract", "introduction"):
+            if section_name in selected_sections and source_document.sections.get(section_name):
+                candidates.append(source_document.sections[section_name][:220])
+        for candidate in candidates:
+            cleaned = cls._clean_text(candidate)
+            if cleaned != cls._missing_text():
+                return cleaned
+        return cls._missing_text()
+
+    @classmethod
+    def _render_bullet_list(cls, items: list[str]) -> str:
+        cleaned_items = cls._clean_list(items)
+        if not cleaned_items:
+            return cls._missing_text()
+        return "\n".join(f"- {item}" for item in cleaned_items)
+
+    @classmethod
+    def _render_experimental_setup(cls, paper_analysis: PaperAnalysis) -> str:
+        setup = cls._clean_text(paper_analysis.extracted_notes.experimental_setup)
+        datasets = cls._clean_list(paper_analysis.extracted_notes.datasets)
+        if not datasets:
+            return setup
+        dataset_line = f"涉及数据集：{', '.join(datasets)}。"
+        if setup == cls._missing_text():
+            return dataset_line
+        return f"{setup}\n\n{dataset_line}"
+
+    @classmethod
+    def _render_baseline_comparison(cls, figure_analyses: list[FigureAnalysis]) -> str:
+        bullets: list[str] = []
+        for analysis in figure_analyses:
+            compared_items = ", ".join(cls._clean_list(analysis.compared_items))
+            observation = cls._clean_text(
+                analysis.main_observations[0] if analysis.main_observations else ""
+            )
+            if compared_items and observation != cls._missing_text():
+                bullets.append(
+                    f"- {cls._clean_text(analysis.figure_id or '未编号图表')}：比较对象包括 {compared_items}；主要观察为 {observation}"
+                )
+        return "\n".join(bullets) if bullets else cls._missing_text()
+
+    @classmethod
+    def _render_author_conclusion(
+        cls,
+        *,
+        result: AnalysisResult,
+        paper_analysis: PaperAnalysis,
+    ) -> str:
+        main_results = cls._clean_text(paper_analysis.extracted_notes.main_results)
+        if main_results != cls._missing_text():
+            return main_results
+        return cls._clean_text(result.summary)
+
+    @classmethod
+    def _render_key_figures(
+        cls,
+        figure_analyses: list[FigureAnalysis],
+        figure_evidence: list[FigureEvidence],
+    ) -> str:
+        bullets: list[str] = []
+        seen_ids: set[str] = set()
+        for analysis in figure_analyses:
+            figure_id = cls._clean_text(analysis.figure_id or "未编号图表")
+            seen_ids.add(figure_id)
+            bullets.append(f"- {figure_id}：{cls._clean_text(analysis.figure_title_or_caption)}")
+        for evidence in figure_evidence:
+            figure_id = cls._clean_text(evidence.figure_id or "未编号图表")
+            if figure_id in seen_ids:
+                continue
+            bullets.append(f"- {figure_id}：{cls._clean_text(evidence.figure_title_or_caption)}")
+        return "\n".join(bullets) if bullets else cls._missing_text()
+
+    @classmethod
+    def _render_applicable_scenarios(
+        cls,
+        *,
+        paper_analysis: PaperAnalysis,
+        source_document: ParsedDocument,
+    ) -> str:
+        datasets = cls._clean_list(paper_analysis.extracted_notes.datasets)
+        if datasets:
+            return f"该方法可优先参考于与 {', '.join(datasets)} 类似的数据或任务场景。"
+        venue = cls._clean_text(paper_analysis.metadata.venue or source_document.metadata.get("venue"))
+        if venue != cls._missing_text():
+            return f"可优先用于与 {venue} 相关的研究问题与实验设计参考。"
+        return cls._missing_text()
+
+    @classmethod
+    def _render_inspiration(
+        cls,
+        *,
+        paper_analysis: PaperAnalysis,
+        result: AnalysisResult,
+    ) -> str:
+        novelty = cls._clean_text(paper_analysis.novelty)
+        if novelty != cls._missing_text():
+            return novelty
+        cleaned_points = cls._clean_list(result.key_points)
+        if cleaned_points:
+            return cleaned_points[0]
+        return cls._missing_text()
+
+    @classmethod
+    def _clean_list(cls, values: list[str]) -> list[str]:
+        items: list[str] = []
+        for value in values:
+            cleaned = cls._clean_text(value)
+            if cleaned != cls._missing_text():
+                items.append(cleaned)
+        return items
+
+    @classmethod
+    def _clean_text(cls, value: object) -> str:
+        if value is None:
+            return cls._missing_text()
+        rendered = str(value).strip()
+        if not rendered:
+            return cls._missing_text()
+
+        rendered = re.sub(r"^\s*#{1,6}\s*", "", rendered, flags=re.MULTILINE)
+        rendered = re.sub(r"^\s*[-*]\s*", "", rendered, flags=re.MULTILINE)
+        rendered = re.sub(r"\n{3,}", "\n\n", rendered)
+        return rendered.strip() or cls._missing_text()
 
     @staticmethod
     def _missing_text() -> str:

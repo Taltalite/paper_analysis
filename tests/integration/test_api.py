@@ -9,7 +9,7 @@ from fastapi.testclient import TestClient
 from paper_analysis.adapters.storage.job_store import LocalFilesystemJobStore
 from paper_analysis.adapters.storage.local_fs import LocalFilesystemArtifactStorage
 from paper_analysis.api.app import create_app
-from paper_analysis.api.deps import get_job_service
+from paper_analysis.api.deps import get_job_executor, get_job_service
 from paper_analysis.domain.models import FigureMetadata
 from paper_analysis.domain.enums import AnalysisMode
 from paper_analysis.domain.schemas import AnalysisResult, ParsedDocument
@@ -60,6 +60,11 @@ class FakeAnalysisService:
         )
 
 
+class ImmediateJobExecutor:
+    async def submit_job(self, *, job_service: JobService, job_id) -> None:  # noqa: ANN001
+        await job_service.run_job(job_id)
+
+
 class ApiIntegrationTests(unittest.TestCase):
     def setUp(self) -> None:
         self._temp_dir = tempfile.TemporaryDirectory()
@@ -73,6 +78,7 @@ class ApiIntegrationTests(unittest.TestCase):
 
         app = create_app()
         app.dependency_overrides[get_job_service] = lambda: job_service
+        app.dependency_overrides[get_job_executor] = lambda: ImmediateJobExecutor()
         self.client = TestClient(app)
         self.job_service = job_service
 
@@ -98,6 +104,16 @@ class ApiIntegrationTests(unittest.TestCase):
         job_response = self.client.get(f"/api/analysis/jobs/{job_id}")
         self.assertEqual(job_response.status_code, 200)
         self.assertEqual(job_response.json()["status"], "completed")
+
+        progress_response = self.client.get(f"/api/analysis/jobs/{job_id}/progress")
+        self.assertEqual(progress_response.status_code, 200)
+        progress_payload = progress_response.json()
+        self.assertEqual(progress_payload["job"]["status"], "completed")
+        self.assertEqual(progress_payload["current_stage"], "任务完成")
+        self.assertEqual(progress_payload["progress_percent"], 100)
+        self.assertTrue(progress_payload["recent_logs"])
+        self.assertIn("任务开始执行", "\n".join(progress_payload["recent_logs"]))
+        self.assertEqual(len(progress_payload["steps"]), 4)
 
         report_response = self.client.get(f"/api/analysis/jobs/{job_id}/report")
         self.assertEqual(report_response.status_code, 200)

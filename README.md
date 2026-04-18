@@ -71,9 +71,10 @@ PDF 文献分析的当前执行顺序为：
   - 分析执行
   - 产物持久化
   - 日志记录
+  - 进程内异步任务调度
 - 前端只负责：
   - 上传文件
-  - 展示任务状态
+  - 展示任务状态、阶段进度与实时日志
   - 渲染 Markdown
   - 下载 Markdown / JSON / parsed markdown
 
@@ -91,6 +92,20 @@ PDF 文献分析的当前执行顺序为：
 - JSON 结构化结果
 - PDF 结构化 Markdown 中间产物
 - 按 job 存储的日志文件
+
+研究型文献模式下，最终 Markdown 报告由后端统一渲染为固定目录结构，默认包含：
+
+- `1. 基本信息`
+- `2. 摘要式总结`
+- `3. 研究问题`
+- `4. 方法`
+- `5. 实验与结果`
+- `6. 图表分析`
+- `7. 评价`
+- `8. 启发与参考价值`
+- `9. 总结`
+
+最终 Markdown 仅保留报告正文，不输出 agent 中间协商、工具调用过程、链式推理文本或结构化解析预览。
 
 ## 环境配置
 
@@ -121,13 +136,25 @@ cd ..
 
 ### LLM 环境变量
 
-当前已实现 `openai-compatible` 适配层，常用环境变量如下：
+当前已实现 `openai-compatible` 适配层。应用启动时会自动加载项目根目录下的 `.env`，也兼容当前 shell 已导出的环境变量；如果两边同时存在，优先使用当前 shell 环境变量。
+
+常用环境变量如下：
+
+```bash
+OPENAI_API_KEY="your-api-key"
+OPENAI_BASE_URL="https://your-compatible-endpoint"
+OPENAI_MODEL="your-model-name"
+```
+
+如果你更习惯手工导出，也可以：
 
 ```bash
 export OPENAI_API_KEY="your-api-key"
 export OPENAI_BASE_URL="https://your-compatible-endpoint"
 export OPENAI_MODEL="your-model-name"
 ```
+
+如果检测到已配置 `OPENAI_MODEL` 但缺少 `OPENAI_API_KEY`，后端会在启动阶段直接报中文错误，而不是等到任务执行时才失败。
 
 如果你的运行环境需要代理，也请在当前 shell 中提前设置代理变量。
 
@@ -219,12 +246,14 @@ bash scripts/run_web.sh
 
 - `POST /api/analysis/jobs`
 - `GET /api/analysis/jobs/{job_id}`
+- `GET /api/analysis/jobs/{job_id}/progress`
 - `GET /api/analysis/jobs/{job_id}/report`
 - `GET /api/analysis/jobs/{job_id}/artifact`
 
 这些接口分别用于：
 - 创建分析任务
 - 查询任务状态
+- 查询任务阶段进度和最新日志
 - 获取 Markdown 报告
 - 获取 Markdown / JSON / parsed markdown / log 等产物
 
@@ -239,10 +268,12 @@ bash scripts/run_web.sh
 ### 后端与前端联调
 
 - 先启动后端，再启动前端。
+- `POST /api/analysis/jobs` 会在创建任务后立即返回；实际分析在后端进程内执行器线程中异步运行。
 - 如果前端上传后显示 `Failed to fetch`，优先检查：
   - 后端是否已经启动
   - `config/app.json` 中的前后端端口是否正确
   - 当前端口是否被其他进程占用
+- 前端会轮询后端 `job progress` 接口，展示文件接收、文档解析、多 Agent 分析、结果生成等阶段，并显示最新任务日志。
 
 ### 日志与问题排查
 

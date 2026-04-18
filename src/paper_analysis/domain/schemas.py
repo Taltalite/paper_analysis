@@ -81,6 +81,21 @@ class MarkdownReportResponse(BaseModel):
     parsed_markdown: str | None = None
 
 
+class JobProgressStep(BaseModel):
+    key: str
+    label: str
+    status: str
+
+
+class JobProgressResponse(BaseModel):
+    job: AnalysisJob
+    current_stage: str
+    progress_percent: int
+    summary_message: str
+    recent_logs: list[str] = Field(default_factory=list)
+    steps: list[JobProgressStep] = Field(default_factory=list)
+
+
 class ArtifactContentResponse(BaseModel):
     job_id: UUID
     status: JobStatus

@@ -4,11 +4,13 @@ from paper_analysis.services.bootstrap import (
     build_default_analysis_service,
     build_default_artifact_service,
 )
+from paper_analysis.services.job_executor import InProcessJobExecutor
 from paper_analysis.services.job_service import JobService
 
 __all__ = [
     "AnalysisService",
     "ArtifactService",
+    "InProcessJobExecutor",
     "JobService",
     "build_default_analysis_service",
     "build_default_artifact_service",

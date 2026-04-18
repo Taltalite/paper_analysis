@@ -2,11 +2,17 @@ from __future__ import annotations
 
 from uuid import UUID
 
-from fastapi import APIRouter, BackgroundTasks, Depends, File, Form, HTTPException, UploadFile, status
+from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile, status
 
-from paper_analysis.api.deps import get_job_service
+from paper_analysis.api.deps import get_job_executor, get_job_service
 from paper_analysis.domain.enums import AnalysisMode, DocumentKind
-from paper_analysis.domain.schemas import AnalysisJob, ArtifactContentResponse, MarkdownReportResponse
+from paper_analysis.domain.schemas import (
+    AnalysisJob,
+    ArtifactContentResponse,
+    JobProgressResponse,
+    MarkdownReportResponse,
+)
+from paper_analysis.services.job_executor import InProcessJobExecutor
 from paper_analysis.services.job_service import JobService
 
 router = APIRouter(prefix="/api/analysis", tags=["analysis"])
@@ -14,10 +20,10 @@ router = APIRouter(prefix="/api/analysis", tags=["analysis"])
 
 @router.post("/jobs", response_model=AnalysisJob, status_code=status.HTTP_202_ACCEPTED)
 async def create_job(
-    background_tasks: BackgroundTasks,
     file: UploadFile = File(...),
     mode: AnalysisMode = Form(default=AnalysisMode.RESEARCH_PAPER),
     job_service: JobService = Depends(get_job_service),
+    job_executor: InProcessJobExecutor = Depends(get_job_executor),
 ) -> AnalysisJob:
     filename = file.filename or "uploaded.bin"
     document_kind = _document_kind_for(filename)
@@ -31,7 +37,7 @@ async def create_job(
         mode=mode,
         document_kind=document_kind,
     )
-    background_tasks.add_task(job_service.run_job, job.id)
+    await job_executor.submit_job(job_service=job_service, job_id=job.id)
     return job
 
 
@@ -42,6 +48,17 @@ async def get_job(
 ) -> AnalysisJob:
     try:
         return await job_service.get_job(job_id)
+    except KeyError as exc:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
+
+
+@router.get("/jobs/{job_id}/progress", response_model=JobProgressResponse)
+async def get_job_progress(
+    job_id: UUID,
+    job_service: JobService = Depends(get_job_service),
+) -> JobProgressResponse:
+    try:
+        return await job_service.get_job_progress(job_id)
     except KeyError as exc:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
 

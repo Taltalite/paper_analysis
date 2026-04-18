@@ -46,3 +46,7 @@ web/dist/
 
 # Large local inputs that often contain private source material
 *.pdf
+
+# codex related
+.codex
+PLANS.md

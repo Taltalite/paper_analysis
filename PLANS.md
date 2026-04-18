@@ -2,6 +2,18 @@
 
 ## 当前审查结论
 
+- 已补齐运行配置可靠性：
+  - 自动加载项目根目录 `.env`
+  - 检测到 OpenAI 配置缺少 `OPENAI_API_KEY` 时在启动阶段直接失败并给出中文提示
+- 已将研究型文献 Markdown 报告收敛为后端统一固定目录：
+  - 不再把重点章节、结构化解析预览、图像语义中间证据直接写入最终 Markdown
+  - 为 `figure agent` 保留独立的“图表分析”章节位置
+- 已补齐前后端任务反馈链路：
+  - 后端新增 job progress 接口，返回阶段进度与日志尾部
+  - 前端状态面板展示实时步骤状态和最新执行日志
+- 已将 job 执行从创建请求中拆出：
+  - `POST /jobs` 创建任务后立即返回
+  - 分析任务转入进程内执行器线程，避免阻塞 API 主事件循环
 - 主执行链路已经不是旧的 `CrewBase` demo，而是：
   `AnalysisService -> CrewAIRuntime -> ResearchPaperPipeline / GeneralTextPipeline -> crew runners`
 - 研究论文模式当前已经包含 6 类协作角色：

@@ -144,6 +144,98 @@ button:disabled {
   margin-top: 12px;
 }
 
+.progress-overview {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.progress-overview > div,
+.step-card {
+  padding: 12px;
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 1px solid #e5eaf1;
+}
+
+.progress-label {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #64748b;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 12px;
+  margin-top: 14px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #dbe7fb;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #2563eb 0%, #0ea5e9 100%);
+  transition: width 240ms ease;
+}
+
+.step-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.step-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.step-active {
+  border-color: #93c5fd;
+  background: #eff6ff;
+}
+
+.step-completed {
+  border-color: #86efac;
+  background: #f0fdf4;
+}
+
+.step-failed {
+  border-color: #fca5a5;
+  background: #fef2f2;
+}
+
+.log-panel {
+  margin-top: 16px;
+}
+
+.log-panel h3 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.log-output {
+  max-height: 280px;
+  overflow: auto;
+  margin: 0;
+  padding: 14px;
+  border: 1px solid #e5eaf1;
+  border-radius: 12px;
+  background: #0f172a;
+  color: #e2e8f0;
+  font-size: 13px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
 .markdown-body {
   border: 1px solid #e5eaf1;
   border-radius: 14px;

@@ -26,6 +26,11 @@ export async function getAnalysisJob(jobId) {
   return parseJsonResponse(response);
 }
 
+export async function getAnalysisProgress(jobId) {
+  const response = await fetch(`${API_BASE_URL}/api/analysis/jobs/${jobId}/progress`);
+  return parseJsonResponse(response);
+}
+
 export async function getMarkdownReport(jobId) {
   const response = await fetch(`${API_BASE_URL}/api/analysis/jobs/${jobId}/report`);
   return parseJsonResponse(response);

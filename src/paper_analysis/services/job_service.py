@@ -11,6 +11,8 @@ from paper_analysis.domain.schemas import (
     AnalysisArtifact,
     AnalysisJob,
     ArtifactContentResponse,
+    JobProgressResponse,
+    JobProgressStep,
     MarkdownReportResponse,
 )
 from paper_analysis.services.analysis_service import AnalysisService
@@ -53,6 +55,19 @@ class JobService:
 
     async def get_job(self, job_id: UUID) -> AnalysisJob:
         return await self._job_store.get(job_id)
+
+    async def get_job_progress(self, job_id: UUID) -> JobProgressResponse:
+        job = await self._job_store.get(job_id)
+        recent_logs = self._read_recent_logs(job.artifact.log_path)
+        current_stage, progress_percent, summary_message = self._build_progress_snapshot(job, recent_logs)
+        return JobProgressResponse(
+            job=job,
+            current_stage=current_stage,
+            progress_percent=progress_percent,
+            summary_message=summary_message,
+            recent_logs=recent_logs,
+            steps=self._build_progress_steps(job),
+        )
 
     async def run_job(self, job_id: UUID) -> AnalysisJob:
         job = await self._job_store.get(job_id)
@@ -207,3 +222,67 @@ class JobService:
         if not path:
             raise FileNotFoundError(f"{label}尚不可用。")
         return Path(path)
+
+    @staticmethod
+    def _read_recent_logs(log_path: str | None, max_lines: int = 30) -> list[str]:
+        if not log_path:
+            return []
+        path = Path(log_path)
+        if not path.exists():
+            return []
+
+        lines = [line.rstrip() for line in path.read_text(encoding="utf-8", errors="ignore").splitlines()]
+        meaningful = [line for line in lines if line.strip()]
+        return meaningful[-max_lines:]
+
+    @staticmethod
+    def _build_progress_snapshot(job: AnalysisJob, recent_logs: list[str]) -> tuple[str, int, str]:
+        stage_mapping = {
+            JobStatus.PENDING: ("任务排队", 10, "后端已接收文件，等待进入执行队列。"),
+            JobStatus.PARSING: ("文档解析", 35, "正在解析文档结构并提取可分析内容。"),
+            JobStatus.ANALYZING: ("多 Agent 分析", 70, "正在执行多 agent 分析与报告生成。"),
+            JobStatus.COMPLETED: ("任务完成", 100, "分析完成，报告和结构化结果已生成。"),
+            JobStatus.FAILED: ("任务失败", 100, "任务执行失败，请结合日志定位原因。"),
+        }
+        current_stage, progress_percent, fallback_message = stage_mapping.get(
+            job.status,
+            ("状态未知", 0, "任务状态未知。"),
+        )
+
+        if recent_logs:
+            return current_stage, progress_percent, recent_logs[-1]
+        if job.error_message:
+            return current_stage, progress_percent, job.error_message
+        return current_stage, progress_percent, fallback_message
+
+    @staticmethod
+    def _build_progress_steps(job: AnalysisJob) -> list[JobProgressStep]:
+        if job.status == JobStatus.FAILED:
+            upload_status = "completed"
+            parsing_status = "completed" if job.updated_at and job.artifact.log_path else "pending"
+            analysis_status = "failed" if job.status == JobStatus.FAILED else "pending"
+            output_status = "failed"
+            return [
+                JobProgressStep(key="upload", label="文件接收", status=upload_status),
+                JobProgressStep(key="parse", label="文档解析", status=parsing_status),
+                JobProgressStep(key="analyze", label="多 Agent 分析", status=analysis_status),
+                JobProgressStep(key="artifact", label="结果生成", status=output_status),
+            ]
+
+        mapping = {
+            JobStatus.PENDING: ["active", "pending", "pending", "pending"],
+            JobStatus.PARSING: ["completed", "active", "pending", "pending"],
+            JobStatus.ANALYZING: ["completed", "completed", "active", "pending"],
+            JobStatus.COMPLETED: ["completed", "completed", "completed", "completed"],
+        }
+        statuses = mapping.get(job.status, ["pending", "pending", "pending", "pending"])
+        labels = [
+            ("upload", "文件接收"),
+            ("parse", "文档解析"),
+            ("analyze", "多 Agent 分析"),
+            ("artifact", "结果生成"),
+        ]
+        return [
+            JobProgressStep(key=key, label=label, status=status)
+            for (key, label), status in zip(labels, statuses, strict=True)
+        ]
