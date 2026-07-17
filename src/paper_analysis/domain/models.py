@@ -1,6 +1,15 @@
 from pydantic import BaseModel, Field
 
 
+class ClaimEvidence(BaseModel):
+    claim_id: str = ""
+    statement: str = ""
+    category: str = ""
+    source_sections: list[str] = Field(default_factory=list)
+    evidence: list[str] = Field(default_factory=list)
+    confidence: str = "不足以判断"
+
+
 class PaperMetadata(BaseModel):
     title: str = ""
     authors: list[str] = Field(default_factory=list)
@@ -23,6 +32,7 @@ class PaperAnalysis(BaseModel):
     strengths: list[str] = Field(default_factory=list)
     limitations: list[str] = Field(default_factory=list)
     reproducibility: str = ""
+    claims: list[ClaimEvidence] = Field(default_factory=list)
     figure_analyses: list["FigureAnalysis"] = Field(default_factory=list)
 
 
@@ -128,6 +138,21 @@ class FigureEvidenceBatch(BaseModel):
     evidences: list[FigureEvidence] = Field(default_factory=list)
 
 
+class FactCheckItem(BaseModel):
+    claim_id: str = ""
+    claim: str = ""
+    claim_source: str = "text"
+    verdict: str = "unverifiable"
+    evidence_refs: list[str] = Field(default_factory=list)
+    rationale: str = ""
+    confidence: str = "不足以判断"
+
+
+class FactCheckBatch(BaseModel):
+    checks: list[FactCheckItem] = Field(default_factory=list)
+    overall_assessment: str = ""
+
+
 class TextAnalysisSections(BaseModel):
     sections: dict[str, str | list[str]] = Field(default_factory=dict)
 
@@ -136,4 +161,5 @@ PaperAnalysis.model_rebuild()
 FigureAnalysisBatch.model_rebuild()
 FigureSemanticArtifactBatch.model_rebuild()
 FigureEvidenceBatch.model_rebuild()
+FactCheckBatch.model_rebuild()
 DocumentStructureDraft.model_rebuild()

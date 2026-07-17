@@ -32,22 +32,18 @@
 ### 分析链路
 
 
-6  agent / role：
+默认分析链路收敛为 3 个核心 agent / role：
 
-- `reader`
-  负责重点章节阅读与事实性笔记提取
-- `analyst`
-  负责正文层研究问题、方法、结果、优缺点与复现建议总结
-- `document_structuring`
-  负责 PDF 元数据校正、章节归并、caption 与正文引用映射
-- `figure_grounding`
-  负责图片语义 grounding，整理局部图片路径、图类型、panel、visible text、axis 等基础视觉证据
-- `figure_evidence_curator`
-  负责把 caption、正文引用和 grounding 证据整理成统一 `FigureEvidence`
-- `figure_analyst`
-  负责基于证据对象输出图像结论与图文一致性检查
+- `text_understanding`
+  一次完成重点章节理解、事实性要点提取、论文综合分析，并输出可追溯的 `claims`
+- `figure_understanding`
+  基于 parser / 视觉语义 adapter 与确定性证据合并结果，输出图表观察、作者结论和图文一致性分析
+- `fact_checker`
+  独立核验正文与图表分析产生的主张，输出证据引用、判定、理由和置信度
 
-其中，前 2 个角色构成通用文本分析 base；后 4 个角色是研究型文献场景的增强层。
+`document_structuring` 不再作为常驻核心 agent。它是条件式结构修复任务，仅在标题、摘要、核心章节或 figure caption 缺失，或 parser 明确标记低置信度时触发。
+
+原 `reader + analyst` 已合并为 `text_understanding`；原 `figure_grounding` 的低层抽取改由 adapter 负责，`figure_evidence_curator` 改为确定性合并逻辑，不再分别消耗 LLM 调用。旧 runner 暂时保留用于兼容已有注入代码，但默认服务不再装配它们。
 
 PDF 文献分析的当前执行顺序为：
 
@@ -55,12 +51,13 @@ PDF 文献分析的当前执行顺序为：
 2. 对 PDF 按阅读顺序提取 text/image blocks。
 3. 使用规则生成粗结构草稿：
    标题、作者、摘要、章节、figure caption、正文引用关系。
-4. 使用 `document-structuring agent` 做语义校正和结构归并。
-5. 将校正后的高价值章节交给正文分析 agents。
-6. 使用 `figure_grounding agent` 生成图片语义基础证据。
-7. 使用 `figure_evidence_curator agent` 把 caption、正文引用和视觉证据整理成统一证据对象。
-8. 使用 `figure_analyst agent` 基于证据对象分析图、表结论与图文一致性。
-9. 输出最终 Markdown、JSON，以及 PDF 的结构化 Markdown 中间产物。
+4. 仅在粗结构不完整时调用 `document_structuring` 修复任务。
+5. 使用 `text_understanding` 生成正文分析和可追溯主张。
+6. 通过 figure semantic adapter 和确定性 assembler 生成统一图表证据，再由 `figure_understanding` 分析图表。
+7. 使用 `fact_checker` 对正文与图表主张做统一内部证据核验。
+8. 输出最终 Markdown、JSON，以及 PDF 的结构化 Markdown 中间产物。
+
+当前默认 figure semantic adapter 仍是 `NoopFigureSemanticExtractor`，图表证据主要来自 caption、正文引用和 parser 关联的图片路径。真实视觉理解仍需接入 MCP 或其他多模态 adapter；系统会在证据不足时保守输出，不把路径字符串当成已经完成的视觉识别。
 
 
 ### 后端与前端职责
@@ -101,9 +98,10 @@ PDF 文献分析的当前执行顺序为：
 - `4. 方法`
 - `5. 实验与结果`
 - `6. 图表分析`
-- `7. 评价`
-- `8. 启发与参考价值`
-- `9. 总结`
+- `7. 事实检查`
+- `8. 评价`
+- `9. 启发与参考价值`
+- `10. 总结`
 
 最终 Markdown 仅保留报告正文，不输出 agent 中间协商、工具调用过程、链式推理文本或结构化解析预览。
 

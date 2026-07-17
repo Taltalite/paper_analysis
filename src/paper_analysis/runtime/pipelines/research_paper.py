@@ -6,6 +6,7 @@ from pydantic import ValidationError
 
 from paper_analysis.domain.models import (
     DocumentStructureDraft,
+    FactCheckBatch,
     FigureAnalysis,
     FigureAnalysisBatch,
     FigureEvidence,
@@ -19,6 +20,7 @@ from paper_analysis.domain.schemas import AnalysisResult, ParsedDocument
 from paper_analysis.runtime.crews.base import TextAnalysisCrewRunner
 from paper_analysis.runtime.crews.research import (
     DocumentStructuringRunner,
+    FactCheckRunner,
     FigureAnalysisRunner,
     FigureEvidenceCuratorRunner,
     FigureGroundingRunner,
@@ -37,6 +39,7 @@ class ResearchPaperPipeline(AnalysisPipeline):
         figure_grounding_runner: FigureGroundingRunner | None = None,
         figure_evidence_curator: FigureEvidenceCuratorRunner | None = None,
         figure_runner: FigureAnalysisRunner | None = None,
+        fact_check_runner: FactCheckRunner | None = None,
     ) -> None:
         self._pipeline = GeneralTextPipeline(
             profile=RESEARCH_PAPER_PROFILE,
@@ -46,6 +49,7 @@ class ResearchPaperPipeline(AnalysisPipeline):
         self._figure_grounding_runner = figure_grounding_runner
         self._figure_evidence_curator = figure_evidence_curator
         self._figure_runner = figure_runner
+        self._fact_check_runner = fact_check_runner
 
     async def run(self, document: ParsedDocument) -> AnalysisResult:
         source_document = self._refine_document_structure(document)
@@ -54,6 +58,12 @@ class ResearchPaperPipeline(AnalysisPipeline):
         semantic_artifacts, figure_evidence, figure_analyses = self._run_figure_pipeline(
             source_document=source_document,
             selected_sections=selected_sections,
+        )
+        fact_checks = self._run_fact_checks(
+            source_document=source_document,
+            result=result,
+            figure_evidence=figure_evidence,
+            figure_analyses=figure_analyses,
         )
         result.structured_data = self._merge_parser_metadata(
             structured_data=result.structured_data,
@@ -64,6 +74,8 @@ class ResearchPaperPipeline(AnalysisPipeline):
             "semantic_artifacts": [artifact.model_dump() for artifact in semantic_artifacts],
             "figure_evidence": [evidence.model_dump() for evidence in figure_evidence],
             "figure_analyses": [analysis.model_dump() for analysis in figure_analyses],
+            "fact_checks": [check.model_dump() for check in fact_checks.checks],
+            "fact_check_summary": fact_checks.overall_assessment,
             "selected_sections": selected_sections,
             "source_structure": {
                 "parser_kind": source_document.metadata.get("parser_kind", "unknown"),
@@ -79,6 +91,7 @@ class ResearchPaperPipeline(AnalysisPipeline):
             selected_sections=selected_sections,
             figure_evidence=figure_evidence,
             figure_analyses=figure_analyses,
+            fact_checks=fact_checks,
         )
         return result
 
@@ -129,6 +142,7 @@ class ResearchPaperPipeline(AnalysisPipeline):
         selected_sections: list[str],
         figure_evidence: list[FigureEvidence],
         figure_analyses: list[FigureAnalysis],
+        fact_checks: FactCheckBatch,
     ) -> str:
         paper_analysis = self._coerce_paper_analysis(result)
         parser_authors = source_document.metadata.get("authors", [])
@@ -195,27 +209,34 @@ class ResearchPaperPipeline(AnalysisPipeline):
 ### 6.3 图文一致性
 {self._render_figure_consistency_checks(figure_analyses)}
 
-## 7. 评价
-### 7.1 优点
+## 7. 事实检查
+### 7.1 总体结论
+{self._clean_text(fact_checks.overall_assessment)}
+
+### 7.2 逐项核验
+{self._render_fact_checks(fact_checks)}
+
+## 8. 评价
+### 8.1 优点
 {self._render_bullet_list(paper_analysis.strengths)}
 
-### 7.2 局限性
+### 8.2 局限性
 {self._render_bullet_list(paper_analysis.limitations)}
 
-### 7.3 可复现性
+### 8.3 可复现性
 {self._clean_text(paper_analysis.reproducibility)}
 
-## 8. 启发与参考价值
-### 8.1 适用场景
+## 9. 启发与参考价值
+### 9.1 适用场景
 {self._render_applicable_scenarios(
     paper_analysis=paper_analysis,
     source_document=source_document,
 )}
 
-### 8.2 对当前研究的启发
+### 9.2 对当前研究的启发
 {self._render_inspiration(paper_analysis=paper_analysis, result=result)}
 
-## 9. 总结
+## 10. 总结
 {self._clean_text(result.summary)}
 """
 
@@ -224,7 +245,7 @@ class ResearchPaperPipeline(AnalysisPipeline):
             return document
 
         draft = self._coarse_structure_draft(document)
-        if self._structuring_runner is not None:
+        if self._structuring_runner is not None and self._needs_structure_refinement(document):
             draft = self._structuring_runner.run(document=document)
 
         title = draft.title or document.title
@@ -352,6 +373,42 @@ class ResearchPaperPipeline(AnalysisPipeline):
         if isinstance(batch, FigureAnalysisBatch):
             return batch
         return FigureAnalysisBatch()
+
+    def _run_fact_checks(
+        self,
+        *,
+        source_document: ParsedDocument,
+        result: AnalysisResult,
+        figure_evidence: list[FigureEvidence],
+        figure_analyses: list[FigureAnalysis],
+    ) -> FactCheckBatch:
+        if self._fact_check_runner is None:
+            return FactCheckBatch(overall_assessment="未配置事实检查 agent。")
+        batch = self._fact_check_runner.run(
+            document=source_document,
+            analysis_result=result,
+            figure_analyses=figure_analyses,
+            figure_evidence=figure_evidence,
+        )
+        if isinstance(batch, FactCheckBatch):
+            return batch
+        return FactCheckBatch(overall_assessment="事实检查 agent 未返回有效结果。")
+
+    @staticmethod
+    def _needs_structure_refinement(document: ParsedDocument) -> bool:
+        if document.metadata.get("structure_needs_refinement") is True:
+            return True
+        if not document.title.strip():
+            return True
+        if not document.sections.get("abstract"):
+            return True
+        has_core_section = any(
+            document.sections.get(name)
+            for name in ("method", "experimental_setup", "results", "conclusion")
+        )
+        if not has_core_section:
+            return True
+        return any(not figure.caption.strip() for figure in document.figures)
 
     @staticmethod
     def _coarse_structure_draft(document: ParsedDocument) -> DocumentStructureDraft:
@@ -540,6 +597,32 @@ class ResearchPaperPipeline(AnalysisPipeline):
             for analysis in figure_analyses
         ]
         return "\n".join(bullets) if bullets else ResearchPaperPipeline._missing_text()
+
+    @classmethod
+    def _render_fact_checks(cls, fact_checks: FactCheckBatch) -> str:
+        if not fact_checks.checks:
+            return cls._missing_text()
+        verdict_labels = {
+            "supported": "有证据支持",
+            "partially_supported": "部分支持",
+            "unsupported": "缺少支持",
+            "conflicting": "存在冲突",
+            "unverifiable": "无法核验",
+        }
+        blocks: list[str] = []
+        for check in fact_checks.checks:
+            verdict = verdict_labels.get(check.verdict, check.verdict or "无法核验")
+            evidence = "；".join(cls._clean_list(check.evidence_refs)) or cls._missing_text()
+            blocks.append(
+                "\n".join(
+                    [
+                        f"- **{cls._clean_text(check.claim_id or '未编号主张')}｜{verdict}**：{cls._clean_text(check.claim)}",
+                        f"  - 依据：{evidence}",
+                        f"  - 说明：{cls._clean_text(check.rationale)}",
+                    ]
+                )
+            )
+        return "\n".join(blocks)
 
     @classmethod
     def _build_summary_blockquote(

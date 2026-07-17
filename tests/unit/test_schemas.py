@@ -1,7 +1,11 @@
 import unittest
 
 from paper_analysis.domain.enums import AnalysisMode
-from paper_analysis.domain.models import FigureEvidenceBatch, FigureSemanticArtifactBatch
+from paper_analysis.domain.models import (
+    FactCheckBatch,
+    FigureEvidenceBatch,
+    FigureSemanticArtifactBatch,
+)
 from paper_analysis.domain.schemas import FileAnalysisRequest
 
 
@@ -23,6 +27,14 @@ class FileAnalysisRequestTest(unittest.TestCase):
         self.assertEqual(semantic_batch.artifacts[0].confidence, "不足以判断")
         self.assertEqual(evidence_batch.evidences[0].figure_id, "Figure 1")
         self.assertEqual(evidence_batch.evidences[0].evidence_quality, "不足以判断")
+
+    def test_fact_check_batch_has_auditable_defaults(self) -> None:
+        batch = FactCheckBatch.model_validate(
+            {"checks": [{"claim_id": "claim-1", "claim": "A claim"}]}
+        )
+
+        self.assertEqual(batch.checks[0].verdict, "unverifiable")
+        self.assertEqual(batch.checks[0].evidence_refs, [])
 
 
 if __name__ == "__main__":

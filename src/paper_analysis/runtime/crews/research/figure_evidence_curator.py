@@ -32,6 +32,23 @@ class FigureEvidenceCuratorRunner(Protocol):
         ...
 
 
+class DeterministicFigureEvidenceCurator:
+    """Merges parser and semantic evidence without an extra agent round-trip."""
+
+    def run(
+        self,
+        *,
+        document: ParsedDocument,
+        figures: list[FigureMetadata],
+        semantic_artifacts: FigureSemanticArtifactBatch,
+    ) -> FigureEvidenceBatch:
+        del document
+        return CrewAIFigureEvidenceCuratorRunner._fallback_batch(
+            figures=figures,
+            semantic_artifacts=semantic_artifacts,
+        )
+
+
 class CrewAIFigureEvidenceCuratorRunner:
     def __init__(
         self,

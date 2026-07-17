@@ -91,5 +91,6 @@ RESEARCH_PAPER_PROFILE = TextAnalysisProfile(
         "包含 `metadata`，键为 `title`、`authors`、`venue`、`year`。",
         "包含 `extracted_notes`，键为 `research_problem`、`core_method`、`datasets`、`experimental_setup`、`main_results`。",
         "包含 `novelty`、`strengths`、`limitations` 和 `reproducibility`。",
+        "包含 `claims` 列表；每项包含 `claim_id`、`statement`、`category`、`source_sections`、`evidence` 和 `confidence`，用于后续事实检查。",
     ),
 )

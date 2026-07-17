@@ -5,7 +5,7 @@ from pydantic import ValidationError
 from paper_analysis.domain.models import PaperAnalysis
 from paper_analysis.domain.schemas import AnalysisResult, ParsedDocument
 from paper_analysis.runtime.crews.base import (
-    CrewAITwoAgentTextAnalysisRunner,
+    CrewAITextUnderstandingRunner,
     TextAnalysisCrewRunner,
 )
 from paper_analysis.runtime.pipelines.base import AnalysisPipeline
@@ -20,7 +20,7 @@ class GeneralTextPipeline(AnalysisPipeline):
         crew_runner: TextAnalysisCrewRunner | None = None,
     ) -> None:
         self._profile = profile
-        self._crew_runner = crew_runner or CrewAITwoAgentTextAnalysisRunner()
+        self._crew_runner = crew_runner or CrewAITextUnderstandingRunner()
 
     async def run(self, document: ParsedDocument) -> AnalysisResult:
         result = self._crew_runner.run(document=document, profile=self._profile)
@@ -153,7 +153,7 @@ class GeneralTextPipeline(AnalysisPipeline):
             if isinstance(payload.get("extracted_notes"), dict)
             else {}
         )
-        return {
+        normalized = {
             "metadata": {
                 "title": GeneralTextPipeline._string_value(metadata.get("title")),
                 "authors": GeneralTextPipeline._list_value(metadata.get("authors")),
@@ -180,6 +180,10 @@ class GeneralTextPipeline(AnalysisPipeline):
             "limitations": GeneralTextPipeline._list_value(payload.get("limitations")),
             "reproducibility": GeneralTextPipeline._string_value(payload.get("reproducibility")),
         }
+        claims = payload.get("claims")
+        if isinstance(claims, list):
+            normalized["claims"] = [item for item in claims if isinstance(item, dict)]
+        return normalized
 
     @staticmethod
     def _string_value(value: object) -> str:

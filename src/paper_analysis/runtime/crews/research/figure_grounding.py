@@ -26,6 +26,21 @@ class FigureGroundingRunner(Protocol):
         ...
 
 
+class AdapterFigureGroundingRunner:
+    """Runs the semantic extractor without spending an additional LLM call."""
+
+    def __init__(self, *, extractor: FigureSemanticExtractor) -> None:
+        self._extractor = extractor
+
+    def run(
+        self,
+        *,
+        document: ParsedDocument,
+        figures: list[FigureMetadata],
+    ) -> FigureSemanticArtifactBatch:
+        return self._extractor.extract(document=document, figures=figures)
+
+
 class CrewAIFigureGroundingRunner:
     def __init__(
         self,

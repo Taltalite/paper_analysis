@@ -4,12 +4,13 @@ from paper_analysis.adapters.parser.pdf import PdfParser
 from paper_analysis.adapters.parser.plain_text import PlainTextParser
 from paper_analysis.adapters.storage.local_fs import LocalFilesystemArtifactStorage
 from paper_analysis.runtime.crewai_runtime import CrewAIRuntime
-from paper_analysis.runtime.crews.base import CrewAITwoAgentTextAnalysisRunner
+from paper_analysis.runtime.crews.base import CrewAITextUnderstandingRunner
 from paper_analysis.runtime.crews.research import (
+    AdapterFigureGroundingRunner,
+    CrewAIFactCheckRunner,
     CrewAIDocumentStructuringRunner,
-    CrewAIFigureEvidenceCuratorRunner,
     CrewAIFigureAnalysisRunner,
-    CrewAIFigureGroundingRunner,
+    DeterministicFigureEvidenceCurator,
 )
 from paper_analysis.runtime.pipelines.general_text import GeneralTextPipeline
 from paper_analysis.runtime.pipelines.research_paper import ResearchPaperPipeline
@@ -19,19 +20,15 @@ from paper_analysis.services.artifact_service import ArtifactService
 
 def build_default_analysis_service() -> AnalysisService:
     llm_client = create_llm_client_from_env()
-    crew_runner = CrewAITwoAgentTextAnalysisRunner(llm_client=llm_client, verbose=True)
+    crew_runner = CrewAITextUnderstandingRunner(llm_client=llm_client, verbose=True)
     structuring_runner = CrewAIDocumentStructuringRunner(llm_client=llm_client, verbose=True)
     figure_semantic_extractor = NoopFigureSemanticExtractor()
-    figure_grounding_runner = CrewAIFigureGroundingRunner(
+    figure_grounding_runner = AdapterFigureGroundingRunner(
         extractor=figure_semantic_extractor,
-        llm_client=llm_client,
-        verbose=True,
     )
-    figure_evidence_curator = CrewAIFigureEvidenceCuratorRunner(
-        llm_client=llm_client,
-        verbose=True,
-    )
+    figure_evidence_curator = DeterministicFigureEvidenceCurator()
     figure_runner = CrewAIFigureAnalysisRunner(llm_client=llm_client, verbose=True)
+    fact_check_runner = CrewAIFactCheckRunner(llm_client=llm_client, verbose=True)
     runtime = CrewAIRuntime(
         general_text_pipeline=GeneralTextPipeline(crew_runner=crew_runner),
         research_paper_pipeline=ResearchPaperPipeline(
@@ -40,6 +37,7 @@ def build_default_analysis_service() -> AnalysisService:
             figure_grounding_runner=figure_grounding_runner,
             figure_evidence_curator=figure_evidence_curator,
             figure_runner=figure_runner,
+            fact_check_runner=fact_check_runner,
         ),
     )
     return AnalysisService(

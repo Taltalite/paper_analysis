@@ -3,6 +3,8 @@ import unittest
 
 from paper_analysis.domain.models import (
     DocumentStructureDraft,
+    FactCheckBatch,
+    FactCheckItem,
     FigureAnalysis,
     FigureAnalysisBatch,
     FigureEvidence,
@@ -137,6 +139,34 @@ class FakeStructuringRunner:
         )
 
 
+class FakeFactCheckRunner:
+    def __init__(self) -> None:
+        self.received_figure_analyses: list[FigureAnalysis] = []
+
+    def run(
+        self,
+        *,
+        document: ParsedDocument,
+        analysis_result: AnalysisResult,
+        figure_analyses: list[FigureAnalysis],
+        figure_evidence: list[FigureEvidence],
+    ) -> FactCheckBatch:
+        self.received_figure_analyses = figure_analyses
+        return FactCheckBatch(
+            checks=[
+                FactCheckItem(
+                    claim_id="text-1",
+                    claim=analysis_result.summary,
+                    verdict="partially_supported",
+                    evidence_refs=["results"],
+                    rationale="结果章节提供了部分支持。",
+                    confidence="中",
+                )
+            ],
+            overall_assessment="主要结论得到部分支持。",
+        )
+
+
 class ResearchPaperPipelineTest(unittest.TestCase):
     def test_focuses_on_selected_sections_and_builds_research_report(self) -> None:
         runner = RecordingCrewRunner(
@@ -167,12 +197,14 @@ class ResearchPaperPipelineTest(unittest.TestCase):
         figure_grounding_runner = FakeFigureGroundingRunner()
         figure_evidence_curator = FakeFigureEvidenceCurator()
         figure_runner = FakeFigureRunner()
+        fact_check_runner = FakeFactCheckRunner()
         pipeline = ResearchPaperPipeline(
             crew_runner=runner,
             structuring_runner=structuring_runner,
             figure_grounding_runner=figure_grounding_runner,
             figure_evidence_curator=figure_evidence_curator,
             figure_runner=figure_runner,
+            fact_check_runner=fact_check_runner,
         )
         document = ParsedDocument(
             title="Template Paper",
@@ -200,6 +232,7 @@ class ResearchPaperPipelineTest(unittest.TestCase):
                 "doi": "10.1000/test",
                 "ordered_blocks": [],
                 "coarse_structure": {"title": "Template Paper"},
+                "structure_needs_refinement": True,
             },
         )
 
@@ -214,16 +247,39 @@ class ResearchPaperPipelineTest(unittest.TestCase):
         self.assertEqual(len(figure_grounding_runner.received_figures), 1)
         self.assertEqual(len(figure_evidence_curator.received_artifacts), 1)
         self.assertEqual(len(figure_runner.received_evidences), 1)
+        self.assertEqual(len(fact_check_runner.received_figure_analyses), 1)
         self.assertIn("# 文献分析报告", result.markdown_report)
         self.assertIn("## 1. 基本信息", result.markdown_report)
         self.assertIn("## 6. 图表分析", result.markdown_report)
         self.assertIn("### 6.3 图文一致性", result.markdown_report)
+        self.assertIn("## 7. 事实检查", result.markdown_report)
+        self.assertIn("部分支持", result.markdown_report)
         self.assertIn("semantic_artifacts", result.structured_data)
         self.assertIn("figure_evidence", result.structured_data)
         self.assertIn("figure_analyses", result.structured_data)
+        self.assertIn("fact_checks", result.structured_data)
         self.assertNotIn("## 结构化解析预览", result.markdown_report)
         self.assertNotIn("## 参与分析的重点章节", result.markdown_report)
         self.assertIn("selected_sections", result.structured_data)
+
+    def test_skips_structure_agent_for_complete_parser_output(self) -> None:
+        runner = RecordingCrewRunner(AnalysisResult(summary="Summary"))
+        structuring_runner = FakeStructuringRunner()
+        pipeline = ResearchPaperPipeline(
+            crew_runner=runner,
+            structuring_runner=structuring_runner,
+        )
+        document = ParsedDocument(
+            title="Complete Paper",
+            raw_text="Abstract and method.",
+            sections={"abstract": "Abstract", "method": "Method"},
+            section_order=["abstract", "method"],
+            metadata={"parser_kind": "pdf", "ordered_blocks": [{"block_id": "p1_b1"}]},
+        )
+
+        asyncio.run(pipeline.run(document))
+
+        self.assertEqual(structuring_runner.calls, 0)
 
 
 if __name__ == "__main__":
