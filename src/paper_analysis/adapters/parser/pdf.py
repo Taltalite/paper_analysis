@@ -88,6 +88,7 @@ class PdfParser(DocumentParser):
             final_year = coarse_structure.year or self._string_value(metadata.get("year"))
             final_figures = coarse_structure.figures or figures
             sections = self._sections_from_draft(coarse_structure=coarse_structure, title=final_title)
+            evidence_map = self._build_evidence_map(sections=sections, figures=final_figures)
             markdown = self._build_markdown(
                 title=final_title,
                 metadata={
@@ -101,6 +102,7 @@ class PdfParser(DocumentParser):
                 },
                 sections=sections,
                 figures=final_figures,
+                evidence_map=evidence_map,
             )
             raw_text = self._build_raw_text(sections=sections, fallback_blocks=blocks)
             ordered_blocks = [self._to_document_block(block).model_dump(mode="json") for block in blocks]
@@ -120,6 +122,7 @@ class PdfParser(DocumentParser):
                     "venue": final_venue,
                     "year": final_year,
                     "figure_count": len(final_figures),
+                    "evidence_map": evidence_map,
                     "ordered_blocks": ordered_blocks,
                     "coarse_structure": coarse_structure.model_dump(mode="json"),
                 },
@@ -462,6 +465,27 @@ class PdfParser(DocumentParser):
             fallback_ids.append(candidate.block_id)
         return fallback_refs[:2], fallback_ids[:2]
 
+    @staticmethod
+    def _build_evidence_map(
+        *,
+        sections: dict[str, str],
+        figures: list[FigureMetadata],
+    ) -> dict[str, object]:
+        """为章节和图表分配稳定 evidence ID。
+
+        章节使用 S1..Sn（按 sections 顺序，跳过 title/figures 合成键）；
+        图表证据 ID 即 figure_id；block 级别沿用 parser block_id。
+        """
+        section_ids: dict[str, str] = {}
+        for key in sections:
+            if key in {"title", "figures"}:
+                continue
+            section_ids[key] = f"S{len(section_ids) + 1}"
+        return {
+            "sections": section_ids,
+            "figures": [figure.figure_id for figure in figures if figure.figure_id],
+        }
+
     def _build_markdown(
         self,
         *,
@@ -469,6 +493,7 @@ class PdfParser(DocumentParser):
         metadata: dict[str, object],
         sections: dict[str, str],
         figures: list[FigureMetadata],
+        evidence_map: dict[str, object] | None = None,
     ) -> str:
         authors = self._list_value(metadata.get("authors"))
         author_text = ", ".join(authors) if authors else "未明确说明"
@@ -483,6 +508,14 @@ class PdfParser(DocumentParser):
         ]
 
         body: list[str] = ["# PDF 结构化解析", "", "## 基础信息", *meta_lines]
+        section_ids = (evidence_map or {}).get("sections")
+        figure_ids = (evidence_map or {}).get("figures")
+        if section_ids or figure_ids:
+            body.extend(["", "## 证据索引"])
+            for section_key, evidence_id in (section_ids or {}).items():
+                body.append(f"- **{evidence_id}**：{self._localized_section_name(section_key)}")
+            for figure_id in figure_ids or []:
+                body.append(f"- **{figure_id}**：图表证据 ID")
         if figures:
             body.extend(["", "## 图表元数据"])
             for figure in figures:

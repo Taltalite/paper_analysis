@@ -16,6 +16,8 @@ class TimestampedLogWriter(io.TextIOBase):
     def write(self, text: str) -> int:
         if not text:
             return 0
+        if self._stream.closed:
+            return len(text)
         self._buffer += text
         while "\n" in self._buffer:
             line, self._buffer = self._buffer.split("\n", 1)
@@ -23,15 +25,24 @@ class TimestampedLogWriter(io.TextIOBase):
         return len(text)
 
     def flush(self) -> None:
+        if self._stream.closed:
+            self._buffer = ""
+            return
         if self._buffer:
             self._emit(self._buffer)
             self._buffer = ""
-        self._stream.flush()
+        try:
+            self._stream.flush()
+        except ValueError:
+            # 底层流可能在清理阶段被提前关闭，此时静默丢弃残余缓冲。
+            self._buffer = ""
 
     def isatty(self) -> bool:
         return False
 
     def _emit(self, line: str) -> None:
+        if self._stream.closed:
+            return
         timestamp = datetime.now().astimezone().isoformat(timespec="seconds")
         self._stream.write(f"{timestamp} {line}\n")
 

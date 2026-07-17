@@ -3,13 +3,11 @@ from paper_analysis.runtime.crews.research.document_structuring import (
     DocumentStructuringRunner,
 )
 from paper_analysis.runtime.crews.research.figure_evidence_curator import (
-    CrewAIFigureEvidenceCuratorRunner,
     DeterministicFigureEvidenceCurator,
     FigureEvidenceCuratorRunner,
 )
 from paper_analysis.runtime.crews.research.figure_grounding import (
     AdapterFigureGroundingRunner,
-    CrewAIFigureGroundingRunner,
     FigureGroundingRunner,
 )
 from paper_analysis.runtime.crews.research.figure_analysis import (
@@ -25,10 +23,8 @@ __all__ = [
     "CrewAIDocumentStructuringRunner",
     "DocumentStructuringRunner",
     "AdapterFigureGroundingRunner",
-    "CrewAIFigureGroundingRunner",
     "FigureGroundingRunner",
     "DeterministicFigureEvidenceCurator",
-    "CrewAIFigureEvidenceCuratorRunner",
     "FigureEvidenceCuratorRunner",
     "CrewAIFigureAnalysisRunner",
     "FigureAnalysisRunner",

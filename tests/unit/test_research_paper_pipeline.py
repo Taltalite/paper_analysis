@@ -281,6 +281,166 @@ class ResearchPaperPipelineTest(unittest.TestCase):
 
         self.assertEqual(structuring_runner.calls, 0)
 
+    def test_pipeline_without_figures_skips_figure_stages(self) -> None:
+        runner = RecordingCrewRunner(AnalysisResult(summary="Summary"))
+        figure_grounding_runner = FakeFigureGroundingRunner()
+        figure_runner = FakeFigureRunner()
+        fact_check_runner = FakeFactCheckRunner()
+        pipeline = ResearchPaperPipeline(
+            crew_runner=runner,
+            figure_grounding_runner=figure_grounding_runner,
+            figure_evidence_curator=FakeFigureEvidenceCurator(),
+            figure_runner=figure_runner,
+            fact_check_runner=fact_check_runner,
+        )
+        document = ParsedDocument(
+            title="No Figure Paper",
+            raw_text="Abstract and method without figures.",
+            sections={"abstract": "Abstract", "method": "Method"},
+            section_order=["abstract", "method"],
+            metadata={"parser_kind": "pdf", "ordered_blocks": []},
+        )
+
+        result = asyncio.run(pipeline.run(document))
+
+        self.assertEqual(figure_grounding_runner.received_figures, [])
+        self.assertEqual(figure_runner.received_evidences, [])
+        self.assertEqual(fact_check_runner.received_figure_analyses, [])
+        self.assertEqual(result.structured_data["figure_analyses"], [])
+        self.assertIn("## 6. 图表分析", result.markdown_report)
+
+    def test_pipeline_with_multiple_figures_limits_selection_to_four(self) -> None:
+        runner = RecordingCrewRunner(AnalysisResult(summary="Summary"))
+        figure_grounding_runner = FakeFigureGroundingRunner()
+        pipeline = ResearchPaperPipeline(
+            crew_runner=runner,
+            figure_grounding_runner=figure_grounding_runner,
+            figure_evidence_curator=FakeFigureEvidenceCurator(),
+            figure_runner=FakeFigureRunner(),
+            fact_check_runner=FakeFactCheckRunner(),
+        )
+        figures = [
+            FigureMetadata(
+                figure_id=f"Figure {index}",
+                caption=f"Figure {index} shows accuracy results for variant {index}.",
+                page_number=index,
+                referenced_text_spans=[f"As shown in Figure {index}, results improve."],
+            )
+            for index in range(1, 7)
+        ]
+        document = ParsedDocument(
+            title="Multi Figure Paper",
+            raw_text="Abstract and method with many figures.",
+            sections={
+                "abstract": "Abstract",
+                "method": "Method",
+                "results": "Figure 1 Figure 2 Figure 3 Figure 4 Figure 5 Figure 6",
+            },
+            section_order=["abstract", "method", "results"],
+            figures=figures,
+            metadata={"parser_kind": "pdf", "ordered_blocks": []},
+        )
+
+        asyncio.run(pipeline.run(document))
+
+        self.assertEqual(len(figure_grounding_runner.received_figures), 4)
+
+
+class AsyncRecordingCrewRunner:
+    def __init__(self, result: AnalysisResult) -> None:
+        self._result = result
+        self.sync_calls = 0
+        self.async_calls = 0
+
+    def run(self, *, document: ParsedDocument, profile) -> AnalysisResult:  # noqa: ANN001
+        self.sync_calls += 1
+        return self._result
+
+    async def arun(self, *, document: ParsedDocument, profile) -> AnalysisResult:  # noqa: ANN001
+        self.async_calls += 1
+        return self._result
+
+
+class AsyncFakeFigureRunner(FakeFigureRunner):
+    def __init__(self) -> None:
+        super().__init__()
+        self.async_calls = 0
+
+    async def arun(self, *, document: ParsedDocument, figure_evidences: FigureEvidenceBatch) -> FigureAnalysisBatch:  # noqa: ANN001
+        self.async_calls += 1
+        return super().run(document=document, figure_evidences=figure_evidences)
+
+
+class ResearchPaperPipelineParallelTest(unittest.TestCase):
+    def test_parallel_stages_use_async_runners(self) -> None:
+        runner = AsyncRecordingCrewRunner(AnalysisResult(summary="Summary"))
+        figure_runner = AsyncFakeFigureRunner()
+        pipeline = ResearchPaperPipeline(
+            crew_runner=runner,
+            figure_grounding_runner=FakeFigureGroundingRunner(),
+            figure_evidence_curator=FakeFigureEvidenceCurator(),
+            figure_runner=figure_runner,
+            fact_check_runner=FakeFactCheckRunner(),
+            parallel_stages=True,
+        )
+        document = ParsedDocument(
+            title="Parallel Paper",
+            raw_text="Abstract and method.",
+            sections={"abstract": "Abstract", "method": "Method", "results": "Figure 1"},
+            section_order=["abstract", "method", "results"],
+            figures=[
+                FigureMetadata(
+                    figure_id="Figure 1",
+                    caption="Figure 1 shows accuracy results.",
+                    page_number=2,
+                    referenced_text_spans=["As shown in Figure 1, accuracy improves."],
+                )
+            ],
+            metadata={"parser_kind": "pdf", "ordered_blocks": []},
+        )
+
+        result = asyncio.run(pipeline.run(document))
+
+        self.assertEqual(runner.sync_calls, 0)
+        self.assertEqual(runner.async_calls, 1)
+        self.assertEqual(figure_runner.async_calls, 1)
+        self.assertIn("# 文献分析报告", result.markdown_report)
+        self.assertEqual(len(result.structured_data["figure_analyses"]), 1)
+        self.assertIn("fact_check_rule_flags", result.structured_data)
+
+    def test_parallel_stages_fall_back_to_sync_runners(self) -> None:
+        runner = RecordingCrewRunner(AnalysisResult(summary="Summary"))
+        figure_runner = FakeFigureRunner()
+        pipeline = ResearchPaperPipeline(
+            crew_runner=runner,
+            figure_grounding_runner=FakeFigureGroundingRunner(),
+            figure_evidence_curator=FakeFigureEvidenceCurator(),
+            figure_runner=figure_runner,
+            fact_check_runner=FakeFactCheckRunner(),
+            parallel_stages=True,
+        )
+        document = ParsedDocument(
+            title="Parallel Fallback Paper",
+            raw_text="Abstract and method.",
+            sections={"abstract": "Abstract", "method": "Method", "results": "Figure 1"},
+            section_order=["abstract", "method", "results"],
+            figures=[
+                FigureMetadata(
+                    figure_id="Figure 1",
+                    caption="Figure 1 shows accuracy results.",
+                    page_number=2,
+                    referenced_text_spans=["As shown in Figure 1, accuracy improves."],
+                )
+            ],
+            metadata={"parser_kind": "pdf", "ordered_blocks": []},
+        )
+
+        result = asyncio.run(pipeline.run(document))
+
+        self.assertIsNotNone(runner.received_document)
+        self.assertEqual(len(figure_runner.received_evidences), 1)
+        self.assertIn("# 文献分析报告", result.markdown_report)
+
 
 if __name__ == "__main__":
     unittest.main()

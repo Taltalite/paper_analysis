@@ -1,5 +1,13 @@
+from __future__ import annotations
+
+import os
+
+from paper_analysis.adapters.llm.base import VisionLLMClient
 from paper_analysis.adapters.llm.factory import create_llm_client_from_env
 from paper_analysis.adapters.parser.mcp_figure_semantics import NoopFigureSemanticExtractor
+from paper_analysis.adapters.parser.multimodal_figure_semantics import (
+    MultimodalFigureSemanticExtractor,
+)
 from paper_analysis.adapters.parser.pdf import PdfParser
 from paper_analysis.adapters.parser.plain_text import PlainTextParser
 from paper_analysis.adapters.storage.local_fs import LocalFilesystemArtifactStorage
@@ -22,13 +30,21 @@ def build_default_analysis_service() -> AnalysisService:
     llm_client = create_llm_client_from_env()
     crew_runner = CrewAITextUnderstandingRunner(llm_client=llm_client, verbose=True)
     structuring_runner = CrewAIDocumentStructuringRunner(llm_client=llm_client, verbose=True)
-    figure_semantic_extractor = NoopFigureSemanticExtractor()
+    if isinstance(llm_client, VisionLLMClient) and llm_client.vision_model:
+        figure_semantic_extractor = MultimodalFigureSemanticExtractor(vision_client=llm_client)
+    else:
+        figure_semantic_extractor = NoopFigureSemanticExtractor()
     figure_grounding_runner = AdapterFigureGroundingRunner(
         extractor=figure_semantic_extractor,
     )
     figure_evidence_curator = DeterministicFigureEvidenceCurator()
     figure_runner = CrewAIFigureAnalysisRunner(llm_client=llm_client, verbose=True)
     fact_check_runner = CrewAIFactCheckRunner(llm_client=llm_client, verbose=True)
+    parallel_stages = os.getenv("PAPER_ANALYSIS_PARALLEL_STAGES", "").strip().lower() in {
+        "1",
+        "true",
+        "yes",
+    }
     runtime = CrewAIRuntime(
         general_text_pipeline=GeneralTextPipeline(crew_runner=crew_runner),
         research_paper_pipeline=ResearchPaperPipeline(
@@ -38,6 +54,7 @@ def build_default_analysis_service() -> AnalysisService:
             figure_evidence_curator=figure_evidence_curator,
             figure_runner=figure_runner,
             fact_check_runner=fact_check_runner,
+            parallel_stages=parallel_stages,
         ),
     )
     return AnalysisService(

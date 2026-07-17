@@ -7,6 +7,7 @@ class ClaimEvidence(BaseModel):
     category: str = ""
     source_sections: list[str] = Field(default_factory=list)
     evidence: list[str] = Field(default_factory=list)
+    evidence_ids: list[str] = Field(default_factory=list)
     confidence: str = "不足以判断"
 
 
@@ -144,6 +145,7 @@ class FactCheckItem(BaseModel):
     claim_source: str = "text"
     verdict: str = "unverifiable"
     evidence_refs: list[str] = Field(default_factory=list)
+    evidence_ids: list[str] = Field(default_factory=list)
     rationale: str = ""
     confidence: str = "不足以判断"
 
@@ -151,6 +153,7 @@ class FactCheckItem(BaseModel):
 class FactCheckBatch(BaseModel):
     checks: list[FactCheckItem] = Field(default_factory=list)
     overall_assessment: str = ""
+    rule_flags: list[str] = Field(default_factory=list)
 
 
 class TextAnalysisSections(BaseModel):

@@ -16,6 +16,7 @@ from paper_analysis.domain.models import (
     FigureEvidence,
 )
 from paper_analysis.domain.schemas import AnalysisResult, ParsedDocument
+from paper_analysis.runtime.pipelines.fact_check_prechecks import run_fact_check_prechecks
 from paper_analysis.tools import PaperKeywordSearchTool, PaperSectionExtractorTool
 
 
@@ -66,8 +67,17 @@ class CrewAIFactCheckRunner:
         )
         if not claims:
             return FactCheckBatch(overall_assessment="没有可供核验的明确主张。")
+        rule_flags = run_fact_check_prechecks(
+            document=document,
+            claims=claims,
+            figure_evidence=figure_evidence,
+        )
         if self._llm_client is None:
-            return self._fallback_batch(claims=claims, reason="未配置 LLM，未执行语义事实检查")
+            return self._fallback_batch(
+                claims=claims,
+                reason="未配置 LLM，未执行语义事实检查",
+                rule_flags=rule_flags,
+            )
 
         agent = Agent(
             role=f"论文事实检查助手：{document.title or '未命名文档'}",
@@ -86,6 +96,7 @@ class CrewAIFactCheckRunner:
                 document=document,
                 claims=claims,
                 figure_evidence=figure_evidence,
+                rule_flags=rule_flags,
             ),
             expected_output=(
                 "严格的 FactCheckBatch JSON；每条主张使用 supported、partially_supported、"
@@ -101,10 +112,10 @@ class CrewAIFactCheckRunner:
                 process=Process.sequential,
                 verbose=self._verbose,
             ).kickoff()
-            return self._coerce_output(result=result, claims=claims)
+            return self._coerce_output(result=result, claims=claims, rule_flags=rule_flags)
         except Exception as exc:
             logger.warning("事实检查 agent 执行失败，回退到未核验结果：%s", exc)
-            return self._fallback_batch(claims=claims, reason=str(exc))
+            return self._fallback_batch(claims=claims, reason=str(exc), rule_flags=rule_flags)
 
     @classmethod
     def _collect_claims(
@@ -157,6 +168,7 @@ class CrewAIFactCheckRunner:
                     category="figure_claim",
                     source_sections=[analysis.figure_id] if analysis.figure_id else [],
                     evidence=analysis.main_observations[:3],
+                    evidence_ids=[analysis.figure_id] if analysis.figure_id else [],
                     confidence=analysis.confidence,
                 )
             )
@@ -169,6 +181,7 @@ class CrewAIFactCheckRunner:
         document: ParsedDocument,
         claims: list[ClaimEvidence],
         figure_evidence: list[FigureEvidence],
+        rule_flags: list[str],
     ) -> str:
         source_text = cls._source_excerpt(document)
         claims_json = json.dumps(
@@ -181,6 +194,7 @@ class CrewAIFactCheckRunner:
             ensure_ascii=False,
             indent=2,
         )
+        flags_text = "\n".join(f"- {flag}" for flag in rule_flags) or "- 无"
         return (
             f'请核验题为“{document.title or "未命名文档"}”的分析主张。\n\n'
             "判定含义：\n"
@@ -193,10 +207,13 @@ class CrewAIFactCheckRunner:
             f"{claims_json}\n\n"
             "图表证据：\n"
             f"{figures_json}\n\n"
+            "规则预检查提示（确定性规则产出，供参考）：\n"
+            f"{flags_text}\n\n"
             "论文证据摘录：\n"
             f"{source_text}\n\n"
-            "逐条输出 claim_id、claim、claim_source、verdict、evidence_refs、rationale、confidence。\n"
-            "evidence_refs 应引用章节名、Figure ID 或简短原文片段；不要引入当前材料之外的事实。\n"
+            "逐条输出 claim_id、claim、claim_source、verdict、evidence_refs、evidence_ids、rationale、confidence。\n"
+            "evidence_refs 应引用章节名、Figure ID 或简短原文片段；evidence_ids 优先引用证据索引中的稳定 ID"
+            "（章节 S1..Sn、图表沿用 Figure ID）；不要引入当前材料之外的事实。\n"
             "说明性内容使用简体中文，最终只输出 JSON。"
         )
 
@@ -211,13 +228,17 @@ class CrewAIFactCheckRunner:
             "discussion",
             "conclusion",
         )
+        evidence_map = document.metadata.get("evidence_map")
+        section_ids = evidence_map.get("sections", {}) if isinstance(evidence_map, dict) else {}
         chunks: list[str] = []
         total = 0
         for section in priority:
             content = document.sections.get(section, "").strip()
             if not content:
                 continue
-            chunk = f"## {section}\n{content}"
+            evidence_id = section_ids.get(section)
+            header = f"## {section}（证据ID: {evidence_id}）" if evidence_id else f"## {section}"
+            chunk = f"{header}\n{content}"
             remaining = 16000 - total
             if remaining <= 0:
                 break
@@ -231,21 +252,22 @@ class CrewAIFactCheckRunner:
         *,
         result: object,
         claims: list[ClaimEvidence],
+        rule_flags: list[str],
     ) -> FactCheckBatch:
         structured = getattr(result, "pydantic", None)
         if isinstance(structured, FactCheckBatch):
-            return cls._sanitize_batch(structured)
+            return cls._sanitize_batch(structured, rule_flags=rule_flags)
         if isinstance(structured, dict):
-            return cls._sanitize_batch(FactCheckBatch.model_validate(structured))
+            return cls._sanitize_batch(FactCheckBatch.model_validate(structured), rule_flags=rule_flags)
         maybe_dict = getattr(result, "to_dict", None)
         if callable(maybe_dict):
             payload = maybe_dict()
             if isinstance(payload, dict):
-                return cls._sanitize_batch(FactCheckBatch.model_validate(payload))
-        return cls._fallback_batch(claims=claims, reason="模型未返回结构化事实检查结果")
+                return cls._sanitize_batch(FactCheckBatch.model_validate(payload), rule_flags=rule_flags)
+        return cls._fallback_batch(claims=claims, reason="模型未返回结构化事实检查结果", rule_flags=rule_flags)
 
     @classmethod
-    def _sanitize_batch(cls, batch: FactCheckBatch) -> FactCheckBatch:
+    def _sanitize_batch(cls, batch: FactCheckBatch, *, rule_flags: list[str]) -> FactCheckBatch:
         checks: list[FactCheckItem] = []
         for item in batch.checks[:20]:
             verdict = cls._sanitize_text(item.verdict, max_length=40).lower()
@@ -262,6 +284,11 @@ class CrewAIFactCheckRunner:
                         for value in item.evidence_refs[:6]
                         if cls._sanitize_text(value, max_length=240)
                     ],
+                    evidence_ids=[
+                        cls._sanitize_text(value, max_length=60)
+                        for value in item.evidence_ids[:8]
+                        if cls._sanitize_text(value, max_length=60)
+                    ],
                     rationale=cls._sanitize_text(item.rationale, max_length=400),
                     confidence=cls._sanitize_text(item.confidence, max_length=40) or "不足以判断",
                 )
@@ -269,6 +296,7 @@ class CrewAIFactCheckRunner:
         return FactCheckBatch(
             checks=checks,
             overall_assessment=cls._sanitize_text(batch.overall_assessment, max_length=600),
+            rule_flags=[cls._sanitize_text(flag, max_length=240) for flag in rule_flags[:30] if flag],
         )
 
     @classmethod
@@ -277,6 +305,7 @@ class CrewAIFactCheckRunner:
         *,
         claims: list[ClaimEvidence],
         reason: str,
+        rule_flags: list[str] | None = None,
     ) -> FactCheckBatch:
         rendered_reason = cls._sanitize_text(reason, max_length=240)
         return FactCheckBatch(
@@ -287,12 +316,14 @@ class CrewAIFactCheckRunner:
                     claim_source=("figure" if claim.category == "figure_claim" else "text"),
                     verdict="unverifiable",
                     evidence_refs=[*claim.source_sections, *claim.evidence][:6],
+                    evidence_ids=claim.evidence_ids[:8],
                     rationale=f"当前未完成语义核验：{rendered_reason}",
                     confidence="不足以判断",
                 )
                 for claim in claims
             ],
             overall_assessment=f"事实检查未完整执行：{rendered_reason}",
+            rule_flags=list(rule_flags or []),
         )
 
     @staticmethod

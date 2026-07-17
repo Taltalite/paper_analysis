@@ -43,7 +43,7 @@
 
 `document_structuring` 不再作为常驻核心 agent。它是条件式结构修复任务，仅在标题、摘要、核心章节或 figure caption 缺失，或 parser 明确标记低置信度时触发。
 
-原 `reader + analyst` 已合并为 `text_understanding`；原 `figure_grounding` 的低层抽取改由 adapter 负责，`figure_evidence_curator` 改为确定性合并逻辑，不再分别消耗 LLM 调用。旧 runner 暂时保留用于兼容已有注入代码，但默认服务不再装配它们。
+原 `reader + analyst` 已合并为 `text_understanding`；原 `figure_grounding` 的低层抽取改由 adapter 负责，`figure_evidence_curator` 改为确定性合并逻辑，不再分别消耗 LLM 调用。旧 runner 与 `ContentCrew` 等兼容实现已完成迁移并删除。
 
 PDF 文献分析的当前执行顺序为：
 
@@ -57,7 +57,7 @@ PDF 文献分析的当前执行顺序为：
 7. 使用 `fact_checker` 对正文与图表主张做统一内部证据核验。
 8. 输出最终 Markdown、JSON，以及 PDF 的结构化 Markdown 中间产物。
 
-当前默认 figure semantic adapter 仍是 `NoopFigureSemanticExtractor`，图表证据主要来自 caption、正文引用和 parser 关联的图片路径。真实视觉理解仍需接入 MCP 或其他多模态 adapter；系统会在证据不足时保守输出，不把路径字符串当成已经完成的视觉识别。
+默认情况下 figure semantic adapter 是 `NoopFigureSemanticExtractor`，图表证据主要来自 caption、正文引用和 parser 关联的图片路径。配置 `KIMI_VISION_MODEL`（或 `OPENAI_VISION_MODEL`）后会切换为 `MultimodalFigureSemanticExtractor`，通过多模态 LLM 对 figure crop 做真实视觉理解（OCR、坐标轴、图例、panel 拆分），抽取结果带缓存且失败时保守回退；系统不会把路径字符串当成已经完成的视觉识别。
 
 
 ### 后端与前端职责
@@ -134,27 +134,39 @@ cd ..
 
 ### LLM 环境变量
 
-当前已实现 `openai-compatible` 适配层。应用启动时会自动加载项目根目录下的 `.env`，也兼容当前 shell 已导出的环境变量；如果两边同时存在，优先使用当前 shell 环境变量。
+系统以 Kimi API 为主要 LLM 提供方，走 OpenAI 兼容协议；同时保留任意 OpenAI 兼容端点的回退配置。应用启动时会自动加载项目根目录下的 `.env`，也兼容当前 shell 已导出的环境变量；如果两边同时存在，优先使用当前 shell 环境变量。
 
-常用环境变量如下：
+Kimi 配置（推荐，任一 `KIMI_*` 变量存在即生效）：
+
+```bash
+KIMI_API_KEY="your-kimi-api-key"          # 必填
+KIMI_MODEL="kimi-k3"                       # 可选，默认 kimi-k3
+KIMI_BASE_URL="https://api.moonshot.cn/v1" # 可选，默认 api.moonshot.cn
+KIMI_TEMPERATURE="0.2"                     # 可选
+KIMI_VISION_MODEL="moonshot-v1-32k-vision-preview" # 可选，启用真实图表视觉理解
+```
+
+- 不设置 `KIMI_VISION_MODEL` 时，图表语义回退为基于 caption 的保守模式。
+- 视觉模型需选用账号可用的 vision 型号（如 `moonshot-v1-*-vision-preview` 或其他多模态 Kimi 模型）。
+
+OpenAI 兼容回退（未设置任何 `KIMI_*` 时生效，行为与之前版本一致）：
 
 ```bash
 OPENAI_API_KEY="your-api-key"
 OPENAI_BASE_URL="https://your-compatible-endpoint"
 OPENAI_MODEL="your-model-name"
+OPENAI_VISION_MODEL="your-vision-model"    # 可选
 ```
 
-如果你更习惯手工导出，也可以：
+如果检测到已配置模型但缺少对应 API Key（`KIMI_API_KEY` 或 `OPENAI_API_KEY`），后端会在启动阶段直接报中文错误，而不是等到任务执行时才失败。
+
+其他可选开关：
 
 ```bash
-export OPENAI_API_KEY="your-api-key"
-export OPENAI_BASE_URL="https://your-compatible-endpoint"
-export OPENAI_MODEL="your-model-name"
+PAPER_ANALYSIS_PARALLEL_STAGES=1  # 正文理解与图表分析两个 LLM 阶段并行（默认串行）
 ```
 
-如果检测到已配置 `OPENAI_MODEL` 但缺少 `OPENAI_API_KEY`，后端会在启动阶段直接报中文错误，而不是等到任务执行时才失败。
-
-如果你的运行环境需要代理，也请在当前 shell 中提前设置代理变量。
+如果你的运行环境需要代理，也请在当前 shell 中提前设置代理变量；`scripts/run.sh` 默认已把 `api.moonshot.cn` / `api.moonshot.ai` 加入 `NO_PROXY`。
 
 ### 应用配置文件
 

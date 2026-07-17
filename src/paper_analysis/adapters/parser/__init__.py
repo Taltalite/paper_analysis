@@ -4,6 +4,9 @@ from paper_analysis.adapters.parser.mcp_figure_semantics import (
     MCPFigureSemanticExtractor,
     NoopFigureSemanticExtractor,
 )
+from paper_analysis.adapters.parser.multimodal_figure_semantics import (
+    MultimodalFigureSemanticExtractor,
+)
 from paper_analysis.adapters.parser.pdf import PdfParser
 from paper_analysis.adapters.parser.plain_text import PlainTextParser
 
@@ -12,6 +15,7 @@ __all__ = [
     "FigureSemanticExtractor",
     "NoopFigureSemanticExtractor",
     "MCPFigureSemanticExtractor",
+    "MultimodalFigureSemanticExtractor",
     "PdfParser",
     "PlainTextParser",
 ]

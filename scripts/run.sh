@@ -21,7 +21,7 @@ export https_proxy="${https_proxy:-$HTTPS_PROXY}"
 unset ALL_PROXY || true
 unset all_proxy || true
 
-export NO_PROXY="${NO_PROXY:-127.0.0.1,localhost,::1}"
+export NO_PROXY="${NO_PROXY:-127.0.0.1,localhost,::1,api.moonshot.cn,api.moonshot.ai}"
 export no_proxy="${no_proxy:-$NO_PROXY}"
 
 uv run kickoff

@@ -41,12 +41,45 @@ class CrewAIFigureAnalysisRunner:
         document: ParsedDocument,
         figure_evidences: FigureEvidenceBatch,
     ) -> FigureAnalysisBatch:
+        prepared = self._prepare(figure_evidences)
+        if isinstance(prepared, FigureAnalysisBatch):
+            return prepared
+        try:
+            result = self._build_crew(document=document, evidence_batch=prepared).kickoff()
+            return self._coerce_output(result=result, evidences=prepared.evidences)
+        except Exception as exc:
+            logger.warning("Figure analysis crew 执行失败，回退到保守结果：%s", exc)
+            return self._fallback_batch(evidences=prepared.evidences, reason=str(exc))
+
+    async def arun(
+        self,
+        *,
+        document: ParsedDocument,
+        figure_evidences: FigureEvidenceBatch,
+    ) -> FigureAnalysisBatch:
+        prepared = self._prepare(figure_evidences)
+        if isinstance(prepared, FigureAnalysisBatch):
+            return prepared
+        try:
+            result = await self._build_crew(document=document, evidence_batch=prepared).kickoff_async()
+            return self._coerce_output(result=result, evidences=prepared.evidences)
+        except Exception as exc:
+            logger.warning("Figure analysis crew 异步执行失败，回退到保守结果：%s", exc)
+            return self._fallback_batch(evidences=prepared.evidences, reason=str(exc))
+
+    def _prepare(
+        self,
+        figure_evidences: FigureEvidenceBatch,
+    ) -> FigureEvidenceBatch | FigureAnalysisBatch:
+        """返回待分析的 evidence batch；若无需 LLM 调用则直接返回可交付的 FigureAnalysisBatch。"""
         if not figure_evidences.evidences:
             return FigureAnalysisBatch()
         cleaned_evidence = self._sanitize_batch(figure_evidences)
         if self._llm_client is None:
             return self._fallback_batch(evidences=cleaned_evidence.evidences, reason="未配置 LLM")
+        return cleaned_evidence
 
+    def _build_crew(self, *, document: ParsedDocument, evidence_batch: FigureEvidenceBatch) -> Crew:
         analyst = Agent(
             role=f"论文图表分析助手：{document.title or '未命名文档'}",
             goal=(
@@ -61,24 +94,19 @@ class CrewAIFigureAnalysisRunner:
             llm=self._build_llm(),
         )
         task = Task(
-            description=self._build_task_description(document=document, evidence_batch=cleaned_evidence),
+            description=self._build_task_description(document=document, evidence_batch=evidence_batch),
             expected_output=(
                 "一个严格 JSON 对象，顶层键为 analyses。字段键名保持英文，字段值中的说明性内容使用简体中文。不要输出代码块。"
             ),
             agent=analyst,
             output_pydantic=FigureAnalysisBatch,
         )
-        try:
-            result = Crew(
-                agents=[analyst],
-                tasks=[task],
-                process=Process.sequential,
-                verbose=self._verbose,
-            ).kickoff()
-            return self._coerce_output(result=result, evidences=cleaned_evidence.evidences)
-        except Exception as exc:
-            logger.warning("Figure analysis crew 执行失败，回退到保守结果：%s", exc)
-            return self._fallback_batch(evidences=cleaned_evidence.evidences, reason=str(exc))
+        return Crew(
+            agents=[analyst],
+            tasks=[task],
+            process=Process.sequential,
+            verbose=self._verbose,
+        )
 
     def _build_llm(self):
         if self._llm_client is None:

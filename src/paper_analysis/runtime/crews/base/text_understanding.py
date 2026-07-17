@@ -1,11 +1,18 @@
 from __future__ import annotations
 
+from typing import Protocol
+
 from crewai import Agent, Crew, Process, Task
 
 from paper_analysis.adapters.llm.base import LLMClient
 from paper_analysis.domain.schemas import AnalysisResult, ParsedDocument
 from paper_analysis.runtime.pipelines.profiles import TextAnalysisProfile
 from paper_analysis.tools import PaperKeywordSearchTool, PaperSectionExtractorTool
+
+
+class TextAnalysisCrewRunner(Protocol):
+    def run(self, *, document: ParsedDocument, profile: TextAnalysisProfile) -> AnalysisResult:
+        ...
 
 
 class CrewAITextUnderstandingRunner:
@@ -21,6 +28,16 @@ class CrewAITextUnderstandingRunner:
         self._verbose = verbose
 
     def run(self, *, document: ParsedDocument, profile: TextAnalysisProfile) -> AnalysisResult:
+        crew = self._build_crew(document=document, profile=profile)
+        result = crew.kickoff()
+        return self._coerce_output(result)
+
+    async def arun(self, *, document: ParsedDocument, profile: TextAnalysisProfile) -> AnalysisResult:
+        crew = self._build_crew(document=document, profile=profile)
+        result = await crew.kickoff_async()
+        return self._coerce_output(result)
+
+    def _build_crew(self, *, document: ParsedDocument, profile: TextAnalysisProfile) -> Crew:
         agent = Agent(
             role=f"{profile.analyst_role}：{document.title or '未命名文档'}",
             goal=(
@@ -47,13 +64,12 @@ class CrewAITextUnderstandingRunner:
             agent=agent,
             output_pydantic=AnalysisResult,
         )
-        result = Crew(
+        return Crew(
             agents=[agent],
             tasks=[task],
             process=Process.sequential,
             verbose=self._verbose,
-        ).kickoff()
-        return self._coerce_output(result)
+        )
 
     def _build_llm(self):
         if self._llm_client is None:
@@ -72,9 +88,11 @@ class CrewAITextUnderstandingRunner:
         rules = "\n".join(
             f"- {item}" for item in (*profile.reader_rules, *profile.analyst_rules)
         )
+        evidence_section = CrewAITextUnderstandingRunner._build_evidence_section(document)
         return (
             f'请理解并分析题为“{document.title or "未命名文档"}”的文本。\n\n'
             f"原文内容：\n{document.raw_text}\n\n"
+            f"{evidence_section}"
             "请在一次分析中完成：\n"
             "- 提取元数据、研究问题、方法、实验设置和主要结果\n"
             "- 总结创新点、优点、局限性和复现信息\n"
@@ -87,7 +105,25 @@ class CrewAITextUnderstandingRunner:
             "规则：\n"
             f"{rules}\n"
             "claims 中每条证据必须能够回到当前输入定位；没有证据的判断不要写成已证实事实。"
+            "每条核心 claim 必须在 evidence_ids 字段引用可用的证据 ID；"
+            "确实无法定位证据的 claim，将 evidence_ids 留空并在 confidence 中标注“低”。"
         )
+
+    @staticmethod
+    def _build_evidence_section(document: ParsedDocument) -> str:
+        evidence_map = document.metadata.get("evidence_map")
+        if not isinstance(evidence_map, dict):
+            return ""
+        section_ids = evidence_map.get("sections")
+        figure_ids = evidence_map.get("figures")
+        if not section_ids and not figure_ids:
+            return ""
+        lines = ["可用证据 ID（claims 的 evidence_ids 字段应引用这些 ID）："]
+        for section_key, evidence_id in (section_ids or {}).items():
+            lines.append(f"- {evidence_id} = 章节 {section_key}")
+        for figure_id in figure_ids or []:
+            lines.append(f"- {figure_id} = 图表证据 ID")
+        return "\n".join(lines) + "\n\n"
 
     @staticmethod
     def _coerce_output(result: object) -> AnalysisResult:

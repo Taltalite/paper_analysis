@@ -24,6 +24,18 @@ class GeneralTextPipeline(AnalysisPipeline):
 
     async def run(self, document: ParsedDocument) -> AnalysisResult:
         result = self._crew_runner.run(document=document, profile=self._profile)
+        return self._post_process(result=result, document=document)
+
+    async def arun(self, document: ParsedDocument) -> AnalysisResult:
+        """异步变体：runner 提供 arun 时走原生异步，否则回退同步调用。"""
+        arun = getattr(self._crew_runner, "arun", None)
+        if callable(arun):
+            result = await arun(document=document, profile=self._profile)
+        else:
+            result = self._crew_runner.run(document=document, profile=self._profile)
+        return self._post_process(result=result, document=document)
+
+    def _post_process(self, *, result: AnalysisResult, document: ParsedDocument) -> AnalysisResult:
         if self._looks_like_paper_result(result):
             result.structured_data = self._normalize_paper_structured_data(result.structured_data)
         if not result.title:
