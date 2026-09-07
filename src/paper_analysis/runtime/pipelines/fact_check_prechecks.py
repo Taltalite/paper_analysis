@@ -51,6 +51,12 @@ def _build_haystack(
         chunks.extend(evidence.direct_evidence)
         chunks.extend(evidence.referenced_text_spans)
         chunks.extend(evidence.metrics_or_axes)
+        chunks.extend(evidence.visible_text)
+        chunks.extend(evidence.legend_items)
+        for panel in evidence.panels:
+            chunks.extend(panel.visible_text)
+            chunks.extend(panel.axes)
+            chunks.append(panel.summary)
     return "\n".join(chunks)
 
 

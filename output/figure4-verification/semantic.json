@@ -1,0 +1,217 @@
+{
+  "artifacts": [
+    {
+      "figure_id": "Figure 4",
+      "page_number": 8,
+      "figure_type": "result_figure",
+      "extraction_source": "multimodal_llm",
+      "page_snapshot_path": "ref_baseline/.paper_analysis_assets/s41467-025-64293-2/pages/page_8.png",
+      "image_block_paths": [
+        "ref_baseline/.paper_analysis_assets/s41467-025-64293-2/pages/page_7.png",
+        "ref_baseline/.paper_analysis_assets/s41467-025-64293-2/pages/page_8.png"
+      ],
+      "crop_path": "ref_baseline/.paper_analysis_assets/s41467-025-64293-2/pages/page_7.png",
+      "visible_text": [
+        "Readfish",
+        "CNN (Porcupine)",
+        "ORCtrl with domain adaptation",
+        "10 minutes",
+        "60 minutes",
+        "30 minutes",
+        "180 minutes",
+        "This work",
+        "Readfish method",
+        "Porcupine method",
+        "Access purity",
+        "Target decode ratio",
+        "Time (minutes)",
+        "60 Minutes",
+        "Avg. read counts",
+        "Total read counts",
+        "Non-target",
+        "Target",
+        "Random access",
+        "(adaptive sampling)",
+        "On",
+        "Off",
+        "Yield (reads / minute)",
+        "Channel 1-256",
+        "Channel 257-512",
+        "Target reads yield ratio"
+      ],
+      "axes": [
+        "panel d: x=Time (minutes), y=Access purity",
+        "panel e: x=Time (minutes), y=Target decode ratio",
+        "panel f left: x=Avg. read counts, y=method category (Readfish/Porcupine/ORCtrl)",
+        "panel f right: x=Total read counts, y=method category (Readfish/Porcupine/ORCtrl)",
+        "panel g upper: y=Yield (reads / minute), x=time axis shared/not clearly labeled",
+        "panel g lower: x=Time (minutes), y=Target reads yield ratio"
+      ],
+      "legend_items": [
+        "Non-target",
+        "Target",
+        "Channel 1-256",
+        "Channel 257-512"
+      ],
+      "panels": [
+        {
+          "panel_id": "Figure 4_a",
+          "panel_label": "a",
+          "panel_type": "result_figure",
+          "summary": "Readfish 条件下两张文档式解码结果缩略图，10 minutes 与 60 minutes 下方均为红色叉号，视觉上表示未成功解码/未达到目标。",
+          "visible_text": [
+            "a",
+            "Readfish",
+            "10 minutes",
+            "60 minutes"
+          ],
+          "axes": [],
+          "legend_items": [],
+          "confidence": "中"
+        },
+        {
+          "panel_id": "Figure 4_b",
+          "panel_label": "b",
+          "panel_type": "result_figure",
+          "summary": "CNN (Porcupine) 条件下两张文档式解码结果缩略图，10 minutes 与 60 minutes 下方均为黄色圆形符号，视觉上表示部分成功或中间状态。",
+          "visible_text": [
+            "b",
+            "CNN (Porcupine)",
+            "10 minutes",
+            "60 minutes"
+          ],
+          "axes": [],
+          "legend_items": [],
+          "confidence": "中"
+        },
+        {
+          "panel_id": "Figure 4_c",
+          "panel_label": "c",
+          "panel_type": "result_figure",
+          "summary": "ORCtrl with domain adaptation 下四张文档式结果缩略图，10/30/60/180 minutes 下方均为绿色对勾，视觉上表示各时间点均可成功解码；右侧附近有少量黑色小方块标记，含义不完全明确。",
+          "visible_text": [
+            "c",
+            "ORCtrl with domain adaptation",
+            "10 minutes",
+            "30 minutes",
+            "60 minutes",
+            "180 minutes"
+          ],
+          "axes": [],
+          "legend_items": [],
+          "confidence": "中"
+        },
+        {
+          "panel_id": "Figure 4_d",
+          "panel_label": "d",
+          "panel_type": "line_chart",
+          "summary": "Access purity 随 Time (minutes) 变化；This work 星形曲线维持在接近 1.0，Readfish method 圆点曲线约 0.9 后略降，Porcupine method 三角曲线明显下降至约 0.3。",
+          "visible_text": [
+            "d",
+            "Access purity",
+            "Time (minutes)",
+            "This work",
+            "Readfish method",
+            "Porcupine method"
+          ],
+          "axes": [
+            "x: Time (minutes)",
+            "y: Access purity"
+          ],
+          "legend_items": [],
+          "confidence": "高"
+        },
+        {
+          "panel_id": "Figure 4_e",
+          "panel_label": "e",
+          "panel_type": "line_chart",
+          "summary": "Target decode ratio 随 Time (minutes) 变化；This work 三角曲线接近 1.0，Porcupine method 三角曲线约 0.85–0.9，Readfish method 圆点曲线从约 0.65 升至约 0.79 后趋平。",
+          "visible_text": [
+            "e",
+            "Target decode ratio",
+            "Time (minutes)",
+            "This work",
+            "Porcupine method",
+            "Readfish method"
+          ],
+          "axes": [
+            "x: Time (minutes)",
+            "y: Target decode ratio"
+          ],
+          "legend_items": [],
+          "confidence": "高"
+        },
+        {
+          "panel_id": "Figure 4_f",
+          "panel_label": "f",
+          "panel_type": "bar_chart",
+          "summary": "60 Minutes 下比较 Readfish、Porcupine、ORCtrl 的 Avg. read counts 与 Total read counts；橙色的 Target 与浅灰的 Non-target 成对显示，ORCtrl 的 Non-target 柱明显更低，Target 柱相对保留。",
+          "visible_text": [
+            "f",
+            "60 Minutes",
+            "Readfish",
+            "Porcupine",
+            "ORCtrl",
+            "Avg. read counts",
+            "Total read counts",
+            "Non-target",
+            "Target"
+          ],
+          "axes": [
+            "left x: Avg. read counts",
+            "right x: Total read counts",
+            "y: Readfish/Porcupine/ORCtrl"
+          ],
+          "legend_items": [
+            "Non-target",
+            "Target"
+          ],
+          "confidence": "高"
+        },
+        {
+          "panel_id": "Figure 4_g",
+          "panel_label": "g",
+          "panel_type": "line_chart",
+          "summary": "Random access (adaptive sampling) 的实时测序演示；上图 Yield 中 Channel 1-256 在 On 区段升高、Off 区段降低，Channel 257-512 基本维持高位；下图 Target reads yield ratio 仅在部分时间段出现尖峰。",
+          "visible_text": [
+            "g",
+            "Random access",
+            "(adaptive sampling)",
+            "On",
+            "Off",
+            "Yield (reads / minute)",
+            "Channel 1-256",
+            "Channel 257-512",
+            "Target reads yield ratio",
+            "Time (minutes)"
+          ],
+          "axes": [
+            "upper y: Yield (reads / minute)",
+            "lower x: Time (minutes)",
+            "lower y: Target reads yield ratio"
+          ],
+          "legend_items": [
+            "Channel 1-256",
+            "Channel 257-512"
+          ],
+          "confidence": "高"
+        }
+      ],
+      "direct_evidence": [
+        "panel a 的 10 minutes 与 60 minutes 下方均为红色叉号，panel b 对应位置为黄色圆形符号，panel c 的四个时间点均为绿色对勾。",
+        "panel d 中 This work 曲线位于接近 1.0 的高位，Readfish method 略低于 1.0，Porcupine method 随时间明显下降。",
+        "panel e 中 This work 接近 1.0，Porcupine method 居中，Readfish method 从较低值上升后进入平台。",
+        "panel f 中 ORCtrl 对应的 Non-target 柱明显短于 Readfish 与 Porcupine，而 Target 柱仍可见；图例显示灰色为 Non-target、橙色为 Target。",
+        "panel g 上图 Channel 1-256 的橙色曲线在 On/Off 切换下呈现开高关低，Channel 257-512 灰色曲线总体维持在较高读长产出；下图橙色目标产率比只在少数时间窗出现尖峰。"
+      ],
+      "uncertainties": [
+        "panel a–c 中文档缩略图内的正文过小，无法可靠 OCR，只能确认标题、时间标签和状态符号。",
+        "panel b 的黄色圆形符号内部细节不够清晰，不能确定是减号、圆点还是其他状态图标。",
+        "panel c 右侧黑色小方块标记的含义无法从图中直接判定。",
+        "panel d、e、f、g 的具体数值点/柱高无法精确读取，以上只描述相对趋势。",
+        "panel g 上图的 x 轴刻度未清晰显示，时间轴可能与其下方 Target reads yield ratio 图共享。"
+      ],
+      "confidence": "高"
+    }
+  ]
+}

@@ -105,6 +105,27 @@ class KimiLLMTest(unittest.TestCase):
         self.assertEqual(llm.base_url, "https://api.moonshot.ai/v1")
         self.assertEqual(llm.temperature, 0.5)
 
+    def test_kimi_code_endpoint_defaults_temperature_to_one(self) -> None:
+        env = {
+            "KIMI_API_KEY": "kimi-key",
+            "KIMI_BASE_URL": "https://api.kimi.com/coding/v1",
+        }
+        with patch.dict(os.environ, env, clear=True):
+            client = create_llm_client_from_env()
+
+        self.assertEqual(client.to_crewai_llm().temperature, 1.0)
+
+    def test_kimi_code_endpoint_respects_explicit_temperature(self) -> None:
+        env = {
+            "KIMI_API_KEY": "kimi-key",
+            "KIMI_BASE_URL": "https://api.kimi.com/coding/v1",
+            "KIMI_TEMPERATURE": "0.7",
+        }
+        with patch.dict(os.environ, env, clear=True):
+            client = create_llm_client_from_env()
+
+        self.assertEqual(client.to_crewai_llm().temperature, 0.7)
+
     def test_kimi_requires_api_key(self) -> None:
         with patch.dict(os.environ, {"KIMI_MODEL": "kimi-k3"}, clear=True):
             with self.assertRaisesRegex(ValueError, "缺少 KIMI_API_KEY"):
@@ -124,6 +145,16 @@ class KimiLLMTest(unittest.TestCase):
 
 
 class VisionLLMTest(unittest.TestCase):
+    def test_vision_timeout_configuration_and_validation(self) -> None:
+        env = {"KIMI_API_KEY": "test-key", "VISION_REQUEST_TIMEOUT": "240"}
+        with patch.dict(os.environ, env, clear=True):
+            client = create_llm_client_from_env()
+            self.assertEqual(client._request_timeout, 240)
+            for invalid in ("0", "-1", "nan", "inf", "oops"):
+                os.environ["VISION_REQUEST_TIMEOUT"] = invalid
+                with self.assertRaisesRegex(ValueError, "VISION_REQUEST_TIMEOUT"):
+                    create_llm_client_from_env()
+
     def test_complete_with_images_requires_vision_model(self) -> None:
         adapter = OpenAICompatibleLLM(model="kimi-k3", api_key="k", base_url="https://x/v1")
         with self.assertRaises(VisionNotConfiguredError):

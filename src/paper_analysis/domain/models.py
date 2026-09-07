@@ -42,6 +42,7 @@ class FigureMetadata(BaseModel):
     caption: str = ""
     page_number: int | None = None
     page_snapshot_path: str | None = None
+    context_page_snapshot_paths: list[str] = Field(default_factory=list)
     image_block_paths: list[str] = Field(default_factory=list)
     referenced_text_spans: list[str] = Field(default_factory=list)
     caption_block_ids: list[str] = Field(default_factory=list)
@@ -128,6 +129,9 @@ class FigureEvidence(BaseModel):
     figure_type: str = ""
     compared_items: list[str] = Field(default_factory=list)
     metrics_or_axes: list[str] = Field(default_factory=list)
+    visible_text: list[str] = Field(default_factory=list)
+    legend_items: list[str] = Field(default_factory=list)
+    panels: list[FigurePanel] = Field(default_factory=list)
     direct_evidence: list[str] = Field(default_factory=list)
     referenced_text_spans: list[str] = Field(default_factory=list)
     semantic_source: str = ""

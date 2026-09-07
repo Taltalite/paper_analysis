@@ -1,0 +1,43 @@
+{
+  "artifacts": [
+    {
+      "figure_id": "Figure 1",
+      "page_number": null,
+      "figure_type": "bar_chart",
+      "extraction_source": "multimodal_llm",
+      "page_snapshot_path": null,
+      "image_block_paths": [
+        "output/vision-verification/images/vision_probe.png"
+      ],
+      "crop_path": "output/vision-verification/images/vision_probe.png",
+      "visible_text": [
+        "Figure 1: Synthetic visual input test",
+        "Score",
+        "37",
+        "83",
+        "Alpha",
+        "Beta"
+      ],
+      "axes": [
+        "纵轴：Score",
+        "横轴：类别（Alpha、Beta）"
+      ],
+      "legend_items": [],
+      "panels": [],
+      "direct_evidence": [
+        "图为单面板柱状图，共两根柱子",
+        "蓝色柱子对应类别 Alpha，柱顶标注数值 37",
+        "橙色柱子对应类别 Beta，柱顶标注数值 83",
+        "纵轴标签为 Score，但图中未显示纵轴刻度线与刻度数值",
+        "横轴下方直接标注类别名 Alpha 和 Beta",
+        "Beta 柱子高度明显高于 Alpha 柱子"
+      ],
+      "uncertainties": [
+        "纵轴 Score 没有刻度数值，无法确认精确量程、单位或是否从 0 开始",
+        "图中无图例，蓝色与橙色的分组含义无法从图内确认",
+        "Alpha 与 Beta 的具体含义、所代表的方法或条件无法从图中确定"
+      ],
+      "confidence": "高"
+    }
+  ]
+}

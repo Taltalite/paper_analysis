@@ -157,6 +157,7 @@ class ResearchPaperPipeline(AnalysisPipeline):
         draft = self._coarse_structure_draft(document)
         if self._structuring_runner is not None and self._needs_structure_refinement(document):
             draft = self._structuring_runner.run(document=document)
+        draft.figures = self._restore_figure_assets(document.figures, draft.figures)
 
         title = draft.title or document.title
         merged_metadata = {
@@ -181,6 +182,35 @@ class ResearchPaperPipeline(AnalysisPipeline):
             figures=draft.figures or document.figures,
             metadata=merged_metadata,
         )
+
+    @staticmethod
+    def _restore_figure_assets(
+        originals: list[FigureMetadata], refined: list[FigureMetadata],
+    ) -> list[FigureMetadata]:
+        """结构修复只能更新文字；本地资产路径必须来自 parser，且不能丢失原图。"""
+        def key(figure: FigureMetadata) -> str:
+            return re.sub(r"^fig(?:ure)?\.?\s*", "figure", figure.figure_id.lower()).strip()
+
+        originals_by_id = {key(figure): figure for figure in originals}
+        merged: list[FigureMetadata] = []
+        seen: set[str] = set()
+        for figure in refined:
+            identifier = key(figure)
+            if identifier in seen:
+                continue
+            seen.add(identifier)
+            original = originals_by_id.get(identifier)
+            merged.append(figure.model_copy(update={
+                "figure_id": original.figure_id if original else figure.figure_id,
+                "page_number": original.page_number if original else figure.page_number,
+                "page_snapshot_path": original.page_snapshot_path if original else None,
+                "context_page_snapshot_paths": original.context_page_snapshot_paths if original else [],
+                "image_block_paths": original.image_block_paths if original else [],
+                "caption_block_ids": original.caption_block_ids if original else [],
+                "reference_block_ids": original.reference_block_ids if original else [],
+            }))
+        merged.extend(figure for figure in originals if key(figure) not in seen)
+        return merged
 
     def _run_figure_pipeline(
         self,

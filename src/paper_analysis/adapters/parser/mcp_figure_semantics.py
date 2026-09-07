@@ -30,13 +30,13 @@ class NoopFigureSemanticExtractor(FigureSemanticExtractor):
                 page_snapshot_path=figure.page_snapshot_path,
                 image_block_paths=figure.image_block_paths[:4],
                 crop_path=figure.image_block_paths[0] if figure.image_block_paths else None,
-                visible_text=self._visible_text(figure),
+                visible_text=[],  # 未读取像素，图注不能冒充 OCR 结果。
                 axes=self._infer_axes(figure),
                 legend_items=[],
                 panels=self._infer_panels(figure),
                 direct_evidence=self._direct_evidence(figure),
                 uncertainties=self._uncertainties(figure),
-                confidence="低" if not figure.image_block_paths else "中",
+                confidence="低",
             )
             for figure in figures
         ]

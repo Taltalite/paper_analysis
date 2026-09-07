@@ -57,7 +57,11 @@ PDF 文献分析的当前执行顺序为：
 7. 使用 `fact_checker` 对正文与图表主张做统一内部证据核验。
 8. 输出最终 Markdown、JSON，以及 PDF 的结构化 Markdown 中间产物。
 
-默认情况下 figure semantic adapter 是 `NoopFigureSemanticExtractor`，图表证据主要来自 caption、正文引用和 parser 关联的图片路径。配置 `KIMI_VISION_MODEL`（或 `OPENAI_VISION_MODEL`）后会切换为 `MultimodalFigureSemanticExtractor`，通过多模态 LLM 对 figure crop 做真实视觉理解（OCR、坐标轴、图例、panel 拆分），抽取结果带缓存且失败时保守回退；系统不会把路径字符串当成已经完成的视觉识别。
+未配置视觉模型时，figure semantic adapter 是 `NoopFigureSemanticExtractor`，只使用图注和正文线索，不产生 OCR 结果。配置 `KIMI_VISION_MODEL`（或 `OPENAI_VISION_MODEL`）后启用 `MultimodalFigureSemanticExtractor`，真实发送 base64 图片并提取 OCR、坐标轴、图例与子图信息。PDF 优先发送 2 倍分辨率的完整页面渲染并指定目标图号，避免只读嵌入位图时丢失矢量坐标轴或部分子图；没有页面截图时才使用可读的嵌入图片（最多 4 张）。当前不是精确的逐图区域裁剪。
+
+视觉字段会传入图表分析、内部事实核验和最终 Markdown / JSON。报告明确显示是否完成视觉识别及失败原因；HTTP / 输出格式失败时保守回退，不能把报告生成成功等同于图片解析成功。图表语义缓存包含图片内容、模型、图号、图注和实际提示词（含正文引用）；更换同路径 PDF 时会重新生成页面截图。
+
+针对“前页整页图、后页顶部图注”的排版，parser 会在图注页缺少图形、前页存在明显图形且无其他图注时，补充前页截图。`FigureMetadata.page_number` 仍表示图注页，新增 `context_page_snapshot_paths` 保存相邻图形页。该关联是保守布局启发式，尚不能覆盖所有跨页或扫描版论文。
 
 
 ### 后端与前端职责
@@ -146,8 +150,13 @@ KIMI_TEMPERATURE="0.2"                     # 可选
 KIMI_VISION_MODEL="moonshot-v1-32k-vision-preview" # 可选，启用真实图表视觉理解
 ```
 
+两套 Kimi 账号体系的 endpoint 不同，按 key 来源选择：
+
+- **开放平台按量 key**（platform.moonshot.cn / platform.moonshot.ai）：`KIMI_BASE_URL` 用 `https://api.moonshot.cn/v1` 或 `https://api.moonshot.ai/v1`，模型如 `kimi-k3`；视觉模型也可用。
+- **Kimi Code 订阅 key**（kimi.com/code 控制台创建）：`KIMI_BASE_URL` 使用 `https://api.kimi.com/coding/v1`，模型按账号权限选择。当前项目已实测 `KIMI_MODEL=kimi-for-coding` 配合 `KIMI_VISION_MODEL=kimi-for-coding` 可通过 OpenAI 兼容接口读取图片。该端点未显式设置温度时自动使用 `temperature=1`。不同账号可用性应通过下方视觉自检确认，不需要伪装客户端身份。[官方图像输入配置说明](https://www.kimi.com/code/docs/en/third-party-tools/hermes.html)
+
 - 不设置 `KIMI_VISION_MODEL` 时，图表语义回退为基于 caption 的保守模式。
-- 视觉模型需选用账号可用的 vision 型号（如 `moonshot-v1-*-vision-preview` 或其他多模态 Kimi 模型）。
+- 视觉模型需选用当前端点和账号实际支持图像输入的型号；不要把开放平台模型名直接用于订阅端点。
 
 OpenAI 兼容回退（未设置任何 `KIMI_*` 时生效，行为与之前版本一致）：
 
@@ -164,6 +173,7 @@ OPENAI_VISION_MODEL="your-vision-model"    # 可选
 
 ```bash
 PAPER_ANALYSIS_PARALLEL_STAGES=1  # 正文理解与图表分析两个 LLM 阶段并行（默认串行）
+VISION_REQUEST_TIMEOUT=240       # 可选；视觉 HTTP 请求超时秒数，默认 120；复杂多面板图可增加
 ```
 
 如果你的运行环境需要代理，也请在当前 shell 中提前设置代理变量；`scripts/run.sh` 默认已把 `api.moonshot.cn` / `api.moonshot.ai` 加入 `NO_PROXY`。
@@ -307,14 +317,36 @@ bash scripts/run_web.sh
 
 ## 测试
 
+所有本地 Python 命令均通过 `bash scripts/run.sh` 执行，复用 uv 缓存、代理、遥测及工作区内的数据目录设置。不带参数仍执行原有文件分析入口。
+
 运行单元测试：
 
 ```bash
-UV_CACHE_DIR=.uv-cache XDG_CACHE_HOME=.cache uv run python -m unittest discover -s tests/unit -p 'test_*.py'
+bash scripts/run.sh python -m unittest discover -s tests/unit -p 'test_*.py'
 ```
 
 运行集成测试：
 
 ```bash
-UV_CACHE_DIR=.uv-cache XDG_CACHE_HOME=.cache uv run python -m unittest discover -s tests/integration -p 'test_*.py'
+bash scripts/run.sh python -m unittest discover -s tests/integration -p 'test_*.py'
 ```
+
+### 真实视觉自检（显式调用模型）
+
+```bash
+KIMI_VISION_MODEL=kimi-for-coding bash scripts/run.sh python scripts/verify_vision.py
+```
+
+默认仅发送自动生成的合成柱状图；柱子标签和数值不出现在图注或提示词中。必须取得 `multimodal_llm` 结果并读出图内标记才返回成功，否则退出码非零。结果保存在 `output/vision-verification/semantic.json`；默认单元 / 集成测试不会调用真实模型。
+
+核对实际论文的视觉解析（会发送选中的论文页面至所配置的模型服务）：
+
+```bash
+bash scripts/run.sh python scripts/verify_vision.py \
+  --pdf ref_baseline/s41467-025-64293-2.pdf --limit 1 \
+ --output output/paper-vision-verification
+```
+
+可增加 `--figure-id 'Figure 4'` 只核对特定图表。
+
+通过该脚本只说明视觉接口返回了结构化结果，不代表论文理解准确率评测已完成。完整报告仍使用上文 `INPUT_PATH=... bash scripts/run.sh` 运行。

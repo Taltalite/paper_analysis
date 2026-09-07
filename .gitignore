@@ -47,6 +47,9 @@ web/dist/
 # Large local inputs that often contain private source material
 *.pdf
 
+# Local outputs from repeatable evaluation runs
+evals/runs/
+
 # codex related
 .codex
 PLANS.md

@@ -138,7 +138,8 @@ class CrewAIFigureAnalysisRunner:
             "- consistency_check\n"
             "- confidence\n\n"
             "规则：\n"
-            "- main_observations 只能来自 direct_evidence 与正文引用，不能凭空补图像细节。\n"
+            "- main_observations 只能来自 direct_evidence、visible_text、legend_items、panels 与正文引用，不能凭空补图像细节。\n"
+            "- semantic_source 为 noop 时未进行真实视觉识别，不得把图注推断写成图片观察。\n"
             "- claimed_conclusion 需要明确标明是作者声称的结论，而不是图中直接可见事实。\n"
             "- consistency_check 需要指出证据是否足以支撑作者结论。\n"
             "- 说明性内容统一使用简体中文；图号、术语、模型名、数据集名、指标名等可保留原文。\n"
@@ -235,6 +236,9 @@ class CrewAIFigureAnalysisRunner:
             figure_type=cls._sanitize_text(evidence.figure_type, max_length=60),
             compared_items=cls._sanitize_list(evidence.compared_items, max_items=6, max_length=120),
             metrics_or_axes=cls._sanitize_list(evidence.metrics_or_axes, max_items=6, max_length=80),
+            visible_text=cls._sanitize_list(evidence.visible_text, max_items=24, max_length=160),
+            legend_items=cls._sanitize_list(evidence.legend_items, max_items=12, max_length=120),
+            panels=evidence.panels,
             direct_evidence=cls._sanitize_list(evidence.direct_evidence, max_items=6, max_length=200),
             referenced_text_spans=cls._sanitize_list(evidence.referenced_text_spans, max_items=4, max_length=220),
             semantic_source=cls._sanitize_text(evidence.semantic_source, max_length=40),

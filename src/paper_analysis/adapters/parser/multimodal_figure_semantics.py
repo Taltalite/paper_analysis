@@ -2,9 +2,12 @@ from __future__ import annotations
 
 import hashlib
 import json
+import logging
 import re
 from pathlib import Path
 from typing import Any
+
+from pydantic import BaseModel, Field
 
 from paper_analysis.adapters.llm.base import VisionLLMClient
 from paper_analysis.adapters.parser.mcp_figure_semantics import NoopFigureSemanticExtractor
@@ -16,11 +19,26 @@ from paper_analysis.domain.models import (
 )
 from paper_analysis.domain.schemas import ParsedDocument
 
-_PROMPT_VERSION = "v1"
+_PROMPT_VERSION = "v2"
+logger = logging.getLogger(__name__)
 _MAX_IMAGES_PER_FIGURE = 4
 _CONFIDENCE_VALUES = {"高", "中", "低", "不足以判断"}
 
+
+class _VisionPayload(BaseModel):
+    figure_type: str = Field(min_length=1)
+    visible_text: list[str] = Field(default_factory=list)
+    axes: list[str] = Field(default_factory=list)
+    legend_items: list[str] = Field(default_factory=list)
+    panels: list[FigurePanel] = Field(default_factory=list)
+    direct_evidence: list[str] = Field(default_factory=list)
+    uncertainties: list[str] = Field(default_factory=list)
+    confidence: str = "低"
+
+
 _PROMPT_TEMPLATE = """你是一名研究论文图表分析助手。请仔细观察给定论文图表的图片，提取其视觉语义信息。
+输入可能是完整论文页面。只分析下述目标图号，不要混入同页其他图表或正文中的数值；
+找不到目标图或无法读清时，请明确写入 uncertainties，并将 confidence 设为低。
 
 图表编号：{figure_id}
 图注（caption）：{caption}
@@ -31,7 +49,7 @@ _PROMPT_TEMPLATE = """你是一名研究论文图表分析助手。请仔细观�
 - "visible_text": 字符串数组，图片中实际可见的文字（OCR），每条不超过 160 字
 - "axes": 字符串数组，坐标轴含义（无坐标轴则为空数组）
 - "legend_items": 字符串数组，图例项（无图例则为空数组）
-- "panels": 数组，每个元素为 {{"panel_label": "a", "panel_type": "...", "summary": "...", "confidence": "高|中|低"}}；单面板图表返回空数组
+- "panels": 数组，每个元素为 {{"panel_label": "a", "panel_type": "...", "summary": "...", "visible_text": [], "axes": [], "legend_items": [], "confidence": "高|中|低"}}；单面板图表返回空数组
 - "direct_evidence": 字符串数组，从图片直接观察到的事实证据（不要复述 caption）
 - "uncertainties": 字符串数组，无法确定或图片不清晰之处
 - "confidence": 字符串，整体置信度，取 "高"、"中"、"低" 之一
@@ -67,8 +85,10 @@ class MultimodalFigureSemanticExtractor:
     ) -> FigureSemanticArtifact:
         try:
             image_paths = self._resolve_image_paths(figure)
-            if not image_paths or not self._vision_client.vision_model:
-                return self._fallback_one(document=document, figure=figure)
+            if not self._vision_client.vision_model:
+                return self._fallback_one(document=document, figure=figure, reason="未配置视觉模型")
+            if not image_paths:
+                return self._fallback_one(document=document, figure=figure, reason="没有可读取的图表图片或页面截图")
 
             cache_key = self._cache_key(figure=figure, image_paths=image_paths)
             cache_path = self._cache_path(image_paths[0], cache_key)
@@ -79,33 +99,48 @@ class MultimodalFigureSemanticExtractor:
                     image_paths=image_paths,
                 )
                 payload = self._parse_payload(raw)
-                self._write_cache(cache_path, payload)
-            return self._to_artifact(figure=figure, image_paths=image_paths, payload=payload)
-        except Exception:
-            return self._fallback_one(document=document, figure=figure)
+            payload = _VisionPayload.model_validate(payload).model_dump()
+            artifact = self._to_artifact(figure=figure, image_paths=image_paths, payload=payload)
+            self._write_cache(cache_path, payload)
+            return artifact
+        except Exception as exc:
+            # 不记录异常正文，避免第三方响应泄露认证信息或完整请求。
+            reason = f"视觉解析失败（{type(exc).__name__}）"
+            response = getattr(exc, "response", None)
+            if response is not None:
+                reason += f"，HTTP {response.status_code}"
+            return self._fallback_one(document=document, figure=figure, reason=reason)
 
     def _fallback_one(
         self,
         *,
         document: ParsedDocument,
         figure: FigureMetadata,
+        reason: str,
     ) -> FigureSemanticArtifact:
-        return self._fallback.extract(document=document, figures=[figure]).artifacts[0]
+        logger.warning("%s：%s；回退图注分析。", figure.figure_id, reason)
+        artifact = self._fallback.extract(document=document, figures=[figure]).artifacts[0]
+        artifact.uncertainties.insert(0, reason)
+        return artifact
 
     @staticmethod
     def _resolve_image_paths(figure: FigureMetadata) -> list[Path]:
-        candidates = [Path(p) for p in figure.image_block_paths[:_MAX_IMAGES_PER_FIGURE]]
-        if not candidates and figure.page_snapshot_path:
-            candidates = [Path(figure.page_snapshot_path)]
-        return [path for path in candidates if path.is_file()]
+        # PDF 中的嵌入图片经常只是子图碎片；页面渲染同时保留矢量坐标轴和文字。
+        if figure.page_snapshot_path and Path(figure.page_snapshot_path).is_file():
+            related = [Path(p) for p in figure.context_page_snapshot_paths if Path(p).is_file()]
+            return list(dict.fromkeys([*related[:1], Path(figure.page_snapshot_path)]))
+        return [Path(p) for p in figure.image_block_paths if Path(p).is_file()][:_MAX_IMAGES_PER_FIGURE]
 
     def _build_prompt(self, figure: FigureMetadata) -> str:
         references = "；".join(span.strip()[:160] for span in figure.referenced_text_spans[:3]) or "（无）"
-        return _PROMPT_TEMPLATE.format(
+        prompt = _PROMPT_TEMPLATE.format(
             figure_id=figure.figure_id or "未知",
             caption=figure.caption.strip()[:400] or "（无）",
             references=references,
         )
+        if figure.context_page_snapshot_paths:
+            prompt += "\n提供了相邻页面：图形本体可能位于前页、图注位于后页，请结合图注中的子图标签对应识别。"
+        return prompt
 
     def _cache_key(self, *, figure: FigureMetadata, image_paths: list[Path]) -> str:
         digest = hashlib.sha256()
@@ -113,6 +148,7 @@ class MultimodalFigureSemanticExtractor:
         digest.update((self._vision_client.vision_model or "").encode("utf-8"))
         digest.update(figure.figure_id.encode("utf-8"))
         digest.update(figure.caption.encode("utf-8"))
+        digest.update(self._build_prompt(figure).encode("utf-8"))
         for path in image_paths:
             digest.update(path.name.encode("utf-8"))
             digest.update(path.read_bytes())
@@ -208,6 +244,9 @@ def _panels(value: Any, *, figure_id: str) -> list[FigurePanel]:
                 panel_label=label,
                 panel_type=str(item.get("panel_type") or "unknown"),
                 summary=str(item.get("summary") or ""),
+                visible_text=_string_list(item.get("visible_text")),
+                axes=_string_list(item.get("axes")),
+                legend_items=_string_list(item.get("legend_items")),
                 confidence=confidence,
             )
         )

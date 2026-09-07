@@ -1,0 +1,244 @@
+{
+  "artifacts": [
+    {
+      "figure_id": "Figure 2",
+      "page_number": 5,
+      "figure_type": "result_figure",
+      "extraction_source": "multimodal_llm",
+      "page_snapshot_path": "ref_baseline/.paper_analysis_assets/s41467-025-64293-2/pages/page_5.png",
+      "image_block_paths": [
+        "ref_baseline/.paper_analysis_assets/s41467-025-64293-2/pages/page_5.png"
+      ],
+      "crop_path": "ref_baseline/.paper_analysis_assets/s41467-025-64293-2/pages/page_5.png",
+      "visible_text": [
+        "a",
+        "SUSTag 96",
+        "Porcupine 96",
+        "ONT 96",
+        "(34 nt)",
+        "(40 nt)",
+        "(24 nt)",
+        "Primer (23 nt)",
+        "8×T (8 nt)",
+        "Primer (13 nt)",
+        "Plasmid pCDB180 (400 nt)",
+        "b",
+        "Optional-reject CNN-LSTM",
+        "CNN Block",
+        "LSTM Block",
+        "Conv 1D",
+        "Avg pooling",
+        "Batch Norm",
+        "×4",
+        "LSTM",
+        "Barcode 11",
+        "Barcode 36",
+        "Barcode 17",
+        "Barcode 02",
+        "True",
+        "False",
+        "Prediction",
+        "Selection",
+        "Recognized or not?",
+        "c",
+        "ONT 96",
+        "Porcupine 96",
+        "SUSTag 96",
+        "Ground truth",
+        "Prediction",
+        "F1-score: 0.9925",
+        "F1-score: 0.9891",
+        "F1-score: 0.9969",
+        "0.01",
+        "0",
+        "d",
+        "CNN (Porcupine)",
+        "CNN",
+        "CNN-LSTM",
+        "Ground truth",
+        "Prediction",
+        "F1-score: 0.9543",
+        "F1-score: 0.9852",
+        "F1-score: 0.9892",
+        "e",
+        "Weighted precision",
+        "Weighted recall",
+        "CNN-LSTM",
+        "CNN",
+        "ORCtrl",
+        "ONT 96",
+        "Porcupine 96",
+        "SUSTag 96",
+        "F1-score: 0.95",
+        "F1-score: 0.96",
+        "F1-score: 0.97",
+        "F1-score: 0.98",
+        "F1-score: 0.99"
+      ],
+      "axes": [
+        "panels c-d: Ground truth vs Prediction 的混淆矩阵坐标轴",
+        "panel e: x 轴 Weighted recall（约 0.95–1.00），y 轴 Weighted precision（约 0.95–1.00）"
+      ],
+      "legend_items": [
+        "ONT 96（蓝色方块）",
+        "Porcupine 96（紫色三角）",
+        "SUSTag 96（橙色圆点）",
+        "panel a 中以颜色区分 SUSTag 96 / Porcupine 96 / ONT 96"
+      ],
+      "panels": [
+        {
+          "panel_id": "Figure 2_a",
+          "panel_label": "a",
+          "panel_type": "method_diagram",
+          "summary": "线性序列结构示意，展示接头/引物、三种 tag 区段以及右侧质粒片段的相对位置与长度。",
+          "visible_text": [
+            "SUSTag 96",
+            "Porcupine 96",
+            "ONT 96",
+            "(34 nt)",
+            "(40 nt)",
+            "(24 nt)",
+            "Primer (23 nt)",
+            "8×T (8 nt)",
+            "Primer (13 nt)",
+            "Plasmid pCDB180 (400 nt)"
+          ],
+          "axes": [],
+          "legend_items": [
+            "SUSTag 96：橙色",
+            "Porcupine 96：深蓝色",
+            "ONT 96：紫色"
+          ],
+          "confidence": "高"
+        },
+        {
+          "panel_id": "Figure 2_b",
+          "panel_label": "b",
+          "panel_type": "method_diagram",
+          "summary": "Optional-reject CNN-LSTM 网络结构：左侧输入类纳米孔信号波形，经 CNN Block 与四层 LSTM Block，再接多个输出头，分出 Prediction 与 Selection 两支，右侧显示 1–96 编号网格及 Recognized or not? 的 True/False 判断。",
+          "visible_text": [
+            "Optional-reject CNN-LSTM",
+            "CNN Block",
+            "LSTM Block",
+            "Conv 1D",
+            "Avg pooling",
+            "Batch Norm",
+            "×4",
+            "LSTM",
+            "Barcode 11",
+            "Barcode 36",
+            "Barcode 17",
+            "Barcode 02",
+            "Prediction",
+            "Selection",
+            "Recognized or not?",
+            "True",
+            "False"
+          ],
+          "axes": [],
+          "legend_items": [
+            "Prediction 输出头",
+            "Selection 输出头",
+            "True / False 选择标签"
+          ],
+          "confidence": "中"
+        },
+        {
+          "panel_id": "Figure 2_c",
+          "panel_label": "c",
+          "panel_type": "result_figure",
+          "summary": "三个混淆矩阵并排比较 ONT 96、Porcupine 96、SUSTag 96 的分类结果；对角线为主，SUSTag 96 的 F1-score 最高。",
+          "visible_text": [
+            "ONT 96",
+            "Porcupine 96",
+            "SUSTag 96",
+            "Ground truth",
+            "Prediction",
+            "F1-score: 0.9925",
+            "F1-score: 0.9891",
+            "F1-score: 0.9969",
+            "0.01",
+            "0"
+          ],
+          "axes": [
+            "Ground truth",
+            "Prediction"
+          ],
+          "legend_items": [],
+          "confidence": "高"
+        },
+        {
+          "panel_id": "Figure 2_d",
+          "panel_label": "d",
+          "panel_type": "result_figure",
+          "summary": "三个混淆矩阵比较 CNN (Porcupine)、CNN、CNN-LSTM；CNN-LSTM 的 F1-score 略高于 CNN，CNN (Porcupine) 明显较低。",
+          "visible_text": [
+            "CNN (Porcupine)",
+            "CNN",
+            "CNN-LSTM",
+            "Ground truth",
+            "Prediction",
+            "F1-score: 0.9543",
+            "F1-score: 0.9852",
+            "F1-score: 0.9892",
+            "0.01",
+            "0"
+          ],
+          "axes": [
+            "Ground truth",
+            "Prediction"
+          ],
+          "legend_items": [],
+          "confidence": "高"
+        },
+        {
+          "panel_id": "Figure 2_e",
+          "panel_label": "e",
+          "panel_type": "result_figure",
+          "summary": "Weighted recall–Weighted precision 散点图，含 F1-score 对角虚线；同色系标记表示三种 tag 设计，ORCtrl 位于左下，CNN 居中，CNN-LSTM 位于右上，说明 CNN-LSTM 整体更靠近高精度高召回区域。",
+          "visible_text": [
+            "Weighted precision",
+            "Weighted recall",
+            "CNN-LSTM",
+            "CNN",
+            "ORCtrl",
+            "ONT 96",
+            "Porcupine 96",
+            "SUSTag 96",
+            "F1-score: 0.95",
+            "F1-score: 0.96",
+            "F1-score: 0.97",
+            "F1-score: 0.98",
+            "F1-score: 0.99"
+          ],
+          "axes": [
+            "x: Weighted recall",
+            "y: Weighted precision"
+          ],
+          "legend_items": [
+            "ONT 96",
+            "Porcupine 96",
+            "SUSTag 96"
+          ],
+          "confidence": "高"
+        }
+      ],
+      "direct_evidence": [
+        "panel a 中从左到右可见 Primer (23 nt)、8×T (8 nt)、三种 tag 区段、Primer (13 nt) 与 Plasmid pCDB180 (400 nt) 的线性排布。",
+        "panel b 明确画出 CNN Block 内的 Conv 1D → Avg pooling → Batch Norm，并经 ×4 进入堆叠 LSTM Block。",
+        "panel b 右侧有 Prediction 与 Selection 两个输出头，Selection 旁出现 True/False 序列与 Recognized or not? 文字。",
+        "panel c 三个混淆矩阵下方分别标注 F1-score: 0.9925、0.9891、0.9969。",
+        "panel d 三个混淆矩阵下方分别标注 F1-score: 0.9543、0.9852、0.9892。",
+        "panel e 中 SUSTag 96 的橙色圆点位于最靠近 (1.00, 1.00) 的区域，ORCtrl 各点分布在较低 recall/precision 区域。",
+        "panel e 图例用蓝色方块、紫色三角、橙色圆点分别对应 ONT 96、Porcupine 96、SUSTag 96。"
+      ],
+      "uncertainties": [
+        "panel b 右侧 1–96 编号网格和 Barcode 示例字号过小，无法逐一可靠 OCR。",
+        "panel c/d 的混淆矩阵 colorbar 只清晰显示 0 与 0.01，完整色阶范围不能从图中确认。",
+        "panel d 是否全部对应同一 tag 设计，图中只直接显示模型名 CNN (Porcupine)、CNN、CNN-LSTM，具体任务背景依赖图注语境。",
+        "panel e 中部分 F1-score 对角虚线标签较小，0.95–0.99 可读但个别位置可能与邻近虚线混淆。"
+      ],
+      "confidence": "高"
+    }
+  ]
+}

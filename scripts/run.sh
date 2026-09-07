@@ -7,6 +7,7 @@ cd "$ROOT"
 mkdir -p "$ROOT/.uv-cache" "$ROOT/.cache"
 export UV_CACHE_DIR="${UV_CACHE_DIR:-$ROOT/.uv-cache}"
 export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$ROOT/.cache}"
+export XDG_DATA_HOME="${XDG_DATA_HOME:-$ROOT/.cache/data}"
 
 export CREWAI_DISABLE_TELEMETRY=true
 export OTEL_SDK_DISABLED=true
@@ -21,7 +22,11 @@ export https_proxy="${https_proxy:-$HTTPS_PROXY}"
 unset ALL_PROXY || true
 unset all_proxy || true
 
-export NO_PROXY="${NO_PROXY:-127.0.0.1,localhost,::1,api.moonshot.cn,api.moonshot.ai}"
+export NO_PROXY="${NO_PROXY:-127.0.0.1,localhost,::1,api.moonshot.cn,api.moonshot.ai,api.kimi.com}"
 export no_proxy="${no_proxy:-$NO_PROXY}"
 
-uv run kickoff
+if (( $# )); then
+    uv run "$@"
+else
+    uv run kickoff
+fi

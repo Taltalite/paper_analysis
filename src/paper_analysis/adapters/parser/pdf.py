@@ -3,6 +3,10 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 from pathlib import Path
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    import fitz
 
 from paper_analysis.adapters.parser.base import DocumentParser
 from paper_analysis.domain.models import DocumentBlock, DocumentStructureDraft, FigureMetadata
@@ -392,6 +396,23 @@ class PdfParser(DocumentParser):
                 source_path=path,
                 page_number=block.page_number,
             )
+            context_pages: list[str] = []
+            page = document.load_page(block.page_number - 1)
+            # 部分期刊将整页图放在前页、图注放在下一页顶部。
+            # 仅在图注页缺少图形且前页有明显图形、无其他图注时补充前页。
+            if block.page_number > 1 and block.y0 < page.rect.height * 0.25:
+                previous = document.load_page(block.page_number - 2)
+                previous_has_caption = any(
+                    item.page_number == block.page_number - 1 and self._extract_figure_id(item.text)
+                    for item in text_blocks
+                )
+                if (not previous_has_caption and not self._has_visual_content(page)
+                        and self._has_visual_content(previous)):
+                    previous_path = self._save_page_snapshot(
+                        document=document, source_path=path, page_number=block.page_number - 1,
+                    )
+                    if previous_path:
+                        context_pages.append(previous_path)
             reference_texts, reference_ids = self._extract_figure_references(
                 blocks=text_blocks,
                 figure_id=figure_id,
@@ -408,6 +429,7 @@ class PdfParser(DocumentParser):
                     caption=caption_text,
                     page_number=block.page_number,
                     page_snapshot_path=page_snapshot_path,
+                    context_page_snapshot_paths=context_pages,
                     image_block_paths=image_block_paths,
                     referenced_text_spans=reference_texts,
                     caption_block_ids=caption_block_ids,
@@ -417,6 +439,17 @@ class PdfParser(DocumentParser):
             index = next_index
 
         return figures
+
+    @staticmethod
+    def _has_visual_content(page: fitz.Page) -> bool:
+        import fitz
+
+        area = page.rect.get_area()
+        if area <= 0:
+            return False
+        rectangles = [fitz.Rect(item["bbox"]) for item in page.get_image_info()]
+        rectangles.extend(item["rect"] for item in page.get_drawings())
+        return sum((rectangle & page.rect).get_area() for rectangle in rectangles) >= area * 0.08
 
     def _extract_figure_references(
         self,
@@ -809,11 +842,9 @@ class PdfParser(DocumentParser):
         asset_dir = self._asset_dir(source_path) / "pages"
         asset_dir.mkdir(parents=True, exist_ok=True)
         target_path = asset_dir / f"page_{page_number}.png"
-        if target_path.exists():
-            return str(target_path)
-
         page = document.load_page(page_number - 1)
-        pixmap = page.get_pixmap(matrix=fitz.Matrix(1.5, 1.5), alpha=False)
+        # 每次重建，避免同路径 PDF 被替换后复用旧截图；保留矢量图、文字和全部子图。
+        pixmap = page.get_pixmap(matrix=fitz.Matrix(2, 2), alpha=False)
         pixmap.save(target_path)
         return str(target_path)
 
