@@ -91,6 +91,9 @@ class ResearchPaperReportRenderer:
 ### 6.3 图文一致性
 {self._render_figure_consistency_checks(figure_analyses)}
 
+### 6.4 视觉证据与解析状态
+{self._render_figure_evidence_section(figure_evidence)}
+
 ## 7. 事实检查
 ### 7.1 总体结论
 {self._clean_text(fact_checks.overall_assessment)}
@@ -159,7 +162,7 @@ class ResearchPaperReportRenderer:
             blocks.append(
                 "\n".join(
                     [
-                        f"### {evidence.figure_id or '未编号图表'}",
+                        f"#### {evidence.figure_id or '未编号图表'}",
                         f"- **图注摘要：** {evidence.figure_title_or_caption or cls._missing_text()}",
                         f"- **图类型：** {evidence.figure_type or cls._missing_text()}",
                         f"- **视觉解析：** {'已调用多模态模型（含缓存结果）' if evidence.semantic_source == 'multimodal_llm' else '未完成视觉识别，仅使用图注和正文线索'}",

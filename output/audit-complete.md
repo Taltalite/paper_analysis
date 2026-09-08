@@ -72,6 +72,79 @@ SUSTag：将纳米孔电学签名作为寻址信息并进行低串扰de novo设�
 - Figure 3：证据一致性较好：panel c、d 的 F1-score 上升与平台标注（0.9456、0.9410）直接支持域适应有效；panel e 中 equalized 轨迹高于 inequalized 支持“增加数据量更高效”的说法；panel f 与 g 的对比直接支持优化域适应降低 Non-target 访问。限制在于 b 的图形类型（violin/density）未明确、数值均为视觉近似，且无误差线与显著性标记，统计可靠性无法从图中确认。（置信度：高）
 - Figure 2：证据一致性较好：panel c 中 SUSTag 96 的 F1-score 最高（0.9969）、panel d 中 CNN-LSTM 的 F1-score 最高（0.9892）、panel e 中 CNN-LSTM 点位于右上区域，三者相互印证并与作者声称结论方向一致。限制在于 panel b 的编号网格与 Barcode 示例细节不可可靠读取，panel d 的具体任务背景（对应哪种 tag）依赖图注语境，panel c/d 色阶不完整，无法逐格验证混淆矩阵数值。（置信度：高）
 
+### 6.4 视觉证据与解析状态
+#### Figure 4
+- **图注摘要：** Fig. 4 | Adaptive nanopore sequencing based random access in DNA storage. a Decoding results of PCR-free random-access d
+- **图类型：** result_figure
+- **视觉解析：** 已调用多模态模型（含缓存结果）
+- **指标 / 坐标：** panel d: x=Time (minutes), y=Access purity, panel e: x=Time (minutes), y=Target decode ratio, panel f left: x=Avg. read counts, y=method category (Readfish/Porcupine/ORCtrl), panel f right: x=Total read counts, y=method category (Readfish/Porcupine/ORCtrl, panel g upper: y=Yield (reads / minute), x=time axis shared/not clearly labeled, panel g lower: x=Time (minutes), y=Target reads yield ratio
+- **可见文字：** Readfish；CNN (Porcupine)；ORCtrl with domain adaptation；10 minutes；60 minutes；30 minutes；180 minutes；This work；Readfish method；Porcupine method；Access purity；Target decode ratio；Time (minutes)；60 Minutes；Avg. read counts；Total read counts；Non-target；Target；Random access；(adaptive sampling)；On；Off；Yield (reads / minute)；Channel 1-256
+- **图例：** Non-target；Target；Channel 1-256；Channel 257-512
+- **子图：** a: Readfish 条件下两张文档式解码结果缩略图，10 minutes 与 60 minutes 下方均为红色叉号，视觉上表示未成功解码/未达到目标。；b: CNN (Porcupine) 条件下两张文档式解码结果缩略图，10 minutes 与 60 minutes 下方均为黄色圆形符号，视觉上表示部分成功或中间状态。；c: ORCtrl with domain adaptation 下四张文档式结果缩略图，10/30/60/180 minutes 下方均为绿色对勾，视觉上表示各时间点均可成功解码；右侧附近有少量黑色小方块标记，含义不完全明确。；d: Access purity 随 Time (minutes) 变化；This work 星形曲线维持在接近 1.0，Readfish method 圆点曲线约 0.9 后略降，Porcupine method 三角曲线明显下降至约 0.3。；e: Target decode ratio 随 Time (minutes) 变化；This work 三角曲线接近 1.0，Porcupine method 三角曲线约 0.85–0.9，Readfish method 圆点曲线从约 0.65 升至约 0.79 后趋平。；f: 60 Minutes 下比较 Readfish、Porcupine、ORCtrl 的 Avg. read counts 与 Total read counts；橙色的 Target 与浅灰的 Non-target 成对显示，ORCtrl 的 Non-target 柱明显更低，Target 柱相对保留。；g: Random access (adaptive sampling) 的实时测序演示；上图 Yield 中 Channel 1-256 在 On 区段升高、Off 区段降低，Channel 257-512 基本维持高位；下图 Target reads yield ratio 仅在部分时间段出现尖峰。
+- **不确定性：** panel a–c 中文档缩略图内的正文过小，无法可靠 OCR，只能确认标题、时间标签和状态符号。；panel b 的黄色圆形符号内部细节不够清晰，不能确定是减号、圆点还是其他状态图标。；panel c 右侧黑色小方块标记的含义无法从图中直接判定。；panel d、e、f、g 的具体数值点/柱高无法精确读取，以上只描述相对趋势。；panel g 上图的 x 轴刻度未清晰显示，时间轴可能与其下方 Target reads yield ratio 图共享。
+- **证据质量：** 高
+- **直接证据：**
+- caption 摘要：Fig. 4 | Adaptive nanopore sequencing based random access in DNA storage. a Decoding results of PCR-free random-access d
+- panel a 的 10 minutes 与 60 minutes 下方均为红色叉号，panel b 对应位置为黄色圆形符号，panel c 的四个时间点均为绿色对勾。
+- panel d 中 This work 曲线位于接近 1.0 的高位，Readfish method 略低于 1.0，Porcupine method 随时间明显下降。
+- panel e 中 This work 接近 1.0，Porcupine method 居中，Readfish method 从较低值上升后进入平台。
+- panel f 中 ORCtrl 对应的 Non-target 柱明显短于 Readfish 与 Porcupine，而 Target 柱仍可见；图例显示灰色为 Non-target、橙色为 Target。
+- panel g 上图 Channel 1-256 的橙色曲线在 On/Off 切换下呈现开高关低，Channel 257-512 灰色曲线总体维持在较高读长产出；下图橙色目标产率比只在少数时间窗出现尖峰。
+
+#### Figure 1
+- **图注摘要：** Fig. 1 | Design of low-crosstalk molecular tags featured with nanopore signatures as addressing information for DNA stor
+- **图类型：** method_diagram
+- **视觉解析：** 已调用多模态模型（含缓存结果）
+- **指标 / 坐标：** 未明确说明
+- **可见文字：** a；Texts, images, …；Synthesized DNA strands；Nanopore targeted sequencing with signatures；Random access；Address bits；Information bits；b；Bhattacharyya distance calculation；Seq #p；Seq #q；Distance matrix；Similar；Less Similar；Incremental clustering；SUSTag design pipeline；A: 8-mers (65,536) Best 400；B: 9-mers (262,144) Best 400；17-mers: A+B B+A (320,000) Best 200；34-mers (40,000) Best 96 / 384；c；Euclidian distances；ONT 96；Porcupine 96
+- **图例：** 未明确说明
+- **子图：** a: 展示数字内容经DNA编码、合成、带签名纳米孔靶向测序及随机访问的流程；地址位用橙色标识，测序电流中对应区段以橙色突出。；b: 展示SUSTag的从头设计流程，包括Bhattacharyya距离计算、距离矩阵、增量聚类，以及从8-mer和9-mer组合生成17-mer、再筛选34-mer的流程。；c: 并列显示ONT 96、Porcupine 96和SUSTag 96的Euclidian距离矩阵；色标范围为0至4，SUSTag矩阵整体颜色较浅。；d: 并列显示ONT 96、Porcupine 96和SUSTag 96的Bhattacharyya距离矩阵；色标范围为0至50，SUSTag矩阵整体颜色较浅。；e: 比较三种96-plex标签的Euclidian距离分布。条形数值分别为ONT 96的2.02、Porcupine 96的2.88和SUSTag 96的4.02。；f: 比较三种96-plex标签的Bhattacharyya距离分布。条形数值分别为ONT 96的15.42、Porcupine 96的25.66和SUSTag 96的35.22，横轴呈对数刻度。
+- **不确定性：** b面板中Bhattacharyya距离公式的部分小字号符号在图片中较小，公式细节可能受到分辨率影响。；增量聚类图中的聚类数量及个别点的归属无法仅凭图像精确确认。
+- **证据质量：** 高
+- **直接证据：**
+- caption 摘要：Fig. 1 | Design of low-crosstalk molecular tags featured with nanopore signatures as addressing information for DNA stor
+- a面板从左至右包含数字文件、DNA双链、纳米孔测序装置、剪切符号、访问结果及绿色对勾或红色警示图标。
+- a面板中Address bits为橙色矩形，Information bits为灰色矩形；纳米孔电流轨迹中的部分波动也用橙色突出。
+- b面板左侧给出两条标为Seq #p和Seq #q的电流波形，并在下方列出Bhattacharyya距离公式。
+- b面板中部为由深浅色块组成的Distance matrix，旁边有从Less Similar指向Similar的箭头。
+- b面板右侧的Incremental clustering图中存在多个点簇及包围部分点簇的轮廓。
+
+#### Figure 3
+- **图注摘要：** Fig. 3 | Domain adaptation for DNA storage application. a Illustration of address bits (barcodes) for DNA information st
+- **图类型：** multi_panel_result_figure
+- **视觉解析：** 已调用多模态模型（含缓存结果）
+- **指标 / 坐标：** b: 纵轴 Cross-talk ratio (%)，横轴 Normalized density, c: 纵轴 Weighted F1-score，横轴 Adapted data amount, d: 纵轴 Weighted F1-score，横轴 Time (minutes), e: 纵轴 Weighted precision，横轴 Weighted recall, f/g: 纵轴 Access ratio，横轴 SUSTag #ID
+- **可见文字：** a；Domain adaptation；Plasmid Sequences；Synthetic Sequences；明德求是；日新自强；VIRTUE TRUTH ADVANCE；23 nt；34 nt；175 nt；11 nt；SUSTag 384；Payload；b；ONT 96；Porcupine 96；SUSTag 96；SUSTag 384；Cross-talk ratio (%)；Normalized density；c；Weighted F1-score；Adapted data amount；0.9456
+- **图例：** 未明确说明
+- **子图：** a: 示意从 Plasmid Sequences 到 Synthetic Sequences 的 domain adaptation，并给出 SUSTag 384 地址片段布局：23 nt、34 nt SUSTag 384、175 nt Payload、11 nt。；b: 四个并列的归一化密度/小提琴样式图比较 ONT 96、Porcupine 96、SUSTag 96、SUSTag 384 的 cross-talk ratio 分布；SUSTag 96 与 SUSTag 384 分布更靠近低值且更窄。；c: Weighted F1-score 随 Adapted data amount 增加而上升并趋稳，低数据量时约 0.92，平台期标注约 0.9456。；d: New sequencing+training 条件下，Weighted F1-score 在约 10 min 时约 0.87，随后快速上升，约 120–180 min 后接近平台，标注约 0.9410。；e: Weighted recall–precision 散点中，W/o domain adaptation 的灰点位于左下；Increasing data amount (equalized) 橙点向右上延伸，Increasing sequencing time (inequalized) 青点位于相对较低轨迹。；f: ORCtrL w/o domain adaptation 的 access ratio：低编号 SUSTag #ID 区域 Target 灰柱较高，约 0.8；非目标区 Non-target 有零散黄色柱，部分可达约 0.2。；g: ORCtrL with optimized domain adaptation 后，低编号 Target 灰柱仍高，约 0.8–0.9；相比 f，非目标区 Non-target 黄色柱明显更少更低，接近 0。
+- **不确定性：** a 中合成序列旁的中文校训文字为艺术化小字，个别字符不宜逐字确认。；b 的图形样式在图中未明确标注为 violin 还是 density，只能按归一化密度图读取。；f/g 中 Target 与 Non-target 的精确分界 ID 未在图中标明，只能按柱色区域判断。；未在图中看到显著性检验标记或误差线，不能仅凭视觉判断统计显著性。
+- **证据质量：** 高
+- **直接证据：**
+- caption 摘要：Fig. 3 | Domain adaptation for DNA storage application. a Illustration of address bits (barcodes) for DNA information st
+- a 中从 Plasmid Sequences 经箭头指向 Synthetic Sequences，下方标尺标出 23 nt、34 nt SUSTag 384、175 nt Payload、11 nt。
+- b 中 ONT 96 与 Porcupine 96 的密度分布更宽且位置偏高，SUSTag 96 与 SUSTag 384 的分布更靠近低 cross-talk ratio。
+- c 中橙色点随 Adapted data amount 增加由约 0.92 升至约 0.9456 平台。
+- d 中青色点随 Time (minutes) 由约 0.87 升至约 0.9410 平台。
+- e 中灰点 W/o domain adaptation 位于左下，橙色 equalized 轨迹整体高于青色 inequalized 轨迹。
+
+#### Figure 2
+- **图注摘要：** Fig. 2 | Experimental benchmarking of tag designs and deep-learning classifiers. a Sequence structure containing SUSTag
+- **图类型：** result_figure
+- **视觉解析：** 已调用多模态模型（含缓存结果）
+- **指标 / 坐标：** panels c-d: Ground truth vs Prediction 的混淆矩阵坐标轴, panel e: x 轴 Weighted recall（约 0.95–1.00），y 轴 Weighted precision（约 0.95–1.00）
+- **可见文字：** a；SUSTag 96；Porcupine 96；ONT 96；(34 nt)；(40 nt)；(24 nt)；Primer (23 nt)；8×T (8 nt)；Primer (13 nt)；Plasmid pCDB180 (400 nt)；b；Optional-reject CNN-LSTM；CNN Block；LSTM Block；Conv 1D；Avg pooling；Batch Norm；×4；LSTM；Barcode 11；Barcode 36；Barcode 17；Barcode 02
+- **图例：** ONT 96（蓝色方块）；Porcupine 96（紫色三角）；SUSTag 96（橙色圆点）；panel a 中以颜色区分 SUSTag 96 / Porcupine 96 / ONT 96
+- **子图：** a: 线性序列结构示意，展示接头/引物、三种 tag 区段以及右侧质粒片段的相对位置与长度。；b: Optional-reject CNN-LSTM 网络结构：左侧输入类纳米孔信号波形，经 CNN Block 与四层 LSTM Block，再接多个输出头，分出 Prediction 与 Selection 两支，右侧显示 1–96 编号网格及 Recognized or not? 的 True/False 判断。；c: 三个混淆矩阵并排比较 ONT 96、Porcupine 96、SUSTag 96 的分类结果；对角线为主，SUSTag 96 的 F1-score 最高。；d: 三个混淆矩阵比较 CNN (Porcupine)、CNN、CNN-LSTM；CNN-LSTM 的 F1-score 略高于 CNN，CNN (Porcupine) 明显较低。；e: Weighted recall–Weighted precision 散点图，含 F1-score 对角虚线；同色系标记表示三种 tag 设计，ORCtrl 位于左下，CNN 居中，CNN-LSTM 位于右上，说明 CNN-LSTM 整体更靠近高精度高召回区域。
+- **不确定性：** panel b 右侧 1–96 编号网格和 Barcode 示例字号过小，无法逐一可靠 OCR。；panel c/d 的混淆矩阵 colorbar 只清晰显示 0 与 0.01，完整色阶范围不能从图中确认。；panel d 是否全部对应同一 tag 设计，图中只直接显示模型名 CNN (Porcupine)、CNN、CNN-LSTM，具体任务背景依赖图注语境。；panel e 中部分 F1-score 对角虚线标签较小，0.95–0.99 可读但个别位置可能与邻近虚线混淆。
+- **证据质量：** 高
+- **直接证据：**
+- caption 摘要：Fig. 2 | Experimental benchmarking of tag designs and deep-learning classifiers. a Sequence structure containing SUSTag
+- panel a 中从左到右可见 Primer (23 nt)、8×T (8 nt)、三种 tag 区段、Primer (13 nt) 与 Plasmid pCDB180 (400 nt) 的线性排布。
+- panel b 明确画出 CNN Block 内的 Conv 1D → Avg pooling → Batch Norm，并经 ×4 进入堆叠 LSTM Block。
+- panel b 右侧有 Prediction 与 Selection 两个输出头，Selection 旁出现 True/False 序列与 Recognized or not? 文字。
+- panel c 三个混淆矩阵下方分别标注 F1-score: 0.9925、0.9891、0.9969。
+- panel d 三个混淆矩阵下方分别标注 F1-score: 0.9543、0.9852、0.9892。
+
 ## 7. 事实检查
 ### 7.1 总体结论
 总体判定：大部分主张获得正文（S2–S4）与Figure 1–4图表证据的支持。核心框架（SUSTag+ORCtrL）、420 bp/s/数百毫秒/F1>0.95自适应采样要求、domain adaptation数值（120 min、~200k reads、87%→over 94%、10 min–3 h）均有直接证据。主要问题集中在：(1) text-2/text-11中的"k=5"与"DTW"在所提供摘录中无证据，仅Bhattacharyya/Euclidian距离与scrappie v1.4.2获证实；(2) text-6中"target N=14、non-target N=370"未出现于材料；(3) text-8所列局限点在摘录中完全无证据；(4) "显著低于""error patterns相似"等强度或附加表述超出图中可见证据（无显著性标记）；(5) text-9关于作者/机构未说明的否定性主张部分不准确（S2含sustech.edu.cn通讯邮箱）。四条figure类主张均与图表面板证据一致，判为supported。

@@ -13,8 +13,8 @@ import fitz
 from paper_analysis.adapters.llm.openai_compatible import OpenAICompatibleLLM
 from paper_analysis.adapters.parser.multimodal_figure_semantics import MultimodalFigureSemanticExtractor
 from paper_analysis.adapters.parser.pdf import PdfParser
-from paper_analysis.domain.models import FigureMetadata
-from paper_analysis.domain.schemas import ParsedDocument
+from paper_analysis.domain.models import FactCheckBatch, FigureMetadata
+from paper_analysis.domain.schemas import AnalysisResult, ParsedDocument
 from paper_analysis.runtime.crews.research.figure_analysis import CrewAIFigureAnalysisRunner
 from paper_analysis.runtime.crews.research.figure_evidence_curator import DeterministicFigureEvidenceCurator
 from paper_analysis.runtime.pipelines.research_paper import ResearchPaperPipeline
@@ -70,7 +70,11 @@ class MultimodalContractTest(unittest.TestCase):
             evidence = DeterministicFigureEvidenceCurator().run(document=document, figures=[figure], semantic_artifacts=batch)
             cleaned = CrewAIFigureAnalysisRunner._sanitize_batch(evidence)
             prompt = CrewAIFigureAnalysisRunner._build_task_description(document=document, evidence_batch=cleaned)
-            report = ResearchPaperReportRenderer._render_figure_evidence_section(cleaned.evidences)
+            report = ResearchPaperReportRenderer().render(
+                source_document=document, result=AnalysisResult(summary="测试"),
+                selected_sections=[], figure_evidence=cleaned.evidences,
+                figure_analyses=[], fact_checks=FactCheckBatch(),
+            )
             for text in ("73", "Method A", "红色柱形"):
                 self.assertIn(text, prompt)
                 self.assertIn(text, report)

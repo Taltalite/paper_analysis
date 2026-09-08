@@ -350,3 +350,5 @@ bash scripts/run.sh python scripts/verify_vision.py \
 可增加 `--figure-id 'Figure 4'` 只核对特定图表。
 
 通过该脚本只说明视觉接口返回了结构化结果，不代表论文理解准确率评测已完成。完整报告仍使用上文 `INPUT_PATH=... bash scripts/run.sh` 运行。
+
+本次真实运行结果、简历能力边界及已知限制见 [项目能力审计](docs/project-capability-audit.md)。
