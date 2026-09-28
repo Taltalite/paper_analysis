@@ -45,6 +45,9 @@ class OpenAICompatibleLLM(LLMClient):
     def vision_model(self) -> str | None:
         return self._vision_model
 
+    def audit_metadata(self) -> dict[str, str | None]:
+        return {"model": self._model, "vision_model": self._vision_model}
+
     def to_crewai_llm(self) -> LLM:
         return LLM(
             model=self._model,

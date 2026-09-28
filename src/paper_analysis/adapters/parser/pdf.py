@@ -27,6 +27,9 @@ class _PdfBlock:
 
 
 class PdfParser(DocumentParser):
+    def __init__(self, *, render_assets: bool = True) -> None:
+        self.render_assets = render_assets
+
     _SECTION_ALIASES = {
         "abstract": "abstract",
         "introduction": "introduction",
@@ -842,6 +845,8 @@ class PdfParser(DocumentParser):
         asset_dir = self._asset_dir(source_path) / "pages"
         asset_dir.mkdir(parents=True, exist_ok=True)
         target_path = asset_dir / f"page_{page_number}.png"
+        if not self.render_assets:
+            return str(target_path)
         page = document.load_page(page_number - 1)
         # 每次重建，避免同路径 PDF 被替换后复用旧截图；保留矢量图、文字和全部子图。
         pixmap = page.get_pixmap(matrix=fitz.Matrix(2, 2), alpha=False)
@@ -857,6 +862,8 @@ class PdfParser(DocumentParser):
         block_id: str,
         bbox: tuple[float, float, float, float],
     ) -> str | None:
+        if not self.render_assets:
+            return None
         try:
             import fitz
         except ImportError:

@@ -17,6 +17,7 @@ from paper_analysis.domain.models import (
 )
 from paper_analysis.domain.schemas import AnalysisResult, ParsedDocument
 from paper_analysis.runtime.pipelines.fact_check_prechecks import run_fact_check_prechecks
+from paper_analysis.runtime.pipelines.claim_inventory import collect_claims
 from paper_analysis.tools import PaperKeywordSearchTool, PaperSectionExtractorTool
 
 
@@ -119,60 +120,10 @@ class CrewAIFactCheckRunner:
 
     @classmethod
     def _collect_claims(
-        cls,
-        *,
-        analysis_result: AnalysisResult,
-        figure_analyses: list[FigureAnalysis],
+        cls, *, analysis_result: AnalysisResult, figure_analyses: list[FigureAnalysis],
     ) -> list[ClaimEvidence]:
-        collected: list[ClaimEvidence] = []
-        raw_claims = analysis_result.structured_data.get("claims")
-        if isinstance(raw_claims, list):
-            for item in raw_claims:
-                if not isinstance(item, dict):
-                    continue
-                try:
-                    claim = ClaimEvidence.model_validate(item)
-                except Exception:
-                    continue
-                if claim.statement:
-                    collected.append(claim)
-
-        if not collected:
-            fallback_values = [analysis_result.summary, *analysis_result.key_points]
-            extracted_notes = analysis_result.structured_data.get("extracted_notes")
-            if isinstance(extracted_notes, dict):
-                fallback_values.extend(
-                    str(extracted_notes.get(key, ""))
-                    for key in ("research_problem", "core_method", "main_results")
-                )
-            for index, value in enumerate(fallback_values, start=1):
-                statement = cls._sanitize_text(value, max_length=400)
-                if statement:
-                    collected.append(
-                        ClaimEvidence(
-                            claim_id=f"text-{index}",
-                            statement=statement,
-                            category="text_analysis",
-                        )
-                    )
-
-        start_index = len(collected) + 1
-        for offset, analysis in enumerate(figure_analyses):
-            statement = cls._sanitize_text(analysis.claimed_conclusion, max_length=400)
-            if not statement or statement == "不足以判断":
-                continue
-            collected.append(
-                ClaimEvidence(
-                    claim_id=f"figure-{start_index + offset}",
-                    statement=statement,
-                    category="figure_claim",
-                    source_sections=[analysis.figure_id] if analysis.figure_id else [],
-                    evidence=analysis.main_observations[:3],
-                    evidence_ids=[analysis.figure_id] if analysis.figure_id else [],
-                    confidence=analysis.confidence,
-                )
-            )
-        return collected[:20]
+        # 保留现有模型调用预算；QC 使用完整清单，将超出预算的主张标为未核验。
+        return collect_claims(analysis_result=analysis_result, figure_analyses=figure_analyses)[:20]
 
     @classmethod
     def _build_task_description(
@@ -212,6 +163,7 @@ class CrewAIFactCheckRunner:
             "论文证据摘录：\n"
             f"{source_text}\n\n"
             "逐条输出 claim_id、claim、claim_source、verdict、evidence_refs、evidence_ids、rationale、confidence。\n"
+            "claim 必须原样复制对应主张，不得改写；evidence_refs 至少提供一段能在所引 evidence_ids 位置直接找到的原文片段。\n"
             "evidence_refs 应引用章节名、Figure ID 或简短原文片段；evidence_ids 优先引用证据索引中的稳定 ID"
             "（章节 S1..Sn、图表沿用 Figure ID）；不要引入当前材料之外的事实。\n"
             "说明性内容使用简体中文，最终只输出 JSON。"
@@ -219,6 +171,8 @@ class CrewAIFactCheckRunner:
 
     @staticmethod
     def _source_excerpt(document: ParsedDocument) -> str:
+        if document.metadata.get("qa_bounded_evidence"):
+            return document.sections.get("results", "")[:20000]
         priority = (
             "abstract",
             "introduction",

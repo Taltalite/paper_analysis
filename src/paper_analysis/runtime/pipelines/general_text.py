@@ -194,7 +194,12 @@ class GeneralTextPipeline(AnalysisPipeline):
         }
         claims = payload.get("claims")
         if isinstance(claims, list):
-            normalized["claims"] = [item for item in claims if isinstance(item, dict)]
+            normalized["claims"] = [
+                {**item, "evidence": [item["evidence"]]}
+                if isinstance(item, dict) and isinstance(item.get("evidence"), str)
+                else item
+                for item in claims
+            ]
         return normalized
 
     @staticmethod

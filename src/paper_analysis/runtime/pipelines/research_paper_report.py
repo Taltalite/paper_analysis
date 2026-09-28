@@ -11,10 +11,11 @@ from paper_analysis.domain.models import (
     PaperAnalysis,
 )
 from paper_analysis.domain.schemas import AnalysisResult, ParsedDocument
+from paper_analysis.runtime.pipelines.quality_control import apply_quality_gate
 
 
 class ResearchPaperReportRenderer:
-    """研究论文 Markdown 报告渲染器（纯函数式，不持有运行状态）。"""
+    """在实际交付入口执行确定性 QC，确保 Markdown 与 JSON 使用同一份质量状态。"""
 
     def render(
         self,
@@ -26,6 +27,10 @@ class ResearchPaperReportRenderer:
         figure_analyses: list[FigureAnalysis],
         fact_checks: FactCheckBatch,
     ) -> str:
+        figure_analyses = apply_quality_gate(
+            document=source_document, result=result, figure_analyses=figure_analyses,
+            figure_evidence=figure_evidence, fact_checks=fact_checks,
+        )
         paper_analysis = self._coerce_paper_analysis(result)
         parser_authors = source_document.metadata.get("authors", [])
         if isinstance(parser_authors, list):
@@ -37,6 +42,8 @@ class ResearchPaperReportRenderer:
         ) or self._missing_text()
 
         return f"""# 文献分析报告
+
+{self._render_quality(result)}
 
 ## 1. 基本信息
 - 标题：{self._clean_text(paper_analysis.metadata.title or source_document.title)}
@@ -92,10 +99,12 @@ class ResearchPaperReportRenderer:
 {self._render_figure_consistency_checks(figure_analyses)}
 
 ### 6.4 视觉证据与解析状态
+以下为解析器线索与模型视觉提取记录，不代表独立核验通过。
 {self._render_figure_evidence_section(figure_evidence)}
 
 ## 7. 事实检查
 ### 7.1 总体结论
+以下为模型核验意见，交付状态以报告顶部 QC 结果为准。
 {self._clean_text(fact_checks.overall_assessment)}
 
 ### 7.2 逐项核验
@@ -123,7 +132,48 @@ class ResearchPaperReportRenderer:
 
 ## 10. 总结
 {self._clean_text(result.summary)}
+
+{self._render_draft(result)}
 """
+
+    @staticmethod
+    def _render_quality(result: AnalysisResult) -> str:
+        qc = result.quality
+        if qc is None:
+            return "> QC 尚未执行。"
+        labels = {"passed": "通过本轮检查", "needs_review": "需要复核", "blocked": "暂不能交付正式结论"}
+        lines = [
+            f"> **QC：{labels[qc.status]}**",
+            f"> 有效清单中已对应核验 {qc.checked_claims}/{qc.expected_claims} 条主张；另有结构无效 {qc.invalid_claims} 条；可交付 {len(qc.accepted_claim_ids)} 条。",
+            f"> {qc.scope}",
+            "\n### QC 问题清单",
+        ]
+        codes = list(dict.fromkeys(item.code for item in qc.issues))
+        for code in codes:
+            issues = [item for item in qc.issues if item.code == code]
+            lines.append(f"- **{code}（{len(issues)} 项）**")
+            lines.extend(f"  - `{item.location}`：{item.message}" for item in issues[:3])
+            if len(issues) > 3:
+                lines.append("  - 其余位置见 JSON 的 quality.issues。")
+        if not qc.issues:
+            lines.append("- 本轮未检出问题；仍需结合检查范围理解。")
+        return "\n".join(lines)
+
+    @classmethod
+    def _render_draft(cls, result: AnalysisResult) -> str:
+        draft = result.structured_data.get("qc_draft", {})
+        sections = draft.get("structured_data", {})
+        fields = {"原始摘要": draft.get("summary", ""), "原始要点": draft.get("key_points", []),
+                  "原始提取": sections.get("extracted_notes", {}), "原始创新点": sections.get("novelty", "")}
+        blocks = ["## 附录：原始生成草稿（待复核，不作为正式结论）", "完整原始结构保存在 JSON 的 qc_draft 中。"]
+        for label, value in fields.items():
+            if not value:
+                continue
+            text = str(value)
+            if len(text) > 3000:
+                text = text[:3000] + "\n（展示已截断，完整内容见 JSON）"
+            blocks.append(f"### {label}\n" + "\n".join(f"> {line}" for line in text.splitlines()))
+        return "\n\n".join(blocks)
 
     @staticmethod
     def _coerce_paper_analysis(result: AnalysisResult) -> PaperAnalysis:
@@ -272,6 +322,8 @@ class ResearchPaperReportRenderer:
         paper_analysis: PaperAnalysis,
         result: AnalysisResult,
     ) -> str:
+        if result.quality is not None:
+            return "\n".join(f"> {line}" for line in result.summary.splitlines())
         research_problem = cls._clean_text(paper_analysis.extracted_notes.research_problem)
         core_method = cls._clean_text(paper_analysis.extracted_notes.core_method)
         main_results = cls._clean_text(paper_analysis.extracted_notes.main_results)

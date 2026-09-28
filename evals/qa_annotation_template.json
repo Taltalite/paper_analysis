@@ -1,0 +1,19 @@
+{
+  "candidate_id": "QA-01",
+  "paper_title": null,
+  "doi": null,
+  "pdf_sha256": null,
+  "question": null,
+  "figure": null,
+  "panel": null,
+  "annotators": [null, null],
+  "annotation_state": "未标注",
+  "expected_status": null,
+  "gold_claims": [],
+  "gold_evidence": [{"pdf_page_1_based": null, "block_id": null, "bbox": null, "figure": null, "panel": null, "source_kind": null, "verbatim_quote": null, "visual_observation": null}],
+  "required_uncertainties": [],
+  "forbidden_inferences": [],
+  "adjudication_notes": null,
+  "execution": {"answer_id": null, "model": null, "vision_model": null, "date": null, "real_call": false, "max_followups": null},
+  "evaluation": {"claim_correctness": null, "citation_correctness": null, "panel_alignment": null, "visual_failure_honesty": null, "abstention_correctness": null, "evidence_recall": null, "reviewer_notes": null}
+}

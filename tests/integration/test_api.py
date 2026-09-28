@@ -5,6 +5,7 @@ import unittest
 from pathlib import Path
 
 from fastapi.testclient import TestClient
+from paper_analysis.domain.quality import QualityReport
 
 from paper_analysis.adapters.storage.job_store import LocalFilesystemJobStore
 from paper_analysis.adapters.storage.local_fs import LocalFilesystemArtifactStorage
@@ -48,6 +49,7 @@ class FakeAnalysisService:
 
     async def analyze_document(self, document: ParsedDocument, mode: AnalysisMode) -> AnalysisResult:
         return AnalysisResult(
+            quality=QualityReport(status="blocked", expected_claims=1),
             title=document.title,
             summary=f"Summary for {mode.value}",
             key_points=["Synthetic key point"],
@@ -104,6 +106,7 @@ class ApiIntegrationTests(unittest.TestCase):
         job_response = self.client.get(f"/api/analysis/jobs/{job_id}")
         self.assertEqual(job_response.status_code, 200)
         self.assertEqual(job_response.json()["status"], "completed")
+        self.assertEqual(job_response.json()["quality"]["status"], "blocked")
 
         progress_response = self.client.get(f"/api/analysis/jobs/{job_id}/progress")
         self.assertEqual(progress_response.status_code, 200)
@@ -118,12 +121,14 @@ class ApiIntegrationTests(unittest.TestCase):
         report_response = self.client.get(f"/api/analysis/jobs/{job_id}/report")
         self.assertEqual(report_response.status_code, 200)
         report_payload = report_response.json()
+        self.assertEqual(report_payload["quality"]["status"], "blocked")
         self.assertIn("# Report", report_payload["markdown_report"])
         self.assertIn("# Parsed PDF Structure", report_payload["parsed_markdown"])
 
         artifact_response = self.client.get(f"/api/analysis/jobs/{job_id}/artifact")
         self.assertEqual(artifact_response.status_code, 200)
         artifact_payload = artifact_response.json()
+        self.assertEqual(artifact_payload["quality"]["status"], "blocked")
         self.assertEqual(artifact_payload["status"], "completed")
         self.assertIn("structured_data", artifact_payload["json_report"])
         self.assertIn("figure_analyses", artifact_payload["json_report"]["structured_data"])

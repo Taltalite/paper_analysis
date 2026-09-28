@@ -10,6 +10,37 @@
 
 ## 架构概览
 
+### 单篇文献图表问答
+
+Web 页面顶部提供生物信息与表观遗传学问答：上传单篇 PDF、输入问题，可指定图号（如 `2`）和子图（如 `a`）。无需创建全文报告任务，原有报告与 `/api/analysis` 接口保留。
+
+新增 `POST /api/qa/questions`（multipart）：`file`、`question`、可选 `figure` / `panel`、`max_followups`（0–2，默认 2）。设为 0 即单轮问答；2 表示初次回答后最多两轮文内补取与纠错。同步返回类型化答案，`GET /api/qa/questions/{id}` 读取后端保存结果。
+
+返回 `status`（`answered` / `partial` / `refused`）、中文 `answer`、逐条 `claims` 与 `evidence_ids`、`evidence` 的 PDF 物理页码/正文块/图号/子图/原文摘录、`uncertainties`、`visual_status` 和 `quality`。页面视觉证据为模型观察，记录实际输入页码集合，不等同于专家金标准。未成功读取目标图/子图时不得交付视觉主张；正文/图注可支持部分回答。
+
+独立链路为 PDF parser → 文内块检索 → 按需视觉 adapter → CrewAI 问答 → 既有事实核验和 QC → 有界纠错。每轮新增最多四个正文块，每块最多 1500 字符；视觉仅针对一个目标图。显式图号优先，也支持从问题提取 `图2a` / `Figure 2a`。未指定图号时按图注关键词选择候选图；复杂定位或扫描图注可能失败，应指定图号或核对原文。问答解析阶段只建结构索引，目标页首次读图或查看证据时才渲染；全文报告的默认解析行为不变。
+
+后端在 `.data/questions/{id}/` 保存 PDF、请求、任务状态、解析视图、逐尝试审计与最终答案。最大 PDF 为 30 MB。Web 默认使用后台问答队列，可取消、重试，在刷新后从后端任务列表恢复；URL 中只保存任务 ID，不在浏览器保存业务结果。LLM / 视觉配置沿用统一适配器，不加入外部检索、多论文综述或训练。
+
+- `POST /api/qa/jobs`：同样的 multipart 字段，返回 202 和任务 ID。
+- `GET /api/qa/jobs`、`GET /api/qa/jobs/{id}`：最近任务及执行阶段。
+- `POST /api/qa/jobs/{id}/cancel`、`POST /api/qa/jobs/{id}/retry`：取消和失败恢复。
+- `GET /api/qa/questions/{id}`：正式答案，任务完成前不发布。
+- `GET /api/qa/questions/{id}/audit`：当前尝试的逐轮证据、草稿、核验和 QC。
+- `GET /api/qa/questions/{id}/pages/{page}?evidence_id=...`：PDF 物理页 PNG，正文证据可高亮原始 bbox；视觉证据可查看实际输入页。
+
+原同步 `POST /api/qa/questions` 保留，通过同一个队列等待结果，超时返回 504。当前是 Linux 单 API 主管进程的本地版本（勿使用多个 Uvicorn workers），默认同时运行 2 个问答子进程，单任务执行上限 600 秒。超时/取消终止子进程；异常重启后运行中的任务标为失败，排队任务恢复，用户可显式重试。重试递增 attempt 并保留旧审计；迟到或旧轮次产物不能覆盖最终状态。具体工程验收见 [docs/qa-engineering.md](docs/qa-engineering.md)。
+
+离线验证：
+
+```bash
+bash scripts/run.sh python -m unittest discover -s tests/unit -v
+bash scripts/run.sh python -m unittest discover -s tests/integration -v
+bash scripts/run.sh npm --prefix web run build
+```
+
+领域候选集及人工标注规则见 [evals/qa_README.md](evals/qa_README.md)。本轮未进行真实问答模型调用或专家效果评估；测试通过仅说明实现和失败处理符合离线验收，不代表领域答案已被验证正确。
+
 ### 目录结构
 
 - `src/paper_analysis/domain/`
@@ -352,3 +383,9 @@ bash scripts/run.sh python scripts/verify_vision.py \
 通过该脚本只说明视觉接口返回了结构化结果，不代表论文理解准确率评测已完成。完整报告仍使用上文 `INPUT_PATH=... bash scripts/run.sh` 运行。
 
 本次真实运行结果、简历能力边界及已知限制见 [项目能力审计](docs/project-capability-audit.md)。
+
+## QC 质量控制
+
+研究论文报告在渲染入口执行零模型调用的 QC，检查主张核验漏项、重复、未知 ID、证据定位及报告字段对应。正式总结只使用满足交付规则的主张，其余生成内容保存在 `qc_draft` 并标记待复核。任务执行状态与新增的 `quality.status` 独立：`completed` 不代表质量通过；旧结果的 `quality=null` 表示尚未检查。
+
+可用 `bash scripts/run.sh python scripts/check_report_quality.py --source 原文.pdf --report 已有报告.json --output output/qc` 离线检查已有结果，不调用模型。接口变化、规则范围、原始草稿位置及已知限制见 [QC 使用说明](docs/quality-control.md)。

@@ -162,6 +162,7 @@ class ResearchPaperPipeline(AnalysisPipeline):
         title = draft.title or document.title
         merged_metadata = {
             **document.metadata,
+            "qc_original_sections": document.metadata.get("qc_original_sections", dict(document.sections)),
             "title": title,
             "authors": draft.authors or document.metadata.get("authors", []),
             "doi": draft.doi or document.metadata.get("doi", ""),

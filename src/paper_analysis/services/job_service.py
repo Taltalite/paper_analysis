@@ -96,6 +96,7 @@ class JobService:
                     await self._update_job(job, status=JobStatus.ANALYZING)
                     logger.info("开始执行分析。mode=%s", job.mode.value)
                     result = await self._analysis_service.analyze_document(parsed_document, job.mode)
+                    job.quality = result.quality
                     logger.info(
                         "分析完成。summary_length=%s structured_keys=%s",
                         len(result.summary),
@@ -144,6 +145,7 @@ class JobService:
             status=job.status,
             markdown_report=markdown_report,
             parsed_markdown=parsed_markdown,
+            quality=job.quality,
         )
 
     async def get_artifact_content(self, job_id: UUID) -> ArtifactContentResponse:
@@ -170,6 +172,7 @@ class JobService:
             markdown_report=markdown_report,
             parsed_markdown=parsed_markdown,
             json_report=json_report,
+            quality=job.quality,
         )
 
     async def _update_job(

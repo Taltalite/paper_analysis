@@ -8,6 +8,7 @@ from pydantic import BaseModel, Field
 
 from paper_analysis.domain.enums import AnalysisMode, DocumentKind, JobStatus
 from paper_analysis.domain.models import FigureMetadata
+from paper_analysis.domain.quality import QualityReport
 
 
 class UploadAnalysisRequest(BaseModel):
@@ -54,6 +55,7 @@ class AnalysisJob(BaseModel):
     updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
     error_message: str | None = None
     artifact: AnalysisArtifact = Field(default_factory=AnalysisArtifact)
+    quality: QualityReport | None = None
 
 
 class AnalysisResult(BaseModel):
@@ -63,6 +65,7 @@ class AnalysisResult(BaseModel):
     limitations: list[str] = Field(default_factory=list)
     markdown_report: str = ""
     structured_data: dict[str, Any] = Field(default_factory=dict)
+    quality: QualityReport | None = None
 
 
 class AnalysisExecution(BaseModel):
@@ -79,6 +82,7 @@ class MarkdownReportResponse(BaseModel):
     status: JobStatus
     markdown_report: str
     parsed_markdown: str | None = None
+    quality: QualityReport | None = None
 
 
 class JobProgressStep(BaseModel):
@@ -103,3 +107,4 @@ class ArtifactContentResponse(BaseModel):
     markdown_report: str | None = None
     parsed_markdown: str | None = None
     json_report: dict[str, Any] | None = None
+    quality: QualityReport | None = None

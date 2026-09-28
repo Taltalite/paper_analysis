@@ -1,5 +1,19 @@
 const API_BASE_URL = __PAPER_ANALYSIS_API_BASE_URL__;
 
+export const qaAssetUrl = (id, suffix) => `${API_BASE_URL}/api/qa/questions/${id}/${suffix}`;
+export const listQuestionJobs = () => fetch(`${API_BASE_URL}/api/qa/jobs`).then(parseJsonResponse);
+export const getQuestionJob = (id) => fetch(`${API_BASE_URL}/api/qa/jobs/${id}`).then(parseJsonResponse);
+export const getQuestionAnswer = (id) => fetch(`${API_BASE_URL}/api/qa/questions/${id}`).then(parseJsonResponse);
+export const retryQuestionJob = (id) => fetch(`${API_BASE_URL}/api/qa/jobs/${id}/retry`, { method: "POST" }).then(parseJsonResponse);
+export const cancelQuestionJob = (id) => fetch(`${API_BASE_URL}/api/qa/jobs/${id}/cancel`, { method: "POST" }).then(parseJsonResponse);
+export const submitQuestionJob = (data) => fetch(`${API_BASE_URL}/api/qa/jobs`, { method: "POST", body: data }).then(parseJsonResponse);
+
+export async function askPaperQuestion(formData) {
+  return parseJsonResponse(await fetch(`${API_BASE_URL}/api/qa/questions`, {
+    method: "POST", body: formData,
+  }));
+}
+
 async function parseJsonResponse(response) {
   const payload = await response.json().catch(() => null);
   if (!response.ok) {

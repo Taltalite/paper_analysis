@@ -2,6 +2,8 @@
 
 本目录用于保存可复现的离线评估定义，而不是保存论文原文件或真实模型输出。
 
+新增单篇图表问答候选集和人工标注模板见 [qa_README.md](qa_README.md)，明确区分候选材料、真实调用和专家效果验证。
+
 - `datasets/paper_v1/manifest.jsonl`：初始黄金集的清单、文件指纹和难度标签。
 - `datasets/paper_v1/ANNOTATION_TEMPLATE.md`：人工确认的标注模板。
 - `runs/`：后续真实模型和基线运行产生的本地结果；已被 Git 忽略。

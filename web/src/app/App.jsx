@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { createAnalysisJob, getAnalysisProgress, getArtifactContent, getMarkdownReport } from "../api/client";
 import ReportPanel from "../components/ReportPanel";
 import StatusPanel from "../components/StatusPanel";
+import QuestionPanel from "../components/QuestionPanel";
 
 const POLL_INTERVAL_MS = 1000;
 const MODE = "research_paper";
@@ -136,6 +137,7 @@ export default function App() {
 
   return (
     <main className="layout">
+      <QuestionPanel />
       <section className="hero panel">
         <div className="panel-header">
           <h1>论文分析系统</h1>

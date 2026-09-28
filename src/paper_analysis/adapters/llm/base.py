@@ -6,6 +6,9 @@ from typing import Any, Protocol, runtime_checkable
 
 
 class LLMClient(ABC):
+    def audit_metadata(self) -> dict[str, str | None]:
+        return {"model": type(self).__name__, "vision_model": None}
+
     @abstractmethod
     def to_crewai_llm(self) -> Any:
         raise NotImplementedError
