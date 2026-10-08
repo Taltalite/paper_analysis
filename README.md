@@ -1,6 +1,16 @@
 # Paper Analysis
 
-一个基于 CrewAI 的研究型文献分析系统，支持本地文件分析、FastAPI 后端服务和轻量 Web 前端。
+面向分子生物学、生物信息学与表观遗传学的 CrewAI 文献分析平台：Kimi 处理论文文字和综合分析，Qwen `qwen3.8-flash` 处理图像输入。重点分析论文故事架构、图组论证流程、结果证据支持，以及多方法比较论文的 benchmark。支持本地文件、FastAPI 后端和轻量 Web 前端。
+
+当前工程目标是在不依赖人工标注的情况下打通 agent loop、证据问答、token 预算和分析强度控制。实施工作包、依赖和测试要求见 [项目改进计划](docs/PROJECT_IMPROVEMENT_PLAN_2026-10-04.md)，进度与验收边界见 [工程目标](docs/ENGINEERING_TARGET_2026-10-04.md)；工程测试通过不等于专家效果评估通过。
+
+2026-10-05 已补入请求级计量与持久化累计预算、报告补取及直接图像复核、后端连续问答、可终止的报告子进程、Web 策略控制和离线 CI。修复映射、复现命令与尚未验收的范围见 [本轮修复验收](docs/PLAN_FIXES_2026-10-05.md)，该记录更新下文历史里程碑的能力边界。
+
+报告创建接口支持 `intensity`、`token_budget`、`max_calls`、`max_output_tokens`、`timeout_seconds`、`report_followups`。报告补取默认 0，Web 默认 1，最多 2；每次新增候选须重新核验。`light/standard/deep` 控制系统迭代与证据范围，不代表供应商原生 reasoning 参数已启用。显式填写的预算不会随强度提高。
+
+`POST /api/qa/questions/{id}/conversation` 从已完成问答创建会话，`GET /api/qa/conversations/{id}` 恢复会话，`POST /api/qa/conversations/{id}/turns` 接收 `QuestionRequest` JSON，无需再上传 PDF。会话按顺序追问并累计用量；重试不清零账本。报告可通过 `/api/analysis/jobs/{id}/cancel` 和 `/retry` 取消、重试。当前本地队列只支持一个 API 主管进程。
+
+真实接口 smoke 使用合成材料，运行命令为 `bash scripts/run.sh python -m scripts.smoke_models --output output/new-smoke-directory`，最多 2 次请求，共享 8,000 token 预算；默认 CI 不执行该命令。未知供应商用量按预留保守记账，估算与实际用量分别显示，不能把预算估算当成精确费用上限。
 
 系统面向的核心场景是：
 - 读取 `txt` / `md` / `pdf`
@@ -16,7 +26,9 @@ Web 页面顶部提供生物信息与表观遗传学问答：上传单篇 PDF、
 
 新增 `POST /api/qa/questions`（multipart）：`file`、`question`、可选 `figure` / `panel`、`max_followups`（0–2，默认 2）。设为 0 即单轮问答；2 表示初次回答后最多两轮文内补取与纠错。同步返回类型化答案，`GET /api/qa/questions/{id}` 读取后端保存结果。
 
-返回 `status`（`answered` / `partial` / `refused`）、中文 `answer`、逐条 `claims` 与 `evidence_ids`、`evidence` 的 PDF 物理页码/正文块/图号/子图/原文摘录、`uncertainties`、`visual_status` 和 `quality`。页面视觉证据为模型观察，记录实际输入页码集合，不等同于专家金标准。未成功读取目标图/子图时不得交付视觉主张；正文/图注可支持部分回答。
+分析和问答请求还可提交 `intensity`（`light` / `standard` / `deep`）、`token_budget`、`max_calls`、`max_output_tokens`、`timeout_seconds`、`max_figures` 和 `max_visual_reviews`。后端会保存 requested/effective policy、调用数量、provider/estimated/unknown 用量、缓存命中和 stop reason；强度档位不会绕过服务端上限。
+
+返回 `status`（`answered` / `partial` / `refused`）、中文 `answer`、逐条 `claims` 与 `evidence_ids`、`evidence` 的 PDF 物理页码/正文块/图号/子图/原文摘录、`uncertainties`、`visual_status` 和 `quality`。审计中的 `visual_review.failure_reason` 会区分缺图、预算耗尽、截止时间、HTTP、解析和供应商错误。页面视觉证据为模型观察，记录实际输入页码集合，不等同于专家金标准。未成功读取目标图/子图时不得交付视觉主张；正文/图注可支持部分回答。
 
 独立链路为 PDF parser → 文内块检索 → 按需视觉 adapter → CrewAI 问答 → 既有事实核验和 QC → 有界纠错。每轮新增最多四个正文块，每块最多 1500 字符；视觉仅针对一个目标图。显式图号优先，也支持从问题提取 `图2a` / `Figure 2a`。未指定图号时按图注关键词选择候选图；复杂定位或扫描图注可能失败，应指定图号或核对原文。问答解析阶段只建结构索引，目标页首次读图或查看证据时才渲染；全文报告的默认解析行为不变。
 
@@ -137,8 +149,11 @@ PDF 文献分析的当前执行顺序为：
 - `8. 评价`
 - `9. 启发与参考价值`
 - `10. 总结`
+- `11. 领域结构化产物`：覆盖状态、故事架构、图组 Flow、细节证据矩阵和 Benchmark（无适用内容时明确标记）
 
 最终 Markdown 仅保留报告正文，不输出 agent 中间协商、工具调用过程、链式推理文本或结构化解析预览。
+
+`AnalysisResult.research_products` 与报告第 11 节使用同一份确定性组装结果。`verified` 只表示通过本项目的证据定位/QC 闸门，不代表专家正确性认证；缺失数据使用 `not_reported`，机制论文没有适用比较时使用 `not_applicable` 并说明原因。
 
 ## 环境配置
 
@@ -389,3 +404,39 @@ bash scripts/run.sh python scripts/verify_vision.py \
 研究论文报告在渲染入口执行零模型调用的 QC，检查主张核验漏项、重复、未知 ID、证据定位及报告字段对应。正式总结只使用满足交付规则的主张，其余生成内容保存在 `qc_draft` 并标记待复核。任务执行状态与新增的 `quality.status` 独立：`completed` 不代表质量通过；旧结果的 `quality=null` 表示尚未检查。
 
 可用 `bash scripts/run.sh python scripts/check_report_quality.py --source 原文.pdf --report 已有报告.json --output output/qc` 离线检查已有结果，不调用模型。接口变化、规则范围、原始草稿位置及已知限制见 [QC 使用说明](docs/quality-control.md)。
+
+
+## 独立视觉模型与有界问答循环（2026-10-03）
+
+配置模板见 [.env.example](.env.example)。已有 `KIMI_*` / `OPENAI_*` 行为保持兼容。
+若保留 Kimi 做文本、使用百炼等 OpenAI 兼容服务读图，在本地 `.env` 增加：
+
+```dotenv
+VISION_API_KEY=
+VISION_BASE_URL=https://YOUR_WORKSPACE_ID.cn-beijing.maas.aliyuncs.com/compatible-mode/v1
+VISION_MODEL=qwen3-vl-flash
+VISION_TEMPERATURE=0.2
+```
+
+独立视觉配置启用后，`VISION_MODEL`、`VISION_API_KEY`、`VISION_BASE_URL` 必须同时提供；缺项直接报错，不会把文本模型密钥发送到视觉端点。`VISION_TEMPERATURE` 默认 0.2；`VISION_REQUEST_TIMEOUT` 仍以秒计。问答和全文报告统一复用该配置。将 `YOUR_WORKSPACE_ID` 替换为百炼控制台的业务空间 ID，API Key 与地域必须匹配；新加坡区将 `cn-beijing` 改为 `ap-southeast-1`。URL 不添加 `/chat/completions`。保留本地 `.env` 中原有 Kimi 订阅密钥，仅合并视觉配置；不要用空密钥模板覆盖已有文件。
+
+2026-10-03 核对[官方接入文档](https://help.aliyun.com/zh/model-studio/first-api-call-to-qwen)后，模板使用业务空间专属地址。默认选择低成本视觉模型 [qwen3-vl-flash](https://help.aliyun.com/zh/model-studio/qwen3-vl-flash)，复杂论文图表可改为 `qwen3-vl-plus` 对比效果。Kimi 负责文字分析与文本核验，Qwen 负责图片语义提取及问答原图复核。API 费用独立于 Kimi 订阅，不保证免费；按控制台额度及地域价格计费。此方案尚未通过本项目的 Qwen 真实调用和领域质量评测。
+
+视觉缓存新增端点、模型及采样配置的指纹，避免同名模型跨供应商误用缓存；指纹不含密钥。问答审计记录视觉配置指纹及完整 Python 包代码指纹。旧审计可继续读取，新缓存与旧缓存分开。
+
+若注册的是**千问AI平台 Token Plan**，使用套餐专属密钥和 `https://token-plan.maas.qianwenaiapi.com/compatible-mode/v1`，视觉模型改为 `qwen3.8-flash`。[官方套餐模型列表](https://platform.qianwenai.com/docs/token-plan/overview)与百炼按量模型列表不同。本项目真实预检中，Token Plan 请求 `qwen3-vl-flash` 返回 HTTP 404 `model_not_found`，改用 `qwen3.8-flash` 后合成视觉测试通过。模型、密钥、端点必须按所购服务成组配置。
+
+Kimi + Qwen3.8-Flash 已完成五场景真实问答冒烟，接口可用，但细小标签提取和复核仍存在错误；详见 [Qwen 冒烟记录](docs/QWEN_SMOKE_2026-10-03.md)。
+
+问答最多执行初轮加两轮补取。`evidence_gaps` 新增 `vision`：当真实视觉不可用且只缺视觉证据时，一轮后停止，保留已支持的正文/图注部分或拒答；若仍缺方法、对照等正文证据，则允许有界补取。后续调用失败只能保留最近一次成功核验结果，不能恢复已被冲突撤回的旧主张。
+
+问答生产装配增加直接看图复核：文本 checker 通过的视觉主张，还需把实际页面图片交给视觉适配器再次核对。复核请求不携带先前 OCR 摘录或核验结论；只交付逐条支持且 ID、原句对应的主张。冲突反馈进入后续纠错，失败、漏项和预算耗尽时不发布对应视觉主张。每题最多两次复核调用，相同图片和主张复用题内结果；这些是逻辑调用预算，不包含供应商 SDK 的内部重试次数。
+
+目标子图单独提取并参与缓存键；审计保存每轮 `visual_review`、图片 SHA-256 与调用次数，最终答案的 `visual_checks` 对应已交付视觉主张。`visual_status=succeeded` 仅表示提取成功。全文报告保留原有图表提取与 QC 流程，本次直接看图复核闸门仅适用于问答。
+
+当前仍使用同一配置的视觉模型进行独立调用，因此不能视作独立专家或正确性保证。人工参考评估仍待完成；真实历史问题与改进后复验见 [冒烟记录](docs/QA_SMOKE_2026-10-03.md)。
+
+
+正文理解与事实核验的检索工具现在绑定后端文档，只接收关键词、章节名及有上限的窗口参数，禁止模型回传或替换 `paper_text`。问答 checker 的工具仅能检索本轮有界证据视图，单次工具输出最多 4000 字符。旧工具类保留供已有调用兼容。
+
+报告正文提示执行 12,000 字符总上限，并为方法、结果、实验设置分配较多空间；避免长摘要/引言挤掉关键章节。这是字符预算，不是精确 Token 计费。问答提示也移除了重复的完整规则文本。

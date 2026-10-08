@@ -29,9 +29,10 @@ class InProcessJobExecutor:
 
             future = self._executor.submit(self._run_job, job_service, job_id)
             self._futures[job_id] = future
-            future.add_done_callback(
-                lambda completed, target_job_id=job_id: self._finalize_job(target_job_id, completed)
-            )
+        # Future 已完成时回调会立即同步执行；不能在持有同一把锁时注册。
+        future.add_done_callback(
+            lambda completed, target_job_id=job_id: self._finalize_job(target_job_id, completed)
+        )
 
     def _finalize_job(self, job_id: UUID, future: Future[None]) -> None:
         with self._lock:

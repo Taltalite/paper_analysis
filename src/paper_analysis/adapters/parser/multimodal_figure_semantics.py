@@ -5,7 +5,7 @@ import json
 import logging
 import re
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from pydantic import BaseModel, Field
 
@@ -18,8 +18,12 @@ from paper_analysis.domain.models import (
     FigureSemanticArtifactBatch,
 )
 from paper_analysis.domain.schemas import ParsedDocument
+from paper_analysis.runtime.budget import BudgetExceededError, DeadlineExceededError
 
-_PROMPT_VERSION = "v2"
+if TYPE_CHECKING:
+    from paper_analysis.runtime.budget import BudgetLedger
+
+_PROMPT_VERSION = "v3-target-panel"
 logger = logging.getLogger(__name__)
 _MAX_IMAGES_PER_FIGURE = 4
 _CONFIDENCE_VALUES = {"高", "中", "低", "不足以判断"}
@@ -73,8 +77,10 @@ class MultimodalFigureSemanticExtractor:
         *,
         document: ParsedDocument,
         figures: list[FigureMetadata],
+        execution_context: "BudgetLedger | None" = None,
     ) -> FigureSemanticArtifactBatch:
-        artifacts = [self._extract_one(document=document, figure=figure) for figure in figures]
+        artifacts = [self._extract_one(document=document, figure=figure, execution_context=execution_context)
+                     for figure in figures]
         return FigureSemanticArtifactBatch(artifacts=artifacts)
 
     def _extract_one(
@@ -82,6 +88,8 @@ class MultimodalFigureSemanticExtractor:
         *,
         document: ParsedDocument,
         figure: FigureMetadata,
+        panel: str | None = None,
+        execution_context: "BudgetLedger | None" = None,
     ) -> FigureSemanticArtifact:
         try:
             image_paths = self._resolve_image_paths(figure)
@@ -90,19 +98,29 @@ class MultimodalFigureSemanticExtractor:
             if not image_paths:
                 return self._fallback_one(document=document, figure=figure, reason="没有可读取的图表图片或页面截图")
 
-            cache_key = self._cache_key(figure=figure, image_paths=image_paths)
+            cache_key = self._cache_key(figure=figure, image_paths=image_paths, panel=panel)
             cache_path = self._cache_path(image_paths[0], cache_key)
             payload = self._read_cache(cache_path)
+            if payload is not None and execution_context is not None:
+                execution_context.record_cache_hit(
+                    stage="figure_extraction",
+                    role="figure_observer",
+                    model=self._vision_client.vision_model or "configured-vision-model",
+                    endpoint_id="vision:cache",
+                )
             if payload is None:
-                raw = self._vision_client.complete_with_images(
-                    prompt=self._build_prompt(figure),
+                raw = self._complete_with_compatibility(
+                    prompt=self._build_prompt(figure, panel),
                     image_paths=image_paths,
+                    execution_context=execution_context,
                 )
                 payload = self._parse_payload(raw)
             payload = _VisionPayload.model_validate(payload).model_dump()
             artifact = self._to_artifact(figure=figure, image_paths=image_paths, payload=payload)
             self._write_cache(cache_path, payload)
             return artifact
+        except (BudgetExceededError, DeadlineExceededError):
+            raise
         except Exception as exc:
             # 不记录异常正文，避免第三方响应泄露认证信息或完整请求。
             reason = f"视觉解析失败（{type(exc).__name__}）"
@@ -110,6 +128,39 @@ class MultimodalFigureSemanticExtractor:
             if response is not None:
                 reason += f"，HTTP {response.status_code}"
             return self._fallback_one(document=document, figure=figure, reason=reason)
+
+    def _complete_with_compatibility(
+        self,
+        *,
+        prompt: str,
+        image_paths: list[Path],
+        execution_context: "BudgetLedger | None",
+    ) -> str:
+        try:
+            return self._vision_client.complete_with_images(
+                prompt=prompt,
+                image_paths=image_paths,
+                execution_context=execution_context,
+                stage="figure_extraction",
+                role="figure_observer",
+            )
+        except TypeError as exc:
+            # 兼容旧版 fake/第三方 adapter；只有明确是新增关键字不被支持时重试，
+            # 避免吞掉真实适配器内部的 TypeError。
+            message = str(exc)
+            if not any(name in message for name in ("execution_context", "stage", "role")):
+                raise
+            return self._vision_client.complete_with_images(
+                prompt=prompt,
+                image_paths=image_paths,
+            )
+
+    def extract_for_question(self, *, document: ParsedDocument, figures: list[FigureMetadata],
+                             panel: str | None = None,
+                             execution_context: "BudgetLedger | None" = None) -> FigureSemanticArtifactBatch:
+        return FigureSemanticArtifactBatch(artifacts=[self._extract_one(document=document, figure=f, panel=panel,
+                                                                        execution_context=execution_context)
+                                                      for f in figures[:1]])
 
     def _fallback_one(
         self,
@@ -131,7 +182,7 @@ class MultimodalFigureSemanticExtractor:
             return list(dict.fromkeys([*related[:1], Path(figure.page_snapshot_path)]))
         return [Path(p) for p in figure.image_block_paths if Path(p).is_file()][:_MAX_IMAGES_PER_FIGURE]
 
-    def _build_prompt(self, figure: FigureMetadata) -> str:
+    def _build_prompt(self, figure: FigureMetadata, panel: str | None = None) -> str:
         references = "；".join(span.strip()[:160] for span in figure.referenced_text_spans[:3]) or "（无）"
         prompt = _PROMPT_TEMPLATE.format(
             figure_id=figure.figure_id or "未知",
@@ -140,15 +191,24 @@ class MultimodalFigureSemanticExtractor:
         )
         if figure.context_page_snapshot_paths:
             prompt += "\n提供了相邻页面：图形本体可能位于前页、图注位于后页，请结合图注中的子图标签对应识别。"
+        if panel:
+            prompt += (f"\n本次只提取子图 {panel.lower()}。panels 仅返回这一子图，找不到则返回空数组。"
+                       "所有观察和 uncertainties 仅针对该子图，不输出其他子图的 OCR、数值或局限。")
+        prompt += "\nsummary 和 direct_evidence 只写图形本体可见内容；不能把图注中的统计含义冒充视觉观察。"
         return prompt
 
-    def _cache_key(self, *, figure: FigureMetadata, image_paths: list[Path]) -> str:
+    def _cache_key(self, *, figure: FigureMetadata, image_paths: list[Path], panel: str | None = None) -> str:
         digest = hashlib.sha256()
         digest.update(_PROMPT_VERSION.encode("utf-8"))
         digest.update((self._vision_client.vision_model or "").encode("utf-8"))
+        identity = getattr(self._vision_client, "vision_cache_identity", None)
+        if callable(identity):
+            value = identity()
+            if isinstance(value, str):
+                digest.update(value.encode("utf-8"))
         digest.update(figure.figure_id.encode("utf-8"))
         digest.update(figure.caption.encode("utf-8"))
-        digest.update(self._build_prompt(figure).encode("utf-8"))
+        digest.update(self._build_prompt(figure, panel).encode("utf-8"))
         for path in image_paths:
             digest.update(path.name.encode("utf-8"))
             digest.update(path.read_bytes())

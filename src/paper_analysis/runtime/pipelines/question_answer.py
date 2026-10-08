@@ -1,19 +1,32 @@
 """有界文内检索 → CrewAI 问答 → 既有事实核验及 QC，不调用全文报告。"""
 from __future__ import annotations
 
+from paper_analysis.domain.execution_context import scoped_execution
+
 import re
 import time
+from pathlib import Path
 from collections.abc import Callable
 
 from paper_analysis.adapters.parser.figure_semantics_base import FigureSemanticExtractor
+from paper_analysis.adapters.llm.visual_check import VisualClaimChecker
+from paper_analysis.domain.execution import ResolvedPolicy
+from paper_analysis.domain.execution import CallStatus
 from paper_analysis.domain.models import DocumentBlock
 from paper_analysis.domain.qa import AnswerDraft, AnswerResponse, EvidenceLocation, QuestionRequest, QuestionRound
 from paper_analysis.domain.quality import QualityReport
 from paper_analysis.runtime.pipelines.qa_quality import enforce_qa_evidence
+from paper_analysis.runtime.pipelines.visual_review import VisualReviewSession, enforce_visual_review
 from paper_analysis.domain.schemas import AnalysisResult, ParsedDocument
 from paper_analysis.runtime.crews.research.fact_check import FactCheckRunner
 from paper_analysis.runtime.crews.research.question_answer import QuestionAnswerRunner
 from paper_analysis.runtime.pipelines.quality_control import apply_quality_gate
+from paper_analysis.runtime.budget import (
+    BudgetExceededError,
+    BudgetLedger,
+    DeadlineExceededError,
+    estimate_text_tokens,
+)
 
 
 def figure_number(value: str) -> str:
@@ -22,13 +35,19 @@ def figure_number(value: str) -> str:
 
 class QuestionAnswerPipeline:
     def __init__(self, *, runner: QuestionAnswerRunner, checker: FactCheckRunner,
-                 vision: FigureSemanticExtractor) -> None:
+                 vision: FigureSemanticExtractor, visual_checker: VisualClaimChecker | None = None) -> None:
         self.runner, self.checker, self.vision = runner, checker, vision
+        self.visual_checker = visual_checker
 
+    @scoped_execution
     def run(self, *, document: ParsedDocument, request: QuestionRequest,
-            audit_sink: Callable[[QuestionRound], None] | None = None) -> AnswerResponse:
+            audit_sink: Callable[[QuestionRound], None] | None = None,
+            policy: ResolvedPolicy | None = None,
+            execution_context: BudgetLedger | None = None) -> AnswerResponse:
         if request.panel:
             request = request.model_copy(update={"panel": request.panel.lower()})
+        if execution_context and getattr(self.runner, "request_metering", False):
+            execution_context.verification_reserve = min(execution_context.policy.max_output_tokens * 2, execution_context.policy.token_budget // 4)
         blocks = [DocumentBlock.model_validate(b) for b in document.metadata.get("ordered_blocks", [])]
         caption_owners = {bid: f.figure_id for f in document.figures for bid in f.caption_block_ids}
         target = figure_number(request.figure) if request.figure else None
@@ -65,17 +84,35 @@ class QuestionAnswerPipeline:
                 selected[figure.figure_id] = EvidenceLocation(evidence_id=figure.figure_id, kind="caption",
                     page=figure.page_number, figure=figure.figure_id, excerpt=figure.caption[:4000])
         visual_status = "not_requested"
+        visual_paths: list[Path] = []
+        visual_budget_stop: str | None = None
         if target:
             visual_status = "failed"
             for figure in figures[:1]:
                 try:
-                    artifacts = self.vision.extract(document=document, figures=[figure]).artifacts
+                    targeted = getattr(self.vision, "extract_for_question", None)
+                    if callable(targeted):
+                        try:
+                            batch = targeted(document=document, figures=[figure], panel=request.panel,
+                                             execution_context=execution_context)
+                        except TypeError:
+                            batch = targeted(document=document, figures=[figure], panel=request.panel)
+                    else:
+                        try:
+                            batch = self.vision.extract(document=document, figures=[figure],
+                                                        execution_context=execution_context)
+                        except TypeError:
+                            batch = self.vision.extract(document=document, figures=[figure])
+                    artifacts = batch.artifacts
+                except (BudgetExceededError, DeadlineExceededError) as exc:
+                    visual_budget_stop = exc.reason.value
+                    artifacts = []
                 except Exception:
                     artifacts = []
                 for artifact in artifacts:
                     if artifact.figure_id != figure.figure_id or artifact.extraction_source != "multimodal_llm":
                         continue
-                    warnings.extend(artifact.uncertainties)
+                    warnings.extend(["图像观察存在不确定性，请核对原图。"] if artifact.uncertainties else [])
                     content = artifact.direct_evidence
                     confidence = artifact.confidence
                     if request.panel:
@@ -96,8 +133,21 @@ class QuestionAnswerPipeline:
                         page=figure.page_number, figure=figure.figure_id, panel=request.panel,
                         excerpt="\n".join(content)[:4000], image_pages=pages)
                     visual_status = "succeeded"
+                    # 文件路径只取 parser/后端渲染资产，绝不采纳模型生成路径。
+                    visual_paths = [Path(path) for path in [figure.page_snapshot_path, *figure.context_page_snapshot_paths]
+                                    if path and (m := re.search(r"page_(\d+)\.png$", path)) and int(m[1]) in pages]
             if visual_status == "failed":
                 warnings.append("目标图或子图未获得可用真实页面视觉证据；仅可引用正文或图注，不能声称读图成功。")
+        if visual_budget_stop is not None:
+            return AnswerResponse(
+                request=request,
+                status="refused",
+                answer="执行预算不足，未发布未经核验的视觉结论。",
+                uncertainties=["视觉证据请求在发送前被预算或截止时间阻止。"],
+                visual_status="failed",
+                quality=QualityReport(status="blocked"),
+                stop_reason=visual_budget_stop,
+            )
         terms = self._terms(request.question)
         feedback: list[str] = []
         draft = AnswerDraft()
@@ -109,12 +159,19 @@ class QuestionAnswerPipeline:
         stop_reason = "budget_exhausted"
         gaps: list[str] = []
         previous_signature: str | None = None
-        for round_index in range(request.max_followups + 1):
+        resolved = policy or ResolvedPolicy.resolve(request.execution_policy_request())
+        visual_session = (
+            VisualReviewSession(self.visual_checker, max_calls=resolved.effective.max_visual_reviews)
+            if self.visual_checker else None
+        )
+        visual_checks = []
+        max_rounds = min(request.max_followups, resolved.effective.max_followups)
+        for round_index in range(max_rounds + 1):
             started = time.monotonic()
             previous_ids = set(selected)
             gap_words = {"methods": "method protocol preparation", "controls": "control wild type untreated",
                          "statistics": "replicate statistical test p-value standard deviation", "results": "result difference"}
-            terms.update(self._terms(" ".join(gap_words[g] for g in gaps)))
+            terms.update(self._terms(" ".join(gap_words[g] for g in gaps if g in gap_words)))
             # 每轮最多新增四块，累计文本不超过 18,000 字符；不向模型重复发送全文。
             reference_ids = {bid for f in figures for bid in f.reference_block_ids}
             ranked = sorted((b for b in blocks if b.text and b.page_number > 0 and b.block_id not in selected),
@@ -139,7 +196,16 @@ class QuestionAnswerPipeline:
             evidence = list(selected.values())
             audit_round = QuestionRound(index=round_index, evidence=evidence, new_evidence_ids=new_ids)
             try:
-                draft = self.runner.run(request=request, evidence=evidence, feedback=[*warnings, *feedback])
+                draft = self._run_text_stage(
+                    self.runner.run,
+                    context=execution_context,
+                    stage="answer_draft",
+                    role="text_understanding",
+                    model="configured-text-model",
+                    request=request,
+                    evidence=evidence,
+                    feedback=[*warnings, *feedback],
+                )
                 audit_round.draft = draft
                 # 使用独立的、仅含已选证据的 ParsedDocument 视图复用既有核验与 QC。
                 view = ParsedDocument(title=document.title,
@@ -148,17 +214,47 @@ class QuestionAnswerPipeline:
                     metadata={"qa_bounded_evidence": True,
                               "ordered_blocks": [{"block_id": e.evidence_id, "text": e.excerpt} for e in evidence]})
                 result = AnalysisResult(structured_data={"claims": [c.model_dump() for c in draft.claims]})
-                checks = self.checker.run(document=view, analysis_result=result, figure_analyses=[], figure_evidence=[])
+                checks = self._run_text_stage(
+                    self.checker.run,
+                    context=execution_context,
+                    stage="fact_check",
+                    role="fact_checker",
+                    model="configured-text-model",
+                    document=view,
+                    analysis_result=result,
+                    figure_analyses=[],
+                    figure_evidence=[],
+                )
                 audit_round.checks = checks
                 apply_quality_gate(document=view, result=result, figure_analyses=[], figure_evidence=[], fact_checks=checks)
                 quality = result.quality or quality
                 enforce_qa_evidence(draft=draft, evidence=selected, request=request, quality=quality)
+                visual_claims = [c for c in draft.claims if c.basis == "visual" and c.claim_id in quality.accepted_claim_ids]
+                visual_checks = []
+                if visual_claims and visual_session:
+                    review = visual_session.review(request=request, claims=visual_claims, image_paths=visual_paths,
+                                                   execution_context=execution_context)
+                    audit_round.visual_review = review
+                    enforce_visual_review(quality, visual_claims, review)
+                    visual_checks = review.checks
+                    if review.status == "budget_exhausted" or review.failure_reason == "deadline_exceeded":
+                        stop_reason = review.failure_reason or "call_budget_exhausted"
+                        accepted = []
+                        audit_round.quality = quality
+                        break
                 audit_round.draft, audit_round.checks, audit_round.quality = draft, checks, quality
                 accepted = [c for c in draft.claims if c.claim_id in quality.accepted_claim_ids]
+            except BudgetExceededError as exc:
+                warnings.append(str(exc))
+                audit_round.error = "执行预算已耗尽；后续调用已停止。"
+                stop_reason = exc.reason.value
+                accepted = []
+                quality = QualityReport(status="blocked")
+                break
             except Exception:
                 warnings.append("问答生成或事实核验失败，本轮未获核验的内容不予交付。")
                 audit_round.error = "生成或核验失败（详情不包含供应商敏感响应）。"
-                stop_reason = "model_error"
+                stop_reason = str(execution_context.stop_reason.value) if execution_context and execution_context.stop_reason else "model_error"
                 accepted = []
                 quality = QualityReport(status="blocked")
                 break
@@ -166,11 +262,14 @@ class QuestionAnswerPipeline:
                 audit_round.elapsed_seconds = round(time.monotonic() - started, 3)
                 if audit_sink:
                     audit_sink(audit_round)
-            if accepted and (best is None or len(accepted) >= len(best[0])):
-                best = (accepted, quality, draft)
+            # 只保留最近一次成功核验的结果；旧主张可能已经被后续冲突撤回。
+            best = (accepted, quality, draft, visual_checks) if accepted else None
 
             feedback = [i.message for i in quality.issues]
             gaps = draft.evidence_gaps
+            if visual_status == "failed" and gaps == ["vision"]:
+                stop_reason = "visual_evidence_unavailable"
+                break
             signature = draft.model_dump_json() + str(quality.accepted_claim_ids)
             if round_index and not new_ids and signature == previous_signature:
                 stop_reason = "no_new_evidence"
@@ -180,20 +279,57 @@ class QuestionAnswerPipeline:
                 stop_reason = "completed"
                 break
             terms.update(self._terms(" ".join(draft.search_terms)))
-        if best is not None and stop_reason == "model_error":
-            accepted, quality, draft = best
-            warnings.append("后续调用失败，保留此前已核验的部分回答；新增证据尚未完成核验。")
+        if best is not None and not accepted and stop_reason in {
+            "model_error", "token_budget_exhausted", "call_budget_exhausted", "deadline_exceeded"
+        }:
+            accepted, quality, draft, visual_checks = best
+            warnings.append("后续调用未完成，保留此前已核验的部分回答；新增证据尚未完成核验。")
         complete = bool(accepted) and draft.sufficient and len(accepted) == len(draft.claims) and not warnings
         status = "answered" if complete else ("partial" if accepted else "refused")
-        uncertainties = list(dict.fromkeys([*warnings, *draft.uncertainties, *feedback]))
+        uncertainties = list(dict.fromkeys([*warnings, *(["模型仍报告证据缺口，相关草稿尚未核实。"] if draft.uncertainties else []), *(["部分主张未通过证据核验。"] if feedback else [])]))
         if status != "answered":
             uncertainties.append("当前证据或核验不足以完整回答问题。")
         used = {eid for claim in accepted for eid in claim.evidence_ids}
+        quality = quality.model_copy(deep=True)
+        for issue in quality.issues:
+            if issue.code == "qa_visual_review":
+                issue.message = "直接看图核验未支持该主张；详细观察保留在本轮审计中。"
         # 同时返回实际核验所用的证据集合，保留正文/图注/视觉来源区分。
         return AnswerResponse(request=request, status=status,
             answer="\n".join(c.statement for c in accepted) or "证据不足，暂不能可靠回答该问题。",
             claims=accepted, evidence=[e for e in selected.values() if e.evidence_id in used],
+            visual_checks=[c.model_copy(update={"observation": "逐条核验记录见审计。", "rationale": "该主张已通过直接看图复核。"})
+                           for c in visual_checks if c.claim_id in {a.claim_id for a in accepted}],
             uncertainties=uncertainties, visual_status=visual_status, followups=round_index, quality=quality, stop_reason=stop_reason)
+
+    @staticmethod
+    def _run_text_stage(call, *, context: BudgetLedger | None, stage: str, role: str,
+                        model: str, **kwargs):  # noqa: ANN001
+        if context is None or getattr(getattr(call, "__self__", None), "request_metering", False):
+            return call(**kwargs)
+        evidence = kwargs.get("evidence")
+        document = kwargs.get("document")
+        text = " ".join(
+            [str(item.excerpt) for item in evidence] if evidence else
+            [str(getattr(document, "raw_text", "")), str(kwargs.get("analysis_result", ""))]
+        )
+        reservation = context.reserve(
+            input_tokens=estimate_text_tokens(text),
+            stage=stage,
+            role=role,
+            model=model,
+            endpoint_id="crewai:text",
+        )
+        context.mark_sent(reservation)
+        try:
+            value = call(**kwargs)
+        except Exception:
+            context.settle(reservation, usage=None, status=CallStatus.PROVIDER_ERROR)
+            raise
+        # CrewAI 当前接口没有把每个 HTTP attempt 的 usage 暴露给本适配层；
+        # 保留保守未知账，而不是把它错误记录为 0。
+        context.settle(reservation, usage=None)
+        return value
 
     @staticmethod
     def _terms(text: str) -> set[str]:

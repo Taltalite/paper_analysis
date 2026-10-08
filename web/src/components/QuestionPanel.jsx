@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
 import { submitQuestionJob, getQuestionJob, getQuestionAnswer, listQuestionJobs, retryQuestionJob, cancelQuestionJob, qaAssetUrl } from "../api/client";
 
+import ExecutionControls, { executionOptions } from "./ExecutionControls";
+import ExecutionSummary from "./ExecutionSummary";
+import { createConversation, submitFollowup } from "../api/client";
+
 const statuses = { answered: "已回答", partial: "部分回答", refused: "证据不足，拒答" };
 const sources = { text: "正文", caption: "图注", vision: "页面视觉模型观察" };
 
@@ -57,7 +61,7 @@ export default function QuestionPanel() {
     finally { setSubmitting(false); }
   }
   return <section className="panel">
-    <h2>生物信息与表观遗传学文献图表问答</h2>
+    <h2>分子生物学、生物信息学与表观遗传学文献问答</h2>
     <p>上传单篇 PDF，直接提问，无需先生成全文报告。</p>
     <label>恢复后端任务 <select value={identifier || ""} onChange={e => selectJob(e.target.value)}>
       <option value="" disabled>选择最近的问答任务</option>
@@ -74,12 +78,26 @@ export default function QuestionPanel() {
       <label>证据补取与纠错上限 <select name="max_followups" defaultValue="2" disabled={busy}>
         <option value="0">单轮问答</option><option value="1">最多一次</option><option value="2">最多两次</option>
       </select></label>
+      <ExecutionControls disabled={busy} />
       <button disabled={busy}>{busy ? "正在读取证据并核验…" : "提交问题"}</button>
     </form>
     <div aria-live="polite">
       {error && <p role="alert">{error}</p>}
       {answer && <>
         <h3>{statuses[answer.status]}</h3>
+        <ExecutionSummary policy={answer.policy} execution={answer.execution} />
+        <form onSubmit={async event => {
+          event.preventDefault(); const data = new FormData(event.currentTarget); setSubmitting(true); setError("");
+          try {
+            const conversation = await createConversation(answer.id);
+            const next = await submitFollowup(conversation.id, { question: data.get("followup"), figure: data.get("followupFigure") || null });
+            selectJob(next.id); setJob(next);
+          } catch (e) { setError(e.message); } finally { setSubmitting(false); }
+        }}>
+          <label>同篇追问 <textarea name="followup" required maxLength={2000} disabled={busy} /></label>
+          <label>图号（可选）<input name="followupFigure" disabled={busy} /></label>
+          <button disabled={busy}>继续追问（复用文档与预算）</button>
+        </form>
         <p>{answer.visual_status === "succeeded" ? "已获得页面视觉证据" : answer.visual_status === "failed" ? "未能可靠读取目标图像" : "本次未读取图像"}；补取与纠错 {answer.followups} 次</p>
         {answer.claims.length ? <ol>{answer.claims.map(claim => <li key={claim.claim_id}>
           {claim.statement} <small>证据：{claim.evidence_ids.map(id => <button key={id} onClick={() => {

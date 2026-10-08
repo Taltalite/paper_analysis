@@ -1,6 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 
 import { createAnalysisJob, getAnalysisProgress, getArtifactContent, getMarkdownReport } from "../api/client";
+import ExecutionControls, { executionOptions } from "../components/ExecutionControls";
+import ExecutionSummary from "../components/ExecutionSummary";
+import ResearchProducts from "../components/ResearchProducts";
+import { cancelReport, retryReport } from "../api/client";
 import ReportPanel from "../components/ReportPanel";
 import StatusPanel from "../components/StatusPanel";
 import QuestionPanel from "../components/QuestionPanel";
@@ -47,6 +51,11 @@ export default function App() {
     };
   }, []);
 
+  useEffect(() => {
+    const id = new URLSearchParams(window.location.search).get("report");
+    if (id) void startPolling(id);
+  }, []);
+
   async function refreshCompletedArtifacts(jobId) {
     const [reportPayload, artifactPayload] = await Promise.all([
       getMarkdownReport(jobId),
@@ -74,7 +83,7 @@ export default function App() {
       await refreshCompletedArtifacts(jobId);
       return true;
     }
-    if (latest.status === "failed") {
+    if (["failed", "cancelled", "timed_out"].includes(latest.status)) {
       stopPolling();
       setError(latest.error_message || "分析任务失败。");
       return true;
@@ -112,6 +121,7 @@ export default function App() {
 
   async function handleSubmit(event) {
     event.preventDefault();
+    const policy = executionOptions(new FormData(event.currentTarget));
     if (!selectedFile) {
       setError("请先选择一个 PDF、TXT 或 MD 文件。");
       return;
@@ -125,8 +135,9 @@ export default function App() {
     setArtifacts(null);
 
     try {
-      const createdJob = await createAnalysisJob(selectedFile, MODE);
+      const createdJob = await createAnalysisJob(selectedFile, MODE, policy);
       setJob(createdJob);
+      const url = new URL(window.location.href); url.searchParams.set("report", createdJob.id); window.history.replaceState(null, "", url);
       setSubmitting(false);
       void startPolling(createdJob.id);
     } catch (requestError) {
@@ -154,6 +165,7 @@ export default function App() {
               onChange={(event) => setSelectedFile(event.target.files?.[0] || null)}
             />
           </label>
+          <ExecutionControls report disabled={submitting} />
           <button type="submit" disabled={submitting}>
             {submitting ? "提交中..." : "上传并分析"}
           </button>
@@ -169,6 +181,14 @@ export default function App() {
         syncingStatus={syncingStatus}
       />
 
+      <ExecutionSummary policy={job?.policy} execution={job?.execution} />
+      {job && ["pending", "parsing", "analyzing"].includes(job.status) && <button onClick={async () => {
+        try { setJob(await cancelReport(job.id)); stopPolling(); } catch (e) { setError(e.message); }
+      }}>取消报告</button>}
+      {job && ["failed", "cancelled", "timed_out"].includes(job.status) && <button onClick={async () => {
+        try { setJob(await retryReport(job.id)); setError(""); void startPolling(job.id); } catch (e) { setError(e.message); }
+      }}>重试报告</button>}
+      <ResearchProducts products={artifacts?.json_report?.research_products} />
       <section className="panel">
         <div className="panel-header">
           <h2>下载结果</h2>

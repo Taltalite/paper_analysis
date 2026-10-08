@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from paper_analysis.domain.execution_context import scoped_execution
+
 import asyncio
 import re
 
@@ -16,6 +18,8 @@ from paper_analysis.domain.models import (
     FigureSemanticArtifact,
     FigureSemanticArtifactBatch,
 )
+from paper_analysis.domain.execution import ResolvedPolicy
+from paper_analysis.domain.execution import CallStatus
 from paper_analysis.domain.schemas import AnalysisResult, ParsedDocument
 from paper_analysis.runtime.crews.base import TextAnalysisCrewRunner
 from paper_analysis.runtime.crews.research import (
@@ -29,6 +33,7 @@ from paper_analysis.runtime.pipelines.general_text import GeneralTextPipeline
 from paper_analysis.runtime.pipelines.base import AnalysisPipeline
 from paper_analysis.runtime.pipelines.profiles import RESEARCH_PAPER_PROFILE
 from paper_analysis.runtime.pipelines.research_paper_report import ResearchPaperReportRenderer
+from paper_analysis.runtime.budget import BudgetLedger, estimate_text_tokens
 
 
 class ResearchPaperPipeline(AnalysisPipeline):
@@ -43,6 +48,7 @@ class ResearchPaperPipeline(AnalysisPipeline):
         fact_check_runner: FactCheckRunner | None = None,
         report_renderer: ResearchPaperReportRenderer | None = None,
         parallel_stages: bool = False,
+        visual_checker=None,
     ) -> None:
         self._pipeline = GeneralTextPipeline(
             profile=RESEARCH_PAPER_PROFILE,
@@ -55,31 +61,90 @@ class ResearchPaperPipeline(AnalysisPipeline):
         self._fact_check_runner = fact_check_runner
         self._report_renderer = report_renderer or ResearchPaperReportRenderer()
         self._parallel_stages = parallel_stages
+        self._visual_checker = visual_checker
 
-    async def run(self, document: ParsedDocument) -> AnalysisResult:
-        source_document = self._refine_document_structure(document)
+    @scoped_execution
+    async def run(
+        self,
+        document: ParsedDocument,
+        policy: ResolvedPolicy | None = None,
+        execution_context: BudgetLedger | None = None,
+    ) -> AnalysisResult:
+        resolved = policy or ResolvedPolicy.resolve()
+        if execution_context and getattr(self._pipeline._crew_runner, "request_metering", False):
+            execution_context.verification_reserve = min(resolved.effective.max_output_tokens * 2, resolved.effective.token_budget // 4)
+        source_document = self._refine_document_structure(document, execution_context=execution_context)
         focused_document, selected_sections = self._build_focus_document(source_document)
         if self._parallel_stages:
             result, figure_outputs = await asyncio.gather(
-                self._pipeline.arun(focused_document),
+                self._pipeline.arun(focused_document, policy=resolved, execution_context=execution_context),
                 self._run_figure_pipeline_async(
                     source_document=source_document,
                     selected_sections=selected_sections,
+                    max_figures=resolved.effective.max_figures,
+                    execution_context=execution_context,
                 ),
             )
             semantic_artifacts, figure_evidence, figure_analyses = figure_outputs
         else:
-            result = await self._pipeline.run(focused_document)
+            result = await self._pipeline.run(
+                focused_document, policy=resolved, execution_context=execution_context
+            )
             semantic_artifacts, figure_evidence, figure_analyses = self._run_figure_pipeline(
                 source_document=source_document,
                 selected_sections=selected_sections,
+                max_figures=resolved.effective.max_figures,
+                execution_context=execution_context,
             )
         fact_checks = self._run_fact_checks(
             source_document=source_document,
             result=result,
             figure_evidence=figure_evidence,
             figure_analyses=figure_analyses,
+            execution_context=execution_context,
         )
+        from paper_analysis.runtime.pipelines.quality_control import apply_quality_gate
+        from paper_analysis.runtime.pipelines.visual_review import VisualReviewSession
+        from paper_analysis.runtime.pipelines.report_visual_review import review_report_visuals
+        session = VisualReviewSession(self._visual_checker, max_calls=resolved.effective.max_visual_reviews) if self._visual_checker else None
+        attempts = []
+        loop_stop = "completed"
+        # 默认保持单遍；显式 report_followups 才启用有界定向修复。
+        for index in range(resolved.effective.report_followups + 1):
+            review_report_visuals(document=source_document, result=result, analyses=figure_analyses,
+                evidence=figure_evidence, checks=fact_checks, session=session, ledger=execution_context)
+            checked = result.model_copy(deep=True)
+            apply_quality_gate(document=source_document, result=checked, figure_analyses=figure_analyses,
+                figure_evidence=figure_evidence, fact_checks=fact_checks)
+            attempts.append({"index": index, "accepted": list(checked.quality.accepted_claim_ids),
+                             "issues": [issue.code for issue in checked.quality.issues]})
+            if not checked.quality.issues:
+                break
+            if index >= resolved.effective.report_followups:
+                loop_stop = "round_limit"
+                break
+            remaining = [name for name in source_document.section_order if name not in selected_sections and source_document.sections.get(name)]
+            if not remaining:
+                loop_stop = "no_new_evidence"
+                break
+            section = remaining[0]
+            repair_document = focused_document.model_copy(deep=True)
+            repair_document.raw_text = focused_document.raw_text[:6000] + "\n补取章节：\n" + source_document.sections[section][:5000]
+            repair_document.metadata["repair_feedback"] = [i.code for i in checked.quality.issues]
+            try:
+                candidate = await self._pipeline.run(repair_document, policy=resolved, execution_context=execution_context)
+                revised = self._run_fact_checks(source_document=source_document, result=candidate,
+                    figure_evidence=figure_evidence, figure_analyses=figure_analyses, execution_context=execution_context)
+                if execution_context and execution_context.stop_reason:
+                    loop_stop = execution_context.stop_reason.value
+                    break
+                result, fact_checks = candidate, revised
+                selected_sections.append(section)
+            except Exception:
+                loop_stop = "provider_error"
+                break  # 保留最近已核验结果；新的未核验候选不得替代正式产物。
+        result.structured_data["report_rounds"] = attempts
+        result.structured_data["execution_stop_reason"] = loop_stop
         result.structured_data = self._merge_parser_metadata(
             structured_data=result.structured_data,
             source_document=source_document,
@@ -109,6 +174,7 @@ class ResearchPaperPipeline(AnalysisPipeline):
             figure_analyses=figure_analyses,
             fact_checks=fact_checks,
         )
+        result.policy = resolved
         return result
 
     @staticmethod
@@ -126,19 +192,29 @@ class ResearchPaperPipeline(AnalysisPipeline):
         if not selected_sections:
             selected_sections = [name for name in document.section_order if document.sections.get(name)]
 
+        # 优先为方法、结果和实验保留空间，避免长引言挤掉关键证据。
+        caps = {"abstract": 1000, "introduction": 800, "method": 2800,
+                "experimental_setup": 2000, "results": 3600, "conclusion": 800, "figures": 500}
         chunks: list[str] = []
         total_chars = 0
+        included: list[str] = []
         for section_name in selected_sections:
             content = document.sections.get(section_name, "").strip()
             if not content:
                 continue
-            chunk = f"## {section_name.replace('_', ' ').title()}\n{content}"
-            if total_chars + len(chunk) > 12000 and chunks:
+            heading = f"## {section_name.replace('_', ' ').title()}\n"
+            separator = 2 if chunks else 0
+            remaining = 12000 - total_chars - separator - len(heading)
+            if remaining <= 0:
                 break
+            excerpt = content[:min(remaining, caps.get(section_name, 2000))]
+            chunk = heading + excerpt
             chunks.append(chunk)
-            total_chars += len(chunk)
+            included.append(section_name)
+            total_chars += len(chunk) + separator
 
         focus_text = "\n\n".join(chunks).strip() or document.raw_text[:12000]
+        selected_sections = included
         focused_document = ParsedDocument(
             title=document.title,
             raw_text=focus_text,
@@ -150,13 +226,34 @@ class ResearchPaperPipeline(AnalysisPipeline):
         )
         return focused_document, selected_sections
 
-    def _refine_document_structure(self, document: ParsedDocument) -> ParsedDocument:
+    def _refine_document_structure(
+        self,
+        document: ParsedDocument,
+        *,
+        execution_context: BudgetLedger | None = None,
+    ) -> ParsedDocument:
         if document.metadata.get("parser_kind") != "pdf":
             return document
 
         draft = self._coarse_structure_draft(document)
         if self._structuring_runner is not None and self._needs_structure_refinement(document):
-            draft = self._structuring_runner.run(document=document)
+            reservation = None
+            if execution_context is not None:
+                reservation = self._reserve_stage(
+                    execution_context,
+                    text=document.raw_text[:24_000],
+                    stage="document_structuring",
+                    role="document_structuring",
+                )
+                execution_context.mark_sent(reservation)
+            try:
+                draft = self._structuring_runner.run(document=document)
+            except Exception:
+                if reservation is not None:
+                    execution_context.settle(reservation, usage=None, status=CallStatus.PROVIDER_ERROR)
+                raise
+            if reservation is not None:
+                execution_context.settle(reservation, usage=None)
         draft.figures = self._restore_figure_assets(document.figures, draft.figures)
 
         title = draft.title or document.title
@@ -182,6 +279,26 @@ class ResearchPaperPipeline(AnalysisPipeline):
             section_order=list(sections.keys()),
             figures=draft.figures or document.figures,
             metadata=merged_metadata,
+        )
+
+    def _reserve_stage(
+        self,
+        execution_context: BudgetLedger,
+        *,
+        text: str,
+        stage: str,
+        role: str,
+    ):
+        runner = {"document_structuring": self._structuring_runner, "figure_analysis": self._figure_runner,
+                  "fact_check": self._fact_check_runner}.get(stage)
+        if getattr(runner, "request_metering", False):
+            return None
+        return execution_context.reserve(
+            input_tokens=estimate_text_tokens(text[:24_000]),
+            stage=stage,
+            role=role,
+            model="configured-text-model",
+            endpoint_id="crewai:text",
         )
 
     @staticmethod
@@ -218,6 +335,8 @@ class ResearchPaperPipeline(AnalysisPipeline):
         *,
         source_document: ParsedDocument,
         selected_sections: list[str],
+        max_figures: int = 4,
+        execution_context: BudgetLedger | None = None,
     ) -> tuple[list[FigureSemanticArtifact], list[FigureEvidence], list[FigureAnalysis]]:
         if not source_document.figures:
             return [], [], []
@@ -225,6 +344,7 @@ class ResearchPaperPipeline(AnalysisPipeline):
         selected_figures = self._select_figures_for_analysis(
             document=source_document,
             selected_sections=selected_sections,
+            max_figures=max_figures,
         )
         if not selected_figures:
             return [], [], []
@@ -232,6 +352,7 @@ class ResearchPaperPipeline(AnalysisPipeline):
         semantic_batch = self._run_figure_grounding(
             source_document=source_document,
             selected_figures=selected_figures,
+            execution_context=execution_context,
         )
         evidence_batch = self._run_figure_evidence_curator(
             source_document=source_document,
@@ -241,6 +362,7 @@ class ResearchPaperPipeline(AnalysisPipeline):
         analysis_batch = self._run_figure_analysis(
             source_document=source_document,
             evidence_batch=evidence_batch,
+            execution_context=execution_context,
         )
         return semantic_batch.artifacts, evidence_batch.evidences, analysis_batch.analyses
 
@@ -249,6 +371,8 @@ class ResearchPaperPipeline(AnalysisPipeline):
         *,
         source_document: ParsedDocument,
         selected_sections: list[str],
+        max_figures: int = 4,
+        execution_context: BudgetLedger | None = None,
     ) -> tuple[list[FigureSemanticArtifact], list[FigureEvidence], list[FigureAnalysis]]:
         """并行模式下的图表阶段：grounding/curator 为确定性或 adapter 调用，保持同步；
         仅 LLM 图表分析阶段走原生异步，与正文理解并行。"""
@@ -258,6 +382,7 @@ class ResearchPaperPipeline(AnalysisPipeline):
         selected_figures = self._select_figures_for_analysis(
             document=source_document,
             selected_sections=selected_sections,
+            max_figures=max_figures,
         )
         if not selected_figures:
             return [], [], []
@@ -265,6 +390,7 @@ class ResearchPaperPipeline(AnalysisPipeline):
         semantic_batch = self._run_figure_grounding(
             source_document=source_document,
             selected_figures=selected_figures,
+            execution_context=execution_context,
         )
         evidence_batch = self._run_figure_evidence_curator(
             source_document=source_document,
@@ -274,6 +400,7 @@ class ResearchPaperPipeline(AnalysisPipeline):
         analysis_batch = await self._run_figure_analysis_async(
             source_document=source_document,
             evidence_batch=evidence_batch,
+            execution_context=execution_context,
         )
         return semantic_batch.artifacts, evidence_batch.evidences, analysis_batch.analyses
 
@@ -282,17 +409,39 @@ class ResearchPaperPipeline(AnalysisPipeline):
         *,
         source_document: ParsedDocument,
         evidence_batch: FigureEvidenceBatch,
+        execution_context: BudgetLedger | None = None,
     ) -> FigureAnalysisBatch:
         if self._figure_runner is None or not evidence_batch.evidences:
             return FigureAnalysisBatch()
         arun = getattr(self._figure_runner, "arun", None)
-        if callable(arun):
-            batch = await arun(document=source_document, figure_evidences=evidence_batch)
+        if execution_context is None:
+            if callable(arun):
+                batch = await arun(document=source_document, figure_evidences=evidence_batch)
+            else:
+                batch = self._figure_runner.run(
+                    document=source_document,
+                    figure_evidences=evidence_batch,
+                )
         else:
-            batch = self._figure_runner.run(
-                document=source_document,
-                figure_evidences=evidence_batch,
+            reservation = self._reserve_stage(
+                execution_context,
+                text=str(evidence_batch.model_dump(mode="json")),
+                stage="figure_analysis",
+                role="figure_understanding",
             )
+            execution_context.mark_sent(reservation)
+            try:
+                if callable(arun):
+                    batch = await arun(document=source_document, figure_evidences=evidence_batch)
+                else:
+                    batch = self._figure_runner.run(
+                        document=source_document,
+                        figure_evidences=evidence_batch,
+                    )
+            except Exception:
+                execution_context.settle(reservation, usage=None, status=CallStatus.PROVIDER_ERROR)
+                raise
+            execution_context.settle(reservation, usage=None)
         if isinstance(batch, FigureAnalysisBatch):
             return batch
         return FigureAnalysisBatch()
@@ -302,13 +451,27 @@ class ResearchPaperPipeline(AnalysisPipeline):
         *,
         source_document: ParsedDocument,
         selected_figures: list[FigureMetadata],
+        execution_context: BudgetLedger | None = None,
     ) -> FigureSemanticArtifactBatch:
         if self._figure_grounding_runner is None:
             return FigureSemanticArtifactBatch()
-        batch = self._figure_grounding_runner.run(
-            document=source_document,
-            figures=selected_figures,
-        )
+        if execution_context is None:
+            batch = self._figure_grounding_runner.run(
+                document=source_document,
+                figures=selected_figures,
+            )
+        else:
+            try:
+                batch = self._figure_grounding_runner.run(
+                    document=source_document,
+                    figures=selected_figures,
+                    execution_context=execution_context,
+                )
+            except TypeError:
+                batch = self._figure_grounding_runner.run(
+                    document=source_document,
+                    figures=selected_figures,
+                )
         if isinstance(batch, FigureSemanticArtifactBatch):
             return batch
         return FigureSemanticArtifactBatch()
@@ -336,13 +499,30 @@ class ResearchPaperPipeline(AnalysisPipeline):
         *,
         source_document: ParsedDocument,
         evidence_batch: FigureEvidenceBatch,
+        execution_context: BudgetLedger | None = None,
     ) -> FigureAnalysisBatch:
         if self._figure_runner is None or not evidence_batch.evidences:
             return FigureAnalysisBatch()
-        batch = self._figure_runner.run(
-            document=source_document,
-            figure_evidences=evidence_batch,
-        )
+        reservation = None
+        if execution_context is not None:
+            reservation = self._reserve_stage(
+                execution_context,
+                text=str(evidence_batch.model_dump(mode="json")),
+                stage="figure_analysis",
+                role="figure_understanding",
+            )
+            execution_context.mark_sent(reservation)
+        try:
+            batch = self._figure_runner.run(
+                document=source_document,
+                figure_evidences=evidence_batch,
+            )
+        except Exception:
+            if reservation is not None:
+                execution_context.settle(reservation, usage=None, status=CallStatus.PROVIDER_ERROR)
+            raise
+        if reservation is not None:
+            execution_context.settle(reservation, usage=None)
         if isinstance(batch, FigureAnalysisBatch):
             return batch
         return FigureAnalysisBatch()
@@ -354,15 +534,32 @@ class ResearchPaperPipeline(AnalysisPipeline):
         result: AnalysisResult,
         figure_evidence: list[FigureEvidence],
         figure_analyses: list[FigureAnalysis],
+        execution_context: BudgetLedger | None = None,
     ) -> FactCheckBatch:
         if self._fact_check_runner is None:
             return FactCheckBatch(overall_assessment="未配置事实检查 agent。")
-        batch = self._fact_check_runner.run(
-            document=source_document,
-            analysis_result=result,
-            figure_analyses=figure_analyses,
-            figure_evidence=figure_evidence,
-        )
+        reservation = None
+        if execution_context is not None:
+            reservation = self._reserve_stage(
+                execution_context,
+                text=source_document.raw_text[:24_000] + str(result.structured_data),
+                stage="fact_check",
+                role="fact_checker",
+            )
+            execution_context.mark_sent(reservation)
+        try:
+            batch = self._fact_check_runner.run(
+                document=source_document,
+                analysis_result=result,
+                figure_analyses=figure_analyses,
+                figure_evidence=figure_evidence,
+            )
+        except Exception:
+            if reservation is not None:
+                execution_context.settle(reservation, usage=None, status=CallStatus.PROVIDER_ERROR)
+            raise
+        if reservation is not None:
+            execution_context.settle(reservation, usage=None)
         if isinstance(batch, FactCheckBatch):
             return batch
         return FactCheckBatch(overall_assessment="事实检查 agent 未返回有效结果。")
@@ -429,6 +626,7 @@ class ResearchPaperPipeline(AnalysisPipeline):
         *,
         document: ParsedDocument,
         selected_sections: list[str],
+        max_figures: int = 4,
     ) -> list[FigureMetadata]:
         if not document.figures:
             return []
@@ -450,7 +648,7 @@ class ResearchPaperPipeline(AnalysisPipeline):
             scored_figures.append((score, figure))
 
         ranked = [figure for _, figure in sorted(scored_figures, key=lambda item: item[0], reverse=True)]
-        return ranked[:4]
+        return ranked[:max(0, max_figures)]
 
     @staticmethod
     def _sections_from_draft(

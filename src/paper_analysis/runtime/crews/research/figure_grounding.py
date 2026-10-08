@@ -5,6 +5,7 @@ from typing import Protocol
 from paper_analysis.adapters.parser.figure_semantics_base import FigureSemanticExtractor
 from paper_analysis.domain.models import FigureMetadata, FigureSemanticArtifactBatch
 from paper_analysis.domain.schemas import ParsedDocument
+from paper_analysis.runtime.budget import BudgetLedger
 
 
 class FigureGroundingRunner(Protocol):
@@ -13,6 +14,7 @@ class FigureGroundingRunner(Protocol):
         *,
         document: ParsedDocument,
         figures: list[FigureMetadata],
+        execution_context: BudgetLedger | None = None,
     ) -> FigureSemanticArtifactBatch:
         ...
 
@@ -28,5 +30,13 @@ class AdapterFigureGroundingRunner:
         *,
         document: ParsedDocument,
         figures: list[FigureMetadata],
+        execution_context: BudgetLedger | None = None,
     ) -> FigureSemanticArtifactBatch:
-        return self._extractor.extract(document=document, figures=figures)
+        if execution_context is None:
+            return self._extractor.extract(document=document, figures=figures)
+        try:
+            return self._extractor.extract(
+                document=document, figures=figures, execution_context=execution_context
+            )
+        except TypeError:
+            return self._extractor.extract(document=document, figures=figures)

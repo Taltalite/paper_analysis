@@ -6,6 +6,7 @@ from uuid import UUID
 
 from paper_analysis.adapters.storage.base import JobStore
 from paper_analysis.domain.schemas import AnalysisJob
+from paper_analysis.adapters.storage.qa_store import atomic_json
 
 
 class InMemoryJobStore(JobStore):
@@ -31,10 +32,7 @@ class LocalFilesystemJobStore(JobStore):
         self._base_dir.mkdir(parents=True, exist_ok=True)
         path = self._job_path(job.id)
         payload = job.model_dump(mode="json")
-        path.write_text(
-            json.dumps(payload, ensure_ascii=False, indent=2),
-            encoding="utf-8",
-        )
+        atomic_json(path, payload)
         return job
 
     async def get(self, job_id: UUID) -> AnalysisJob:
@@ -43,6 +41,9 @@ class LocalFilesystemJobStore(JobStore):
             raise KeyError(f"Unknown job id: {job_id}")
         payload = json.loads(path.read_text(encoding="utf-8"))
         return AnalysisJob.model_validate(payload)
+
+    async def list(self) -> list[AnalysisJob]:
+        return [AnalysisJob.model_validate_json(p.read_text()) for p in self._base_dir.glob("*.json")]
 
     def _job_path(self, job_id: UUID) -> Path:
         return self._base_dir / f"{job_id}.json"

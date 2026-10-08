@@ -17,6 +17,9 @@ export HTTP_PROXY="${HTTP_PROXY:-http://127.0.0.1:7890}"
 export HTTPS_PROXY="${HTTPS_PROXY:-http://127.0.0.1:7890}"
 export http_proxy="${http_proxy:-$HTTP_PROXY}"
 export https_proxy="${https_proxy:-$HTTPS_PROXY}"
+if [[ "${PAPER_ANALYSIS_DISABLE_PROXY:-0}" == "1" ]]; then
+    unset HTTP_PROXY HTTPS_PROXY http_proxy https_proxy
+fi
 
 # 避免误走 SOCKS
 unset ALL_PROXY || true

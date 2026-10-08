@@ -1,0 +1,130 @@
+[
+  {
+    "case": "uncertainties_must_not_leak_unverified_assertion",
+    "passed": false,
+    "details": {
+      "status": "answered",
+      "uncertainties": [
+        "未核验标签断言：FAKE_LABEL_999"
+      ]
+    }
+  },
+  {
+    "case": "rejected_claim_not_in_unlabelled_evidence_matrix",
+    "passed": false,
+    "details": "- `rejected`：UNSUPPORTED_CLAIM_999；样本/条件/重复/对照：not_reported / not_reported / not_reported / not_reported；证据 ID：p1_b1"
+  },
+  {
+    "case": "benchmark_requires_verified_evidence",
+    "passed": false,
+    "details": "- InventedMethod｜not_reported｜not_reported｜accuracy：99.9（unknown；证据：未明确说明）"
+  },
+  {
+    "case": "accepted_section_evidence_preserved",
+    "passed": false,
+    "details": {
+      "schema_version": "execution-v1",
+      "finding_id": "c1",
+      "statement": "Source statement",
+      "claim_ids": [
+        "c1"
+      ],
+      "evidence_ids": [],
+      "kind": "fact",
+      "verification_status": "verified"
+    }
+  },
+  {
+    "case": "max_calls_applies_inside_text_stage",
+    "passed": false,
+    "details": {
+      "simulated_internal_calls": 3,
+      "ledger_calls": 1
+    }
+  },
+  {
+    "case": "text_adapter_enforces_output_limit",
+    "passed": false,
+    "details": {
+      "parameter_names": [
+        "api_key",
+        "base_url",
+        "model",
+        "provider",
+        "temperature"
+      ]
+    }
+  },
+  {
+    "case": "partial_provider_usage_is_retained",
+    "passed": false,
+    "details": {
+      "schema_version": "execution-v1",
+      "actual_usage": {
+        "input": null,
+        "output": null,
+        "total": null,
+        "cached": null,
+        "reasoning": null,
+        "estimated": false,
+        "reserved": null,
+        "unknown": false
+      },
+      "estimated_usage": {
+        "input": null,
+        "output": null,
+        "total": 164,
+        "cached": null,
+        "reasoning": null,
+        "estimated": true,
+        "reserved": null,
+        "unknown": false
+      },
+      "unknown_usage": true,
+      "call_count": 1,
+      "retry_count": 0,
+      "cache_hits": 0,
+      "budget": {
+        "schema_version": "execution-v1",
+        "intensity": "standard",
+        "token_budget": 30000,
+        "max_calls": 1,
+        "max_output_tokens": 64,
+        "timeout_seconds": 420.0,
+        "max_followups": 1,
+        "max_figures": 4,
+        "max_visual_reviews": 2
+      },
+      "elapsed_seconds": 0.0,
+      "stop_reason": "completed",
+      "calls": [
+        {
+          "schema_version": "execution-v1",
+          "call_id": "7285039e683040cda845aa36b1860a5c",
+          "job_id": "partial-usage",
+          "attempt": 1,
+          "stage": "vision",
+          "role": "vision",
+          "model": "fake",
+          "endpoint_id": "fake",
+          "started_at": "2026-10-04T17:26:11.508544Z",
+          "ended_at": "2026-10-04T17:26:11.508575Z",
+          "status": "succeeded",
+          "usage_source": "unknown",
+          "usage": null,
+          "reservation": 164
+        }
+      ]
+    }
+  },
+  {
+    "case": "offline_qa_happy_path",
+    "passed": true,
+    "details": "answered"
+  },
+  {
+    "case": "missing_figure_refused",
+    "passed": true,
+    "details": "target_unresolved"
+  }
+]

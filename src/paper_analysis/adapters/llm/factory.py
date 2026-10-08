@@ -1,11 +1,35 @@
 import math
 import os
+from urllib.parse import urlsplit
 
 from paper_analysis.adapters.llm.base import LLMClient
 from paper_analysis.adapters.llm.openai_compatible import OpenAICompatibleLLM
 
 KIMI_DEFAULT_BASE_URL = "https://api.moonshot.cn/v1"
 KIMI_DEFAULT_MODEL = "kimi-k3"
+
+
+def _vision_options(legacy_model: str | None) -> dict[str, str | float | None]:
+    names = ("VISION_MODEL", "VISION_API_KEY", "VISION_BASE_URL", "VISION_TEMPERATURE")
+    values = {name: os.getenv(name, "").strip() for name in names}
+    if not any(values.values()):
+        return {"vision_model": legacy_model}
+    # 独立端点必须提供独立密钥，不得将文本供应商密钥发送到新目的地。
+    missing = [name for name in names[:3] if not values[name]]
+    if missing:
+        raise ValueError("独立视觉配置不完整，缺少 " + "、".join(missing) + "。")
+    try:
+        url = urlsplit(values["VISION_BASE_URL"])
+        valid = (url.scheme in {"http", "https"} and bool(url.hostname)
+                 and not url.username and not url.password and not url.query and not url.fragment)
+        temperature = float(values["VISION_TEMPERATURE"] or "0.2")
+        valid = valid and math.isfinite(temperature) and 0 <= temperature <= 2
+    except ValueError:
+        valid = False
+    if not valid:
+        raise ValueError("VISION_BASE_URL 必须是无内嵌凭据的 HTTP(S) 地址；VISION_TEMPERATURE 必须在 0–2 之间。")
+    return {"vision_model": values["VISION_MODEL"], "vision_api_key": values["VISION_API_KEY"],
+            "vision_base_url": values["VISION_BASE_URL"], "vision_temperature": temperature}
 
 
 def _vision_request_timeout() -> float:
@@ -65,7 +89,7 @@ def create_llm_client_from_env() -> LLMClient | None:
             base_url=base_url,
             provider="openai",
             temperature=float(temperature or "0.2"),
-            vision_model=kimi_vars["vision_model"],
+            **_vision_options(kimi_vars["vision_model"]),
             request_timeout=_vision_request_timeout(),
         )
 
@@ -77,6 +101,8 @@ def create_llm_client_from_env() -> LLMClient | None:
     vision_model = os.getenv("OPENAI_VISION_MODEL")
 
     if not any([model, api_key, base_url, provider, temperature, vision_model]):
+        if any(os.getenv(name) for name in ("VISION_MODEL", "VISION_API_KEY", "VISION_BASE_URL")):
+            raise ValueError("独立视觉配置还需要配置文本模型及其 API Key。")
         return None
 
     if not model:
@@ -97,6 +123,6 @@ def create_llm_client_from_env() -> LLMClient | None:
         base_url=base_url,
         provider=provider or "openai",
         temperature=float(temperature or "0.2"),
-        vision_model=vision_model,
+        **_vision_options(vision_model),
         request_timeout=_vision_request_timeout(),
     )

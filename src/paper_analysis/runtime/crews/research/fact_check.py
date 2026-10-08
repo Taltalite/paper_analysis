@@ -5,6 +5,8 @@ import logging
 import re
 from typing import Protocol
 
+from paper_analysis.domain.execution_context import agent_limits
+
 from crewai import Agent, Crew, Process, Task
 
 from paper_analysis.adapters.llm.base import LLMClient
@@ -18,7 +20,7 @@ from paper_analysis.domain.models import (
 from paper_analysis.domain.schemas import AnalysisResult, ParsedDocument
 from paper_analysis.runtime.pipelines.fact_check_prechecks import run_fact_check_prechecks
 from paper_analysis.runtime.pipelines.claim_inventory import collect_claims
-from paper_analysis.tools import PaperKeywordSearchTool, PaperSectionExtractorTool
+from paper_analysis.tools.document_tools import build_document_tools
 
 
 logger = logging.getLogger(__name__)
@@ -37,6 +39,7 @@ class FactCheckRunner(Protocol):
 
 
 class CrewAIFactCheckRunner:
+    request_metering = True
     _VERDICTS = {
         "supported",
         "partially_supported",
@@ -80,7 +83,7 @@ class CrewAIFactCheckRunner:
                 rule_flags=rule_flags,
             )
 
-        agent = Agent(
+        agent = Agent(**agent_limits(),
             role=f"论文事实检查助手：{document.title or '未命名文档'}",
             goal="逐条核验正文与图表分析产生的主张，并给出证据引用、判定和不确定性。",
             backstory=(
@@ -88,9 +91,9 @@ class CrewAIFactCheckRunner:
                 "只判断主张是否被当前论文正文、图注和图表证据支持。"
             ),
             verbose=self._verbose,
-            tools=[PaperKeywordSearchTool(), PaperSectionExtractorTool()],
+            tools=build_document_tools(document),
             allow_delegation=False,
-            llm=self._llm_client.to_crewai_llm(),
+            llm=self._llm_client.for_role("fact_checker"),
         )
         task = Task(
             description=self._build_task_description(
@@ -115,8 +118,8 @@ class CrewAIFactCheckRunner:
             ).kickoff()
             return self._coerce_output(result=result, claims=claims, rule_flags=rule_flags)
         except Exception as exc:
-            logger.warning("事实检查 agent 执行失败，回退到未核验结果：%s", exc)
-            return self._fallback_batch(claims=claims, reason=str(exc), rule_flags=rule_flags)
+            logger.warning("事实检查失败：%s", type(exc).__name__)
+            return self._fallback_batch(claims=claims, reason="供应商调用或输出校验失败", rule_flags=rule_flags)
 
     @classmethod
     def _collect_claims(

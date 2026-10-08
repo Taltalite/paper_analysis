@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 
 from paper_analysis.adapters.llm.base import VisionLLMClient
+from paper_analysis.adapters.llm.visual_check import ImageClaimChecker
 from paper_analysis.adapters.llm.factory import create_llm_client_from_env
 from paper_analysis.adapters.parser.mcp_figure_semantics import NoopFigureSemanticExtractor
 from paper_analysis.adapters.parser.multimodal_figure_semantics import (
@@ -55,6 +56,7 @@ def build_default_analysis_service() -> AnalysisService:
             figure_runner=figure_runner,
             fact_check_runner=fact_check_runner,
             parallel_stages=parallel_stages,
+            visual_checker=ImageClaimChecker(llm_client) if isinstance(llm_client, VisionLLMClient) and llm_client.vision_model else None,
         ),
     )
     return AnalysisService(

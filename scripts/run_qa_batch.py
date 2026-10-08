@@ -13,10 +13,17 @@ def main() -> None:
     parser.add_argument("--ids", default="")
     parser.add_argument("--real", action="store_true")
     parser.add_argument("--max-followups", type=int, choices=[0, 1, 2], default=0)
+    parser.add_argument("--token-budget", type=int, default=60000, help="整个顺序批次共享额度")
+    parser.add_argument("--max-calls", type=int, default=32)
     args = parser.parse_args()
     results = asyncio.run(run_candidates(args.manifest, args.output,
-        ids=set(args.ids.split(",")) if args.ids else None, max_followups=args.max_followups, real=args.real))
+        ids=set(args.ids.split(",")) if args.ids else None, max_followups=args.max_followups, real=args.real, token_budget=args.token_budget, max_calls=args.max_calls))
     print(f"记录 {len(results)} 条候选运行；专家效果均未评测。清单：{args.output / 'manifest.json'}")
+    if args.real and (not results or any(
+        result.execution in {"not_called", "configuration_failed", "execution_failed"}
+        or any(value is False for value in result.engineering_checks.values()) for result in results
+    )):
+        raise SystemExit(1)
 
 
 if __name__ == "__main__":

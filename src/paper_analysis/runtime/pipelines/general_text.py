@@ -1,8 +1,11 @@
 from __future__ import annotations
 
+from paper_analysis.domain.execution_context import scoped_execution
+
 from pydantic import ValidationError
 
 from paper_analysis.domain.models import PaperAnalysis
+from paper_analysis.domain.execution import CallStatus, ResolvedPolicy
 from paper_analysis.domain.schemas import AnalysisResult, ParsedDocument
 from paper_analysis.runtime.crews.base import (
     CrewAITextUnderstandingRunner,
@@ -10,6 +13,7 @@ from paper_analysis.runtime.crews.base import (
 )
 from paper_analysis.runtime.pipelines.base import AnalysisPipeline
 from paper_analysis.runtime.pipelines.profiles import GENERAL_TEXT_PROFILE, TextAnalysisProfile
+from paper_analysis.runtime.budget import BudgetLedger, estimate_text_tokens
 
 
 class GeneralTextPipeline(AnalysisPipeline):
@@ -22,18 +26,72 @@ class GeneralTextPipeline(AnalysisPipeline):
         self._profile = profile
         self._crew_runner = crew_runner or CrewAITextUnderstandingRunner()
 
-    async def run(self, document: ParsedDocument) -> AnalysisResult:
-        result = self._crew_runner.run(document=document, profile=self._profile)
+    @scoped_execution
+    async def run(
+        self,
+        document: ParsedDocument,
+        policy: ResolvedPolicy | None = None,
+        execution_context: BudgetLedger | None = None,
+    ) -> AnalysisResult:
+        result = self._run_with_budget(document=document, execution_context=execution_context)
         return self._post_process(result=result, document=document)
 
-    async def arun(self, document: ParsedDocument) -> AnalysisResult:
+    @scoped_execution
+    async def arun(
+        self,
+        document: ParsedDocument,
+        policy: ResolvedPolicy | None = None,
+        execution_context: BudgetLedger | None = None,
+    ) -> AnalysisResult:
         """异步变体：runner 提供 arun 时走原生异步，否则回退同步调用。"""
         arun = getattr(self._crew_runner, "arun", None)
-        if callable(arun):
-            result = await arun(document=document, profile=self._profile)
+        if execution_context is None:
+            if callable(arun):
+                result = await arun(document=document, profile=self._profile)
+            else:
+                result = self._crew_runner.run(document=document, profile=self._profile)
         else:
-            result = self._crew_runner.run(document=document, profile=self._profile)
+            reservation = self._reserve(document, execution_context)
+            execution_context.mark_sent(reservation)
+            try:
+                if callable(arun):
+                    result = await arun(document=document, profile=self._profile)
+                else:
+                    result = self._crew_runner.run(document=document, profile=self._profile)
+            except Exception:
+                execution_context.settle(reservation, usage=None, status=CallStatus.PROVIDER_ERROR)
+                raise
+            execution_context.settle(reservation, usage=None)
         return self._post_process(result=result, document=document)
+
+    def _run_with_budget(
+        self,
+        *,
+        document: ParsedDocument,
+        execution_context: BudgetLedger | None,
+    ) -> AnalysisResult:
+        if execution_context is None:
+            return self._crew_runner.run(document=document, profile=self._profile)
+        reservation = self._reserve(document, execution_context)
+        execution_context.mark_sent(reservation)
+        try:
+            result = self._crew_runner.run(document=document, profile=self._profile)
+        except Exception:
+            execution_context.settle(reservation, usage=None, status=CallStatus.PROVIDER_ERROR)
+            raise
+        execution_context.settle(reservation, usage=None)
+        return result
+
+    def _reserve(self, document: ParsedDocument, execution_context: BudgetLedger):
+        if getattr(self._crew_runner, "request_metering", False):
+            return None
+        return execution_context.reserve(
+            input_tokens=estimate_text_tokens(document.raw_text[:24_000]),
+            stage="text_understanding",
+            role="text_understanding",
+            model="configured-text-model",
+            endpoint_id="crewai:text",
+        )
 
     def _post_process(self, *, result: AnalysisResult, document: ParsedDocument) -> AnalysisResult:
         if self._looks_like_paper_result(result):
@@ -200,7 +258,7 @@ class GeneralTextPipeline(AnalysisPipeline):
                 else item
                 for item in claims
             ]
-        return normalized
+        return {**payload, **normalized}
 
     @staticmethod
     def _string_value(value: object) -> str:

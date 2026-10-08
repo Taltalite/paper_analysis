@@ -1,12 +1,16 @@
 from __future__ import annotations
 
 import logging
+import inspect
+import hashlib
+from paper_analysis.adapters.storage.qa_store import atomic_json
 from datetime import UTC, datetime
 from pathlib import Path
 from uuid import UUID
 
 from paper_analysis.adapters.storage.base import JobStore
 from paper_analysis.domain.enums import AnalysisMode, DocumentKind, JobStatus
+from paper_analysis.domain.execution import ExecutionPolicyRequest, ResolvedPolicy
 from paper_analysis.domain.schemas import (
     AnalysisArtifact,
     AnalysisJob,
@@ -44,8 +48,12 @@ class JobService:
         content: bytes,
         mode: AnalysisMode,
         document_kind: DocumentKind,
+        policy: ExecutionPolicyRequest | None = None,
     ) -> AnalysisJob:
-        job = AnalysisJob(mode=mode, document_kind=document_kind, filename=filename)
+        if not content or len(content) > 30 * 1024 * 1024:
+            raise ValueError("上传文件必须非空且不超过 30 MB。")
+        job = AnalysisJob(document_sha256=hashlib.sha256(content).hexdigest(), mode=mode, document_kind=document_kind, filename=filename,
+                          policy=ResolvedPolicy.resolve(policy))
         input_path = self._job_workspace(job.id) / f"source{self._suffix_for(filename, document_kind)}"
         input_path.parent.mkdir(parents=True, exist_ok=True)
         input_path.write_bytes(content)
@@ -54,10 +62,15 @@ class JobService:
         return await self._job_store.save(job)
 
     async def get_job(self, job_id: UUID) -> AnalysisJob:
-        return await self._job_store.get(job_id)
+        job = await self._job_store.get(job_id)
+        budget_path = self._job_workspace(job_id) / "budget.json"
+        if budget_path.exists():
+            from paper_analysis.domain.execution import ExecutionSummary
+            job.execution = ExecutionSummary.model_validate_json(budget_path.read_text())
+        return job
 
     async def get_job_progress(self, job_id: UUID) -> JobProgressResponse:
-        job = await self._job_store.get(job_id)
+        job = await self.get_job(job_id)
         recent_logs = self._read_recent_logs(job.artifact.log_path)
         current_stage, progress_percent, summary_message = self._build_progress_snapshot(job, recent_logs)
         return JobProgressResponse(
@@ -69,12 +82,14 @@ class JobService:
             steps=self._build_progress_steps(job),
         )
 
-    async def run_job(self, job_id: UUID) -> AnalysisJob:
+    async def run_job(self, job_id: UUID, *, publish: bool = True) -> AnalysisJob:
         job = await self._job_store.get(job_id)
         if not job.input_path:
             return await self._fail_job(job, "输入文件缺失。")
 
         input_path = Path(job.input_path)
+        if job.document_sha256 and hashlib.sha256(input_path.read_bytes()).hexdigest() != job.document_sha256:
+            return await self._fail_job(job, "源文档指纹不匹配。")
         if not job.artifact.log_path:
             job.artifact.log_path = str(self._job_log_path(job.id, datetime.now(UTC)))
             job = await self._job_store.save(job)
@@ -92,19 +107,26 @@ class JobService:
                         len(parsed_document.sections),
                         len(parsed_document.figures),
                     )
+                    parsed_document.metadata.update(job_id=str(job.id), attempt=getattr(job, "attempt", 1), budget_path=str(self._job_workspace(job.id) / "budget.json"))
 
                     await self._update_job(job, status=JobStatus.ANALYZING)
                     logger.info("开始执行分析。mode=%s", job.mode.value)
-                    result = await self._analysis_service.analyze_document(parsed_document, job.mode)
+                    analyze = self._analysis_service.analyze_document
+                    if "policy" in inspect.signature(analyze).parameters:
+                        result = await analyze(parsed_document, job.mode, policy=job.policy)
+                    else:
+                        result = await analyze(parsed_document, job.mode)
                     job.quality = result.quality
+                    job.policy = result.policy or job.policy
+                    job.execution = result.execution
                     logger.info(
                         "分析完成。summary_length=%s structured_keys=%s",
                         len(result.summary),
                         sorted(result.structured_data.keys()),
                     )
 
-                    markdown_path = self._job_workspace(job.id) / "report.md"
-                    json_path = self._job_workspace(job.id) / "report.json"
+                    markdown_path = self._job_workspace(job.id) / f"attempt-{job.attempt}" / "report.md"
+                    json_path = self._job_workspace(job.id) / f"attempt-{job.attempt}" / "report.json"
                     artifact = await self._artifact_service.save_analysis_result(
                         markdown_path=markdown_path,
                         json_path=json_path,
@@ -120,12 +142,15 @@ class JobService:
                         artifact.parsed_markdown_path,
                         artifact.log_path,
                     )
+                    if not publish:
+                        atomic_json(self._job_workspace(job.id) / f"result-{job.attempt}.json", job)
+                        return job
                     return await self._update_job(job, status=JobStatus.COMPLETED, error_message=None)
                 except Exception:
-                    logger.exception("任务执行失败。job_id=%s", job.id)
+                    logger.error("任务执行失败。job_id=%s", job.id)
                     raise
         except Exception as exc:
-            return await self._fail_job(job, str(exc))
+            return await self._fail_job(job, "报告解析、模型调用或产物保存失败。")
 
     async def get_markdown_report(self, job_id: UUID) -> MarkdownReportResponse:
         job = await self._job_store.get(job_id)
@@ -146,6 +171,8 @@ class JobService:
             markdown_report=markdown_report,
             parsed_markdown=parsed_markdown,
             quality=job.quality,
+            policy=job.policy,
+            execution=job.execution,
         )
 
     async def get_artifact_content(self, job_id: UUID) -> ArtifactContentResponse:
@@ -173,6 +200,8 @@ class JobService:
             parsed_markdown=parsed_markdown,
             json_report=json_report,
             quality=job.quality,
+            policy=job.policy,
+            execution=job.execution,
         )
 
     async def _update_job(
@@ -245,6 +274,8 @@ class JobService:
             JobStatus.PARSING: ("文档解析", 35, "正在解析文档结构并提取可分析内容。"),
             JobStatus.ANALYZING: ("多 Agent 分析", 70, "正在执行多 agent 分析与报告生成。"),
             JobStatus.COMPLETED: ("任务完成", 100, "分析完成，报告和结构化结果已生成。"),
+            JobStatus.CANCELLED: ("任务取消", 100, "工作进程已停止。"),
+            JobStatus.TIMED_OUT: ("任务超时", 100, "超过执行时限，工作进程已停止。"),
             JobStatus.FAILED: ("任务失败", 100, "任务执行失败，请结合日志定位原因。"),
         }
         current_stage, progress_percent, fallback_message = stage_mapping.get(

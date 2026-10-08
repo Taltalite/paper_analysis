@@ -23,10 +23,11 @@ async function parseJsonResponse(response) {
   return payload;
 }
 
-export async function createAnalysisJob(file, mode = "research_paper") {
+export async function createAnalysisJob(file, mode = "research_paper", policy = {}) {
   const formData = new FormData();
   formData.append("file", file);
   formData.append("mode", mode);
+  Object.entries(policy).forEach(([key, value]) => formData.append(key, String(value)));
 
   const response = await fetch(`${API_BASE_URL}/api/analysis/jobs`, {
     method: "POST",
@@ -54,3 +55,8 @@ export async function getArtifactContent(jobId) {
   const response = await fetch(`${API_BASE_URL}/api/analysis/jobs/${jobId}/artifact`);
   return parseJsonResponse(response);
 }
+
+export const createConversation = id => fetch(`${API_BASE_URL}/api/qa/questions/${id}/conversation`, { method: "POST" }).then(parseJsonResponse);
+export const submitFollowup = (id, question) => fetch(`${API_BASE_URL}/api/qa/conversations/${id}/turns`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(question) }).then(parseJsonResponse);
+export const cancelReport = id => fetch(`${API_BASE_URL}/api/analysis/jobs/${id}/cancel`, { method: "POST" }).then(parseJsonResponse);
+export const retryReport = id => fetch(`${API_BASE_URL}/api/analysis/jobs/${id}/retry`, { method: "POST" }).then(parseJsonResponse);

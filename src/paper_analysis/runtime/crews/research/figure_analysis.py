@@ -5,6 +5,8 @@ import logging
 import re
 from typing import Protocol
 
+from paper_analysis.domain.execution_context import agent_limits
+
 from crewai import Agent, Crew, Process, Task
 
 from paper_analysis.adapters.llm.base import LLMClient
@@ -26,6 +28,7 @@ logger = logging.getLogger(__name__)
 
 
 class CrewAIFigureAnalysisRunner:
+    request_metering = True
     def __init__(
         self,
         *,
@@ -80,7 +83,7 @@ class CrewAIFigureAnalysisRunner:
         return cleaned_evidence
 
     def _build_crew(self, *, document: ParsedDocument, evidence_batch: FigureEvidenceBatch) -> Crew:
-        analyst = Agent(
+        analyst = Agent(**agent_limits(),
             role=f"论文图表分析助手：{document.title or '未命名文档'}",
             goal=(
                 "只基于整理后的图片证据对象，输出实验焦点、主要观察、作者声称结论与图文一致性判断。"

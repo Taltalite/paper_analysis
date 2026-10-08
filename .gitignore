@@ -38,6 +38,8 @@ input/.paper_analysis_assets/
 # Frontend artifacts
 web/node_modules/
 web/dist/
+web/test-results/
+web/playwright-report/
 
 # OS and editor files
 .DS_Store

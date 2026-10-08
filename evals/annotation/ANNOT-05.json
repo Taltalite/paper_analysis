@@ -1,0 +1,55 @@
+{
+  "schema_version": "manual-qa-v1",
+  "candidate_id": "ANNOT-05",
+  "paper": {
+    "source_path": "ref_baseline/gkaf795.pdf",
+    "title": null,
+    "doi": "10.1093/nar/gkaf795",
+    "sha256": "b8b9addf31732c1f3fd3f56b3009b9cbc9d22b0f5c03afecfe48355376cd5dee"
+  },
+  "question": "Figure 99a 是否支持该机制？",
+  "figure": "99",
+  "panel": "a",
+  "annotator_id": null,
+  "annotation_state": "未标注",
+  "expected_status": null,
+  "gold_claims": [
+    {
+      "claim_id": "G1",
+      "statement": null,
+      "basis": null,
+      "evidence_ids": [],
+      "required": null
+    }
+  ],
+  "gold_evidence": [
+    {
+      "evidence_id": "E1",
+      "source_kind": null,
+      "pdf_page_1_based": null,
+      "block_id": null,
+      "bbox": null,
+      "figure": null,
+      "panel": null,
+      "verbatim_quote": null,
+      "visual_observation": null,
+      "legibility": null
+    }
+  ],
+  "required_uncertainties": [],
+  "forbidden_inferences": [],
+  "adjudication": {
+    "reviewer_ids": [],
+    "disagreements": [],
+    "resolution": null,
+    "frozen_at": null
+  },
+  "evaluation": {
+    "answer_id": null,
+    "run_id": null,
+    "claim_reviews": [],
+    "missed_gold_claim_ids": [],
+    "expected_status_match": null,
+    "reviewer_notes": null
+  }
+}

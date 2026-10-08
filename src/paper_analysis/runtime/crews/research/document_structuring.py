@@ -5,6 +5,8 @@ import logging
 import re
 from typing import Protocol
 
+from paper_analysis.domain.execution_context import agent_limits
+
 from crewai import Agent, Crew, Process, Task
 
 from paper_analysis.adapters.llm.base import LLMClient
@@ -21,6 +23,7 @@ class DocumentStructuringRunner(Protocol):
 
 
 class CrewAIDocumentStructuringRunner:
+    request_metering = True
     _SECTION_ALIASES = {
         "abstract": "abstract",
         "introduction": "introduction",
@@ -53,7 +56,7 @@ class CrewAIDocumentStructuringRunner:
         if not ordered_blocks:
             return coarse_draft
 
-        agent = Agent(
+        agent = Agent(**agent_limits(),
             role=f"论文结构校正助手：{document.title or '未命名文档'}",
             goal=(
                 "基于按顺序提取的 PDF block、粗规则切分结果和 figure metadata，"

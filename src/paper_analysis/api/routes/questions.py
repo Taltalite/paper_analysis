@@ -1,3 +1,4 @@
+import asyncio
 from functools import lru_cache
 from uuid import UUID
 
@@ -5,9 +6,11 @@ from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile, R
 from fastapi.responses import FileResponse
 from pydantic import ValidationError
 
+from paper_analysis.domain.execution import AnalysisIntensity
 from paper_analysis.domain.qa import AnswerResponse, QuestionRequest, QuestionJob, QuestionAudit
 from paper_analysis.services.question_jobs import QuestionJobs
 from paper_analysis.services.question_answer_service import QuestionAnswerService, build_question_answer_service
+from paper_analysis.services.conversations import Conversation
 
 router = APIRouter(prefix="/api/qa", tags=["questions"])
 
@@ -17,14 +20,50 @@ def get_question_service() -> QuestionAnswerService:
     return build_question_answer_service()
 
 
-def get_jobs(request: Request) -> QuestionJobs:
-    return request.app.state.qa_jobs
+async def get_jobs(request: Request) -> QuestionJobs:
+    jobs = getattr(request.app.state, "qa_jobs", None)
+    if jobs is not None:
+        return jobs
+
+    lock = getattr(request.app.state, "qa_jobs_lock", None)
+    if lock is None:
+        lock = asyncio.Lock()
+        request.app.state.qa_jobs_lock = lock
+    async with lock:
+        jobs = getattr(request.app.state, "qa_jobs", None)
+        if jobs is not None:
+            return jobs
+        factory = request.app.dependency_overrides.get(get_question_service, get_question_service)
+        try:
+            service = factory()
+            jobs = QuestionJobs(service)
+            await jobs.start()
+        except ValueError as exc:
+            raise HTTPException(503, "问答服务尚未配置可用的文本模型。") from exc
+        request.app.state.qa_jobs = jobs
+        request.app.state.qa_jobs_started = True
+        return jobs
 
 
 def parse_request(question: str = Form(...), figure: str | None = Form(None), panel: str | None = Form(None),
-                  max_followups: int = Form(2)) -> QuestionRequest:
+                  max_followups: int = Form(2), intensity: AnalysisIntensity | None = Form(None),
+                  token_budget: int | None = Form(None), max_calls: int | None = Form(None),
+                  max_output_tokens: int | None = Form(None), timeout_seconds: float | None = Form(None),
+                  max_figures: int | None = Form(None), max_visual_reviews: int | None = Form(None)) -> QuestionRequest:
     try:
-        return QuestionRequest(question=question, figure=figure or None, panel=panel or None, max_followups=max_followups)
+        return QuestionRequest(
+            question=question,
+            figure=figure or None,
+            panel=panel or None,
+            max_followups=max_followups,
+            intensity=intensity,
+            token_budget=token_budget,
+            max_calls=max_calls,
+            max_output_tokens=max_output_tokens,
+            timeout_seconds=timeout_seconds,
+            max_figures=max_figures,
+            max_visual_reviews=max_visual_reviews,
+        )
     except ValidationError as exc:
         raise HTTPException(422, "问题不能为空，图号/子图格式须正确，补取次数须为 0–2。") from exc
 
@@ -118,3 +157,33 @@ def get_answer(identifier: UUID, service: QuestionAnswerService = Depends(get_qu
         return service.get(identifier)
     except FileNotFoundError as exc:
         raise HTTPException(404, "问答结果不存在或尚未完成。") from exc
+
+
+@router.post("/questions/{identifier}/conversation", response_model=Conversation)
+def create_conversation(identifier: UUID, service: QuestionAnswerService = Depends(get_question_service)):
+    from paper_analysis.services.conversations import ConversationService
+    try:
+        return ConversationService(service).create(identifier)
+    except FileNotFoundError as exc:
+        raise HTTPException(404, "问答不存在。") from exc
+    except ValueError as exc:
+        raise HTTPException(409, str(exc)) from exc
+
+
+@router.get("/conversations/{identifier}", response_model=Conversation)
+def get_conversation(identifier: UUID, service: QuestionAnswerService = Depends(get_question_service)):
+    from paper_analysis.services.conversations import ConversationService
+    try:
+        return ConversationService(service).get(identifier)
+    except FileNotFoundError as exc:
+        raise HTTPException(404, "会话不存在。") from exc
+
+
+@router.post("/conversations/{identifier}/turns", response_model=QuestionJob, status_code=202)
+async def followup(identifier: UUID, request: QuestionRequest, jobs: QuestionJobs = Depends(get_jobs)):
+    try:
+        return jobs.submit_turn(identifier, request)
+    except FileNotFoundError as exc:
+        raise HTTPException(404, "会话不存在。") from exc
+    except ValueError as exc:
+        raise HTTPException(409, str(exc)) from exc

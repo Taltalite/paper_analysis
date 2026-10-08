@@ -6,9 +6,11 @@ from uuid import UUID, uuid4
 
 from pydantic import BaseModel, Field
 
+from paper_analysis.domain.execution import ExecutionPolicyRequest, ExecutionSummary, ResolvedPolicy
 from paper_analysis.domain.enums import AnalysisMode, DocumentKind, JobStatus
 from paper_analysis.domain.models import FigureMetadata
 from paper_analysis.domain.quality import QualityReport
+from paper_analysis.domain.research import ResearchProducts
 
 
 class UploadAnalysisRequest(BaseModel):
@@ -18,6 +20,7 @@ class UploadAnalysisRequest(BaseModel):
     llm_provider: str = "default"
     llm_model: str = "default"
     options: dict[str, Any] = Field(default_factory=dict)
+    policy: ExecutionPolicyRequest | None = None
 
 
 class FileAnalysisRequest(BaseModel):
@@ -25,6 +28,7 @@ class FileAnalysisRequest(BaseModel):
     output_markdown_path: str
     output_json_path: str
     mode: AnalysisMode = AnalysisMode.RESEARCH_PAPER
+    policy: ExecutionPolicyRequest | None = None
 
 
 class ParsedDocument(BaseModel):
@@ -45,6 +49,8 @@ class AnalysisArtifact(BaseModel):
 
 
 class AnalysisJob(BaseModel):
+    attempt: int = Field(default=1, ge=1)
+    document_sha256: str = ""
     id: UUID = Field(default_factory=uuid4)
     status: JobStatus = JobStatus.PENDING
     mode: AnalysisMode
@@ -56,9 +62,12 @@ class AnalysisJob(BaseModel):
     error_message: str | None = None
     artifact: AnalysisArtifact = Field(default_factory=AnalysisArtifact)
     quality: QualityReport | None = None
+    policy: ResolvedPolicy | None = None
+    execution: ExecutionSummary | None = None
 
 
 class AnalysisResult(BaseModel):
+    schema_version: str = "analysis-v2"
     title: str = ""
     summary: str = ""
     key_points: list[str] = Field(default_factory=list)
@@ -66,6 +75,9 @@ class AnalysisResult(BaseModel):
     markdown_report: str = ""
     structured_data: dict[str, Any] = Field(default_factory=dict)
     quality: QualityReport | None = None
+    policy: ResolvedPolicy | None = None
+    execution: ExecutionSummary | None = None
+    research_products: ResearchProducts | None = None
 
 
 class AnalysisExecution(BaseModel):
@@ -83,6 +95,8 @@ class MarkdownReportResponse(BaseModel):
     markdown_report: str
     parsed_markdown: str | None = None
     quality: QualityReport | None = None
+    policy: ResolvedPolicy | None = None
+    execution: ExecutionSummary | None = None
 
 
 class JobProgressStep(BaseModel):
@@ -108,3 +122,5 @@ class ArtifactContentResponse(BaseModel):
     parsed_markdown: str | None = None
     json_report: dict[str, Any] | None = None
     quality: QualityReport | None = None
+    policy: ResolvedPolicy | None = None
+    execution: ExecutionSummary | None = None

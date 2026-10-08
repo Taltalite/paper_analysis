@@ -1,0 +1,29 @@
+Figure 1：视觉解析失败（RuntimeError）；回退图注分析。
+Figure 1：视觉解析失败（ValueError）；回退图注分析。
+Figure 2：没有可读取的图表图片或页面截图；回退图注分析。
+Figure 1：未配置视觉模型；回退图注分析。
+Figure 1：视觉解析失败（ValidationError）；回退图注分析。
+Figure 1：视觉解析失败（ValidationError）；回退图注分析。
+ERROR:root:Failed to connect to OpenAI API: Connection error.
+ERROR:root:OpenAI API call failed: Failed to connect to OpenAI API: Connection error.
+[CrewAIEventsBus] Warning: Ending event 'llm_call_failed' emitted with empty 
+scope stack. Missing starting event?
+╭──────────────────────────────── ❌ LLM Error ────────────────────────────────╮
+│                                                                              │
+│  LLM Call Failed                                                             │
+│  Error: Failed to connect to OpenAI API: Connection error.                   │
+│                                                                              │
+╰──────────────────────────────────────────────────────────────────────────────╯
+
+╭──────────────────────────────── ❌ LLM Error ────────────────────────────────╮
+│                                                                              │
+│  LLM Call Failed                                                             │
+│  Error: OpenAI API call failed: Failed to connect to OpenAI API: Connection  │
+│  error.                                                                      │
+│                                                                              │
+╰──────────────────────────────────────────────────────────────────────────────╯
+
+----------------------------------------------------------------------
+Ran 137 tests in 2.740s
+
+OK

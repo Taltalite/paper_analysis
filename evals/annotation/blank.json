@@ -1,0 +1,55 @@
+{
+  "schema_version": "manual-qa-v1",
+  "candidate_id": null,
+  "paper": {
+    "source_path": null,
+    "title": null,
+    "doi": null,
+    "sha256": null
+  },
+  "question": null,
+  "figure": null,
+  "panel": null,
+  "annotator_id": null,
+  "annotation_state": "未标注",
+  "expected_status": null,
+  "gold_claims": [
+    {
+      "claim_id": "G1",
+      "statement": null,
+      "basis": null,
+      "evidence_ids": [],
+      "required": null
+    }
+  ],
+  "gold_evidence": [
+    {
+      "evidence_id": "E1",
+      "source_kind": null,
+      "pdf_page_1_based": null,
+      "block_id": null,
+      "bbox": null,
+      "figure": null,
+      "panel": null,
+      "verbatim_quote": null,
+      "visual_observation": null,
+      "legibility": null
+    }
+  ],
+  "required_uncertainties": [],
+  "forbidden_inferences": [],
+  "adjudication": {
+    "reviewer_ids": [],
+    "disagreements": [],
+    "resolution": null,
+    "frozen_at": null
+  },
+  "evaluation": {
+    "answer_id": null,
+    "run_id": null,
+    "claim_reviews": [],
+    "missed_gold_claim_ids": [],
+    "expected_status_match": null,
+    "reviewer_notes": null
+  }
+}

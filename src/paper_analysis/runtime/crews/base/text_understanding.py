@@ -2,12 +2,14 @@ from __future__ import annotations
 
 from typing import Protocol
 
+from paper_analysis.domain.execution_context import agent_limits
+
 from crewai import Agent, Crew, Process, Task
 
 from paper_analysis.adapters.llm.base import LLMClient
 from paper_analysis.domain.schemas import AnalysisResult, ParsedDocument
 from paper_analysis.runtime.pipelines.profiles import TextAnalysisProfile
-from paper_analysis.tools import PaperKeywordSearchTool, PaperSectionExtractorTool
+from paper_analysis.tools.document_tools import build_document_tools
 
 
 class TextAnalysisCrewRunner(Protocol):
@@ -16,6 +18,7 @@ class TextAnalysisCrewRunner(Protocol):
 
 
 class CrewAITextUnderstandingRunner:
+    request_metering = True
     """Single-agent text understanding runner with evidence-oriented output."""
 
     def __init__(
@@ -38,7 +41,7 @@ class CrewAITextUnderstandingRunner:
         return self._coerce_output(result)
 
     def _build_crew(self, *, document: ParsedDocument, profile: TextAnalysisProfile) -> Crew:
-        agent = Agent(
+        agent = Agent(**agent_limits(),
             role=f"{profile.analyst_role}：{document.title or '未命名文档'}",
             goal=(
                 "一次完成源文本理解、事实性要点提取与结构化综合，"
@@ -49,7 +52,7 @@ class CrewAITextUnderstandingRunner:
                 "再输出结构化结果，不虚构缺失信息。"
             ),
             verbose=self._verbose,
-            tools=[PaperSectionExtractorTool(), PaperKeywordSearchTool()],
+            tools=build_document_tools(document),
             allow_delegation=False,
             llm=self._build_llm(),
         )
@@ -92,6 +95,7 @@ class CrewAITextUnderstandingRunner:
         return (
             f'请理解并分析题为“{document.title or "未命名文档"}”的文本。\n\n'
             f"原文内容：\n{document.raw_text}\n\n"
+            f"修复反馈：{document.metadata.get('repair_feedback', [])}\n"
             f"{evidence_section}"
             "请在一次分析中完成：\n"
             "- 提取元数据、研究问题、方法、实验设置和主要结果\n"

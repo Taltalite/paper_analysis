@@ -63,6 +63,12 @@ class PdfParser(DocumentParser):
     )
 
     async def parse(self, path: Path) -> ParsedDocument:
+        return self.parse_sync(path)
+
+    def parse_sync(self, path: Path) -> ParsedDocument:
+        return self._parse_sync_inline(path)
+
+    def _parse_sync_inline(self, path: Path) -> ParsedDocument:
         try:
             import fitz
         except ImportError as exc:
@@ -136,7 +142,6 @@ class PdfParser(DocumentParser):
             )
         finally:
             document.close()
-
     def _extract_blocks(self, *, document, path: Path) -> list[_PdfBlock]:  # noqa: ANN001
         blocks: list[_PdfBlock] = []
         order_index = 0

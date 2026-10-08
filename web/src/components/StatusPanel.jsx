@@ -4,6 +4,8 @@ const STATUS_LABELS = {
   analyzing: "分析中",
   completed: "已完成",
   failed: "失败",
+  cancelled: "已取消",
+  timed_out: "已超时",
 };
 
 const STEP_STATUS_LABELS = {
@@ -11,6 +13,8 @@ const STEP_STATUS_LABELS = {
   active: "进行中",
   completed: "已完成",
   failed: "失败",
+  cancelled: "已取消",
+  timed_out: "已超时",
 };
 
 export default function StatusPanel({ job, progress, error, modeLabel, submitting, syncingStatus }) {
@@ -100,7 +104,7 @@ export default function StatusPanel({ job, progress, error, modeLabel, submittin
       {!job && submitting ? (
         <p className="muted">正在提交任务到后端，请稍候。</p>
       ) : null}
-      {job && job.status !== "completed" && job.status !== "failed" ? (
+      {job && !["completed", "failed", "cancelled", "timed_out"].includes(job.status) ? (
         <p className="muted">
           {syncingStatus ? "前端正在同步后端状态，状态会在解析和分析阶段实时更新。" : "任务已提交，等待下一次状态同步。"}
         </p>

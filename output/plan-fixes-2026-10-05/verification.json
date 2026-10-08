@@ -1,0 +1,27 @@
+{
+  "scope": "本轮工程回归；专家效果未评估",
+  "unit": {
+    "passed": 137,
+    "exit_code": 0
+  },
+  "integration": {
+    "passed": 6,
+    "exit_code": 0
+  },
+  "browser": {
+    "passed": 2,
+    "exit_code": 0,
+    "api": "mocked"
+  },
+  "production_build": {
+    "exit_code": 0
+  },
+  "real_smoke": {
+    "requests": 2,
+    "actual_tokens": 1600,
+    "budget": 8000,
+    "input": "synthetic"
+  },
+  "expert_evaluation": "not_evaluated",
+  "full_real_paper_loop": "not_run_in_this_round"
+}

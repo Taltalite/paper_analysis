@@ -36,6 +36,7 @@ class QuestionJobs:
             if job.status == "running":
                 job.status, job.stage, job.error = "failed", "执行中断", "服务重启，旧尝试不再发布；可重试。"
                 self.service.store.save(job)
+                self._seal_audit(job)
             elif job.status == "queued":
                 self._schedule(job)
 
@@ -54,10 +55,31 @@ class QuestionJobs:
         self._schedule(job)
         return job
 
+    def submit_turn(self, identifier: UUID, request: QuestionRequest) -> QuestionJob:
+        from paper_analysis.services.conversations import ConversationService
+        job = ConversationService(self.service).prepare_turn(identifier, request)
+        self._schedule(job)
+        return job
+
     def retry(self, identifier: UUID) -> QuestionJob:
+        job = self.service.store.get(identifier)
+        directory = self.service.store.directory(identifier)
+        if job.conversation_id:
+            from paper_analysis.services.conversations import ConversationService
+            directory = ConversationService(self.service).directory(job.conversation_id)
+        with (directory / "turn.lock").open("a") as lock:
+            fcntl.flock(lock, fcntl.LOCK_EX)
+            return self._retry_locked(identifier)
+
+    def _retry_locked(self, identifier: UUID) -> QuestionJob:
         job = self.service.store.get(identifier)
         if job.status not in {"failed", "timed_out", "cancelled"}:
             raise ValueError("仅失败、超时或已取消的任务可重试。")
+        if job.conversation_id:
+            from paper_analysis.services.conversations import ConversationService
+            conversation = ConversationService(self.service).get(job.conversation_id)
+            if conversation.turns[-1] != job.id:
+                raise ValueError("只能重试会话最后一轮，不能覆盖后续追问依据。")
         job.attempt += 1
         job.status, job.stage, job.error = "queued", "等待重试", None
         self.service.store.save(job)
@@ -89,7 +111,7 @@ class QuestionJobs:
                     return
                 job.status, job.stage = "running", "解析、读取证据与核验"
                 self.service.store.save(job)
-                response = await asyncio.wait_for(self.worker(job), timeout=self.timeout)
+                response = await asyncio.wait_for(self.worker(job), timeout=min(self.timeout, job.policy.effective.timeout_seconds) if job.policy else self.timeout)
                 self.service.complete(job, response)
         except asyncio.TimeoutError:
             self._fail(job, "timed_out", "执行超时，工作进程已终止，可重试。")
@@ -109,6 +131,9 @@ class QuestionJobs:
             self._seal_audit(current)
 
     def _seal_audit(self, job: QuestionJob) -> None:
+        from paper_analysis.runtime.budget import seal_interrupted_budget
+        budget_path = self.service.budget_path(job)
+        seal_interrupted_budget(budget_path, job.status)
         try:
             audit = self.service.audit(job.id)
             atomic_json(self.service.store.directory(job.id) / f"audit-{job.attempt}.json", audit)

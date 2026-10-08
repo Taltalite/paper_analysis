@@ -12,6 +12,7 @@ from paper_analysis.domain.models import (
 )
 from paper_analysis.domain.schemas import AnalysisResult, ParsedDocument
 from paper_analysis.runtime.pipelines.quality_control import apply_quality_gate
+from paper_analysis.runtime.pipelines.research_products import build_research_products
 
 
 class ResearchPaperReportRenderer:
@@ -31,6 +32,14 @@ class ResearchPaperReportRenderer:
             document=source_document, result=result, figure_analyses=figure_analyses,
             figure_evidence=figure_evidence, fact_checks=fact_checks,
         )
+        products = build_research_products(
+            document=source_document,
+            result=result,
+            figure_evidence=figure_evidence,
+            figure_analyses=figure_analyses,
+        )
+        result.research_products = products
+        result.structured_data["research_products"] = products.model_dump(mode="json")
         paper_analysis = self._coerce_paper_analysis(result)
         parser_authors = source_document.metadata.get("authors", [])
         if isinstance(parser_authors, list):
@@ -133,6 +142,10 @@ class ResearchPaperReportRenderer:
 ## 10. 总结
 {self._clean_text(result.summary)}
 
+## 11. 领域结构化产物
+以下产物由已解析证据、主张清单和 QC 结果确定性组装；`verified` 仅表示通过本项目的引用/定位闸门，不代表专家正确性认证。
+{self._render_research_products(products)}
+
 {self._render_draft(result)}
 """
 
@@ -157,6 +170,55 @@ class ResearchPaperReportRenderer:
                 lines.append("  - 其余位置见 JSON 的 quality.issues。")
         if not qc.issues:
             lines.append("- 本轮未检出问题；仍需结合检查范围理解。")
+        return "\n".join(lines)
+
+    @classmethod
+    def _render_research_products(cls, products) -> str:  # noqa: ANN001
+        coverage = products.coverage
+        lines = [
+            f"### 11.1 覆盖状态\n- 候选章节：{len(coverage.candidate.sections)}；已读取：{len(coverage.read.sections)}；已核验主张：{len(coverage.verified.claims)}/{len(coverage.candidate.claims)}。",
+            f"- 候选图表：{len(coverage.candidate.figures)}；已选择：{len(coverage.selected.figures)}；已有直接复核支持：{len(coverage.verified.figures)}。",
+            "### 11.2 故事架构",
+        ]
+        if products.story.nodes:
+            lines.extend(
+                f"- `{node.node_id}`（{node.role}，{node.verification_status.value}）：{cls._clean_text(node.statement)}"
+                for node in products.story.nodes
+            )
+        else:
+            lines.append("- 未形成可定位的故事节点。")
+        if products.story.edges:
+            lines.append("- 结构边：" + "；".join(
+                f"{edge.source} → {edge.target}（{edge.relation}）" for edge in products.story.edges
+            ))
+        lines.append("### 11.3 图组 Flow")
+        if products.figure_flow.nodes:
+            lines.extend(
+                f"- `{node.figure}`（{node.coverage_status.value}）：{cls._clean_text(node.role)}"
+                for node in products.figure_flow.nodes
+            )
+            lines.extend(f"- {edge.source} → {edge.target}：{cls._clean_text(edge.relation)}；证据：{'、'.join(edge.evidence_ids)}"
+                         for edge in products.figure_flow.edges)
+            if not products.figure_flow.edges:
+                lines.append("- 尚无通过核验的图间论证关系，不根据图号顺序补充连线。")
+        else:
+            lines.append("- 未形成可定位的图组节点。")
+        lines.append("### 11.4 细节证据")
+        if products.evidence_matrix:
+            lines.extend(
+                f"- `{row.finding_id}`：{cls._clean_text(row.statement)}；样本/条件/重复/对照：{row.sample_or_system} / {row.condition} / {row.replicates} / {row.controls}；证据 ID：{'、'.join(row.evidence_ids) or '未明确说明'}"
+                for row in products.evidence_matrix
+            )
+        else:
+            lines.append("- 未形成细节证据矩阵。")
+        lines.append("### 11.5 Benchmark")
+        if products.benchmark.status != "available":
+            lines.append(f"- `{products.benchmark.status.value if hasattr(products.benchmark.status, 'value') else products.benchmark.status}`：{cls._clean_text(products.benchmark.reason)}")
+        else:
+            lines.extend(
+                f"- {entry.method}｜{entry.dataset}｜{entry.task}｜{entry.metric}：{entry.value_raw or '未报告'}（{entry.direction.value}；证据：{'、'.join(entry.evidence_ids) or '未明确说明'}）"
+                for entry in products.benchmark.entries
+            )
         return "\n".join(lines)
 
     @classmethod

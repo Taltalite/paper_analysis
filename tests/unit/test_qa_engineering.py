@@ -97,6 +97,40 @@ class EvidenceEngineeringTests(unittest.TestCase):
         self.assertEqual(answer.status, "refused")
         self.assertFalse(answer.claims)
 
+    def test_conflict_then_error_cannot_restore_old_claim(self):
+        class FailsThird(FakeRunner):
+            def run(self, **kwargs):
+                if len(self.calls) == 2:
+                    raise RuntimeError("fake third-round failure")
+                return super().run(**kwargs)
+        class ConflictsSecond(FakeChecker):
+            calls = 0
+            def run(self, **kwargs):
+                batch = super().run(**kwargs)
+                self.calls += 1
+                if self.calls == 2:
+                    batch.checks[0].verdict = "conflicting"
+                return batch
+        answer = pipeline(FailsThird(sufficient=False), checker=ConflictsSecond()).run(
+            document=document(), request=QuestionRequest(question="ATAC 重复？"))
+        self.assertEqual(answer.stop_reason, "model_error")
+        self.assertEqual(answer.status, "refused")
+        self.assertFalse(answer.claims)
+
+    def test_missing_vision_stops_without_irrelevant_text_rounds(self):
+        class MissingVision(FakeRunner):
+            def run(self, **kwargs):
+                self.calls.append(kwargs)
+                return AnswerDraft(evidence_gaps=["vision"], sufficient=False)
+        runner = MissingVision()
+        audit = []
+        answer = pipeline(runner).run(document=document(),
+            request=QuestionRequest(question="图1a曲线差异", figure="1", panel="a"), audit_sink=audit.append)
+        self.assertEqual(answer.stop_reason, "visual_evidence_unavailable")
+        self.assertEqual(answer.status, "refused")
+        self.assertEqual(len(audit), 1)
+        self.assertEqual(len(runner.calls), 1)
+
     def test_gap_targets_statistics_block(self):
         class Gaps(FakeRunner):
             def run(self, **kwargs):

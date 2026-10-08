@@ -1,0 +1,13 @@
+
+> paper-analysis-web@0.1.0 build
+> vite build
+
+vite v5.4.21 building for production...
+transforming...
+✓ 200 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.40 kB │ gzip:  0.27 kB
+dist/assets/index-Dl9rqR-f.css    3.20 kB │ gzip:  1.20 kB
+dist/assets/index-BNPrtxas.js   277.91 kB │ gzip: 89.21 kB
+✓ built in 1.11s

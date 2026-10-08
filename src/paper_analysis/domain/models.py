@@ -1,7 +1,10 @@
 from pydantic import BaseModel, Field
+from paper_analysis.domain.research import BenchmarkSection
 
 
 class ClaimEvidence(BaseModel):
+    story_role: str = ""
+    experiment: dict[str, str] = Field(default_factory=dict)
     claim_id: str = ""
     statement: str = ""
     category: str = ""
@@ -26,6 +29,12 @@ class ExtractedNotes(BaseModel):
     main_results: str = ""
 
 
+class StoryRelationDraft(BaseModel):
+    source: str
+    target: str
+    claim_id: str
+
+
 class PaperAnalysis(BaseModel):
     metadata: PaperMetadata = Field(default_factory=PaperMetadata)
     extracted_notes: ExtractedNotes = Field(default_factory=ExtractedNotes)
@@ -34,6 +43,8 @@ class PaperAnalysis(BaseModel):
     limitations: list[str] = Field(default_factory=list)
     reproducibility: str = ""
     claims: list[ClaimEvidence] = Field(default_factory=list)
+    story_edges: list[StoryRelationDraft] = Field(default_factory=list)
+    benchmark: BenchmarkSection | None = None
     figure_analyses: list["FigureAnalysis"] = Field(default_factory=list)
 
 

@@ -59,7 +59,7 @@ GENERAL_TEXT_PROFILE = TextAnalysisProfile(
 RESEARCH_PAPER_PROFILE = TextAnalysisProfile(
     name="research_paper",
     markdown_title="研究型文献分析报告",
-    reader_role="学术论文阅读助手",
+    reader_role="分子生物学、生物信息学与表观遗传学论文阅读助手",
     reader_goal="认真阅读论文，提取忠实、可追溯、基于原文的要点，不补造缺失信息。",
     reader_backstory="你是一名细致的研究助理，擅长按章节阅读学术论文，重点关注研究问题、方法、数据集、实验设计与主要结果。",
     analyst_role="研究分析助手",
@@ -88,6 +88,11 @@ RESEARCH_PAPER_PROFILE = TextAnalysisProfile(
         "避免整段英文分析；仅在专业术语、专有名词、方法名、数据集名或直接引用场景下保留原文。",
     ),
     structured_data_requirements=(
+        "每条 claim 增加 story_role（problem/hypothesis/design/result/conclusion/limitation），区分作者假设、实验设计与观察。不要用图号顺序推断因果。",
+        "每条 claim 的 experiment 可包含 sample_or_system、condition、assay、replicates、controls、effect_or_significance；值只能逐字摘取所引原文，缺失留空。",
+        "story_edges 为 source/target claim_id 以及支持该联系的 claim_id；只有原文支持的论证联系才写入，不自动连接所有节点。",
+        "多方法比较时包含 benchmark={status,entries}；每项 method/dataset/split/task/metric/direction/value_raw/value/unit/uncertainty/resource/evidence_ids/claim_ids/value_source。",
+        "benchmark 每个数值与方法/指标必须出现在对应 claim 陈述与原文引文内；value_source=explicit 才可用于正式比较，不从曲线猜数值，不同切分/任务/单位不排名。无比较写 not_applicable 并说明原因，未提取写 not_reported。",
         "包含 `metadata`，键为 `title`、`authors`、`venue`、`year`。",
         "包含 `extracted_notes`，键为 `research_problem`、`core_method`、`datasets`、`experimental_setup`、`main_results`。",
         "包含 `novelty`、`strengths`、`limitations` 和 `reproducibility`。",

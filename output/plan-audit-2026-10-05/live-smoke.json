@@ -1,0 +1,96 @@
+[
+  {
+    "case": "kimi_synthetic_text",
+    "passed": false,
+    "error_type": "AttributeError"
+  },
+  {
+    "case": "qwen_synthetic_image",
+    "model": "qwen3.8-flash",
+    "passed": true,
+    "response": "- Alpha：37\n- Beta：83",
+    "execution": {
+      "schema_version": "execution-v1",
+      "actual_usage": {
+        "input": 1279,
+        "output": 78,
+        "total": 1357,
+        "cached": null,
+        "reasoning": null,
+        "estimated": false,
+        "reserved": null,
+        "unknown": false
+      },
+      "estimated_usage": {
+        "input": null,
+        "output": null,
+        "total": null,
+        "cached": null,
+        "reasoning": null,
+        "estimated": false,
+        "reserved": null,
+        "unknown": false
+      },
+      "unknown_usage": false,
+      "call_count": 1,
+      "retry_count": 0,
+      "cache_hits": 0,
+      "budget": {
+        "schema_version": "execution-v1",
+        "intensity": "standard",
+        "token_budget": 10000,
+        "max_calls": 1,
+        "max_output_tokens": 1024,
+        "timeout_seconds": 420.0,
+        "max_followups": 1,
+        "max_figures": 4,
+        "max_visual_reviews": 2
+      },
+      "elapsed_seconds": 4.082,
+      "stop_reason": "completed",
+      "calls": [
+        {
+          "schema_version": "execution-v1",
+          "call_id": "6918cd2faab24966b0d24cb5266770cf",
+          "job_id": "synthetic-vision-smoke",
+          "attempt": 1,
+          "stage": "vision",
+          "role": "image_observer",
+          "model": "qwen3.8-flash",
+          "endpoint_id": "https://token-plan.maas.qianwenaiapi.com/compatible-mode/v1",
+          "started_at": "2026-10-04T17:27:15.585401Z",
+          "ended_at": "2026-10-04T17:27:19.616650Z",
+          "status": "succeeded",
+          "usage_source": "provider",
+          "usage": {
+            "input": 1279,
+            "output": 78,
+            "total": 1357,
+            "cached": 0,
+            "reasoning": 63,
+            "estimated": false,
+            "reserved": null,
+            "unknown": false
+          },
+          "reservation": 2078
+        }
+      ]
+    },
+    "elapsed_seconds": 4.083
+  },
+  {
+    "case": "kimi_synthetic_text",
+    "model": "kimi-for-coding",
+    "passed": true,
+    "response": "生物学重复数为 3，技术测量总数为 6。",
+    "usage": {
+      "total_tokens": 221,
+      "prompt_tokens": 118,
+      "cached_prompt_tokens": 0,
+      "completion_tokens": 103,
+      "successful_requests": 1
+    },
+    "elapsed_seconds": 3.281,
+    "scope": "适配器返回的 CrewAI LLM；手动设置测试输出/超时/重试限额，不代表生产策略已传递"
+  }
+]

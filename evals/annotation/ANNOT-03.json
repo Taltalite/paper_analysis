@@ -1,0 +1,55 @@
+{
+  "schema_version": "manual-qa-v1",
+  "candidate_id": "ANNOT-03",
+  "paper": {
+    "source_path": "ref_baseline/gkaf795.pdf",
+    "title": null,
+    "doi": "10.1093/nar/gkaf795",
+    "sha256": "b8b9addf31732c1f3fd3f56b3009b9cbc9d22b0f5c03afecfe48355376cd5dee"
+  },
+  "question": "Figure 4a 横轴位置 34 和 37 的完整标签分别是什么，颜色分别是什么？若上标无法辨认请明确说明。",
+  "figure": "4",
+  "panel": "a",
+  "annotator_id": null,
+  "annotation_state": "未标注",
+  "expected_status": null,
+  "gold_claims": [
+    {
+      "claim_id": "G1",
+      "statement": null,
+      "basis": null,
+      "evidence_ids": [],
+      "required": null
+    }
+  ],
+  "gold_evidence": [
+    {
+      "evidence_id": "E1",
+      "source_kind": null,
+      "pdf_page_1_based": null,
+      "block_id": null,
+      "bbox": null,
+      "figure": null,
+      "panel": null,
+      "verbatim_quote": null,
+      "visual_observation": null,
+      "legibility": null
+    }
+  ],
+  "required_uncertainties": [],
+  "forbidden_inferences": [],
+  "adjudication": {
+    "reviewer_ids": [],
+    "disagreements": [],
+    "resolution": null,
+    "frozen_at": null
+  },
+  "evaluation": {
+    "answer_id": null,
+    "run_id": null,
+    "claim_reviews": [],
+    "missed_gold_claim_ids": [],
+    "expected_status_match": null,
+    "reviewer_notes": null
+  }
+}

@@ -44,7 +44,14 @@ class ParsedDocumentCache:
                 except (ValueError, KeyError, OSError):
                     pass
             cached_source.write_bytes(content)
-            document = asyncio.run(self.parser.parse(cached_source))
+            parse_sync = getattr(self.parser, "parse_sync", None)
+            if callable(parse_sync):
+                # PyMuPDF 1.26.x may deadlock when opened from the default
+                # asyncio worker thread. The PDF adapter exposes an explicit
+                # synchronous path for callers that already own the thread.
+                document = parse_sync(cached_source)
+            else:
+                document = asyncio.run(self.parser.parse(cached_source))
             document.metadata.update(document_sha256=fingerprint, source_path=str(cached_source), parser_version=self.version)
             atomic_json(parsed, document)
             atomic_json(directory / "manifest.json", {"parsed_sha256": hashlib.sha256(parsed.read_bytes()).hexdigest()})
@@ -82,6 +89,19 @@ class OnDemandFigureExtractor:
         self.delegate = delegate
 
     def extract(self, *, document: ParsedDocument, figures: list[FigureMetadata]) -> FigureSemanticArtifactBatch:
+        self._render(document, figures)
+        return self.delegate.extract(document=document, figures=figures)
+
+    def extract_for_question(self, *, document: ParsedDocument, figures: list[FigureMetadata],
+                             panel: str | None = None) -> FigureSemanticArtifactBatch:
+        self._render(document, figures)
+        targeted = getattr(self.delegate, "extract_for_question", None)
+        if callable(targeted):
+            return targeted(document=document, figures=figures, panel=panel)
+        return self.delegate.extract(document=document, figures=figures)
+
+    @staticmethod
+    def _render(document: ParsedDocument, figures: list[FigureMetadata]) -> None:
         import re
         source = Path(document.metadata["source_path"])
         for figure in figures:
@@ -90,4 +110,3 @@ class OnDemandFigureExtractor:
             pages = [int(match[1]) for path in figure.context_page_snapshot_paths
                      if (match := re.search(r"page_(\d+)\.png$", path))]
             figure.context_page_snapshot_paths = [str(render_page(source, page)) for page in pages]
-        return self.delegate.extract(document=document, figures=figures)
