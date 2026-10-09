@@ -1,0 +1,2390 @@
+{
+  "schema_version": "analysis-v2",
+  "title": "Scalable and robust DNA-based storage via coding theory and deep learning",
+  "summary": "暂无满足交付条件的主张，请查看 QC 问题清单。",
+  "key_points": [
+    "待核验：尚未建立与获支持主张的一致对应关系。",
+    "待核验：尚未建立与获支持主张的一致对应关系。",
+    "待核验：尚未建立与获支持主张的一致对应关系。",
+    "待核验：尚未建立与获支持主张的一致对应关系。",
+    "待核验：尚未建立与获支持主张的一致对应关系。",
+    "待核验：尚未建立与获支持主张的一致对应关系。",
+    "待核验：尚未建立与获支持主张的一致对应关系。"
+  ],
+  "limitations": [
+    "待核验：尚未建立与获支持主张的一致对应关系。",
+    "待核验：尚未建立与获支持主张的一致对应关系。",
+    "待核验：尚未建立与获支持主张的一致对应关系。",
+    "待核验：尚未建立与获支持主张的一致对应关系。",
+    "待核验：尚未建立与获支持主张的一致对应关系。",
+    "待核验：尚未建立与获支持主张的一致对应关系。"
+  ],
+  "markdown_report": "# 文献分析报告\n\n> **QC：暂不能交付正式结论**\n> 有效清单中已对应核验 11/11 条主张；另有结构无效 10 条；可交付 0 条。\n> 主张对应关系、证据引用定位和报告交付；不代表独立语义正确性或医学质量认证。\n\n### QC 问题清单\n- **invalid_claim（10 项）**\n  - `claims[0]`：主张结构无效或陈述为空，未纳入有效核验。\n  - `claims[1]`：主张结构无效或陈述为空，未纳入有效核验。\n  - `claims[2]`：主张结构无效或陈述为空，未纳入有效核验。\n  - 其余位置见 JSON 的 quality.issues。\n- **invalid_evidence（11 项）**\n  - `claims.text-1`：证据 ID 不存在于当前文档：S1-摘要。\n  - `claims.text-2`：证据 ID 不存在于当前文档：S1-摘要、S2-引言。\n  - `claims.text-3`：证据 ID 不存在于当前文档：S2-引言。\n  - 其余位置见 JSON 的 quality.issues。\n- **unbound_report_field（30 项）**\n  - `draft.summary`：报告文本未与可交付主张精确对应，已移入原始草稿。\n  - `key_points[0]`：报告文本未与可交付主张精确对应，已移入原始草稿。\n  - `key_points[1]`：报告文本未与可交付主张精确对应，已移入原始草稿。\n  - 其余位置见 JSON 的 quality.issues。\n\n## 1. 基本信息\n- 标题：Scalable and robust DNA-based storage via coding theory and deep learning\n- 作者：Daniella Bar-Lev, Itai Orr, Omer Sabary, Tuvi Etzion, Eitan Yaakobi\n- 发表平台：未明确说明（仅见收稿/接收/在线发表日期，期刊或会议名未在所提供原文中标明）\n- 年份：2025\n\n## 2. 摘要式总结\n> 暂无满足交付条件的主张，请查看 QC 问题清单。\n\n## 3. 研究问题\n### 3.1 背景\n待核验：尚未建立与获支持主张的一致对应关系。\n\n### 3.2 论文要解决的问题\n待核验：尚未建立与获支持主张的一致对应关系。\n\n## 4. 方法\n### 4.1 方法概述\n待核验：尚未建立与获支持主张的一致对应关系。\n\n### 4.2 关键模块\n- 待核验：尚未建立与获支持主张的一致对应关系。\n- 待核验：尚未建立与获支持主张的一致对应关系。\n- 待核验：尚未建立与获支持主张的一致对应关系。\n- 待核验：尚未建立与获支持主张的一致对应关系。\n- 待核验：尚未建立与获支持主张的一致对应关系。\n- 待核验：尚未建立与获支持主张的一致对应关系。\n- 待核验：尚未建立与获支持主张的一致对应关系。\n\n### 4.3 创新点\n待核验：尚未建立与获支持主张的一致对应关系。\n\n## 5. 实验与结果\n### 5.1 实验设置\n待核验：尚未建立与获支持主张的一致对应关系。\n\n涉及数据集：待核验：尚未建立与获支持主张的一致对应关系。。\n\n### 5.2 主要结果\n待核验：尚未建立与获支持主张的一致对应关系。\n\n### 5.3 与基线对比\n未明确说明\n\n### 5.4 作者结论\n待核验：尚未建立与获支持主张的一致对应关系。\n\n## 6. 图表分析\n### 6.1 关键图表\n未明确说明\n\n### 6.2 图中结论\n未明确说明\n\n### 6.3 图文一致性\n未明确说明\n\n### 6.4 视觉证据与解析状态\n以下为解析器线索与模型视觉提取记录，不代表独立核验通过。\n未明确说明\n\n## 7. 事实检查\n### 7.1 总体结论\n以下为模型核验意见，交付状态以报告顶部 QC 结果为准。\n全部 11 条主张均判为 supported：所有可核验内容（研究背景、标准流程描述、方法组合、定量结果声称、出版日期、材料完整性说明）均能在所提供的摘要、引言开头或出版信息中找到直接原文对应。但需注意整体证据强度有限：定量结果（3,200×、40%、1.6 bits/base）目前仅有摘要级作者声称，方法、实验设置、基线对比与统计细节均未在所提供材料中出现，因此这些结果的独立可验证性低；判定 supported 表示“论文确作此声称”，不构成对结果真实性的独立背书。\n\n### 7.2 逐项核验\n- **text-1｜有证据支持**：本文提出一种模块化、整体化的 DNA 存储信息检索流程，将基于模拟数据训练的深度神经网络、基于张量积的纠错码（tensor product-based error-correcting codes）以及安全裕度机制（safety margin mechanism）整合为单一管线。作者在 3.1 MB 信息上使用两种不同测序技术进行了演示，声称相比当前领先方案实现 3,200 倍的速度提升和 40% 的精度提升，并在高噪声环境下达到每碱基 1.6 比特的码率。需注意：当前可用原文仅包含标题、作者、摘要及引言开头，方法、实验细节与定量结果的完整证据未提供，因此部分结构化字段标注为“未明确说明”。\n  - 依据：摘要：“Here we show a modular and holistic approach that combines deep neural networks trained on simulated data, tensor product-based error-correcting codes and a safety margin mechanism into a single coherent pipeline. We demonstrated our so；引言（仅开头）：方法与实验细节未包含在所提供材料中\n  - 证据 ID：S1-摘要\n  - 说明：摘要逐字包含主张中列出的所有方法要素（DNN、张量积纠错码、安全裕度）与全部定量主张（3.1 MB、两种测序技术、3,200×、40%、1.6 bits/base），证据直接。需要说明的是，这些定量结果目前仅有摘要级别的作者声称，尚无论文方法/实验细节的独立证据，但不影响“主张被摘要支持”这一判定；主张本身也已声明当前材料不完整。\n- **text-2｜有证据支持**：研究背景：全球数据量预计 2025 年达 180 zettabytes，现有磁/光存储技术难以同步扩展，DNA 存储因高密度、高耐久、近乎零功耗维护而成为候选方案。\n  - 依据：摘要：“The global data sphere is expanding exponentially, projected to hit 180 zettabytes by 2025, whereas current technologies are not anticipated to scale at nearly the same rate. DNA-based storage emerges as a crucial solution to this gap..；引言：“While the global data sphere is anticipated to reach 180 zettabytes by 2025, current storage solutions are not expected to scale at nearly the same pace... offering extraordinary data density and durability.”\n  - 证据 ID：S1-摘要、S2-引言\n  - 说明：摘要与引言均明确给出 180 zettabytes、现有技术扩展不足、以及 DNA 存储的高密度、高耐久、低维护功耗等优势，与主张逐项对应，其中“磁/光存储”直接对应摘要中的“magnetic and optical storage solutions”。\n- **text-3｜有证据支持**：DNA 存储标准流程：二进制数据编码为 {A,C,G,T} 四进制序列→合成（每条序列产生多条 oligo，链长通常限制在约 200–300 个核苷酸）→无序存储→取样、PCR 扩增、测序检索。\n  - 依据：引言：“First, the binary data are encoded into sequences over the DNA 4-ary alphabet, which are referred to as encoded sequences. Next, the encoded sequences are synthesized by a DNA synthesizer... multiple DNA strands (known as oligos) are pr；引言：“The synthesized strands are then stored in a storage container in an unordered manner. To access the data, a sample of the strands is taken from the storage container, amplified using PCR and then sequenced by a DNA sequencer.”\n  - 证据 ID：S2-引言\n  - 说明：引言对 Fig. 1a 标准流程的描述与主张的每一步完全对应：四进制编码、每条序列多条 oligo、约 200–300 核苷酸长度上限、无序存储、取样+PCR+测序。\n- **text-4｜有证据支持**：核心方法（作者主张）：深度神经网络（基于模拟数据训练）+ 张量积纠错码 + 安全裕度机制的组合管线。\n  - 依据：摘要：“Here we show a modular and holistic approach that combines deep neural networks trained on simulated data, tensor product-based error-correcting codes and a safety margin mechanism into a single coherent pipeline.”\n  - 证据 ID：S1-摘要\n  - 说明：摘要原文逐字覆盖主张的全部三个方法要素及“单一管线”表述；主张已正确标注为作者主张。\n- **text-5｜有证据支持**：主要结果（作者声称）：在 3.1 MB 信息、两种测序技术上演示；速度提升 3,200×，精度提升 40%，高噪声区码率 1.6 bits/base。\n  - 依据：摘要：“We demonstrated our solution on 3.1 MB of information using two different sequencing technologies. Our work improves upon the current leading solutions with a 3,200× increase in speed and a 40% improvement in accuracy and offers a code\n  - 证据 ID：S1-摘要\n  - 说明：摘要直接包含全部数字与演示规模。判定 supported 指“这些数字确实出自作者声称”；由于方法、基线方案与统计细节未在所提供材料中出现，其独立可验证性仍受限，主张本身亦以“作者声称”限定，未扩大范围。\n- **text-6｜有证据支持**：检索过程的主要瓶颈是规模性与准确性之间的自然权衡，本文声称以整体化方案缓解该权衡。\n  - 依据：摘要：“an information retrieval process is employed, where some of the main bottlenecks are the scalability and accuracy, which have a natural tradeoff between the two.”；摘要：“Here we show a modular and holistic approach...”\n  - 证据 ID：S1-摘要\n  - 说明：摘要明确将 scalability 与 accuracy 的自然权衡称为主要瓶颈，并提出模块化整体化（holistic）方案，与主张一致。\n- **text-7｜有证据支持**：论文时间线：2024 年 6 月 12 日收稿，2025 年 1 月 23 日接收，2025 年 2 月 21 日在线发表。\n  - 依据：原文出版信息：“Received: 12 June 2024 / Accepted: 23 January 2025 / Published online: 21 February 2025”\n  - 证据 ID：S3-出版信息\n  - 说明：收稿、接收与在线发表日期与主张完全一致。\n- **text-8｜有证据支持**：当前输入原文不完整：仅含摘要与引言开头，方法、实验设置、数据集细节与统计显著性均未明确说明。\n  - 依据：所提供材料仅含标题、作者、摘要全文、引言开头三段及出版日期；引言在“The sequencer processes the strands and generates”处截断；方法、实验、数据集与统计显著性内容缺失\n  - 证据 ID：S1-摘要、S2-引言\n  - 说明：该主张是对所提供材料范围的事实描述，与当前输入内容直接相符：引言被截断、无任何方法或结果章节。\n- **text-9｜有证据支持**：全球数据量预计 2025 年达 180 zettabytes，而现有存储技术难以同步扩展；DNA 存储的检索过程存在规模性与准确性之间的自然权衡瓶颈，需要可扩展且稳健的检索方案。\n  - 依据：摘要：“projected to hit 180 zettabytes by 2025, whereas current technologies are not anticipated to scale at nearly the same rate.”；摘要：“some of the main bottlenecks are the scalability and accuracy, which have a natural tradeoff between the two.”\n  - 证据 ID：S1-摘要\n  - 说明：180 zettabytes 与扩展瓶颈、scalability/accuracy 自然权衡均由摘要直接支持；“需要可扩展且稳健的检索方案”与摘要提出的整体化方案及标题中“Scalable and robust”定位一致。\n- **text-10｜有证据支持**：作者主张的模块化整体管线：基于模拟数据训练的深度神经网络 + 张量积纠错码（tensor product-based error-correcting codes）+ 安全裕度机制（safety margin mechanism）。\n  - 依据：摘要：“a modular and holistic approach that combines deep neural networks trained on simulated data, tensor product-based error-correcting codes and a safety margin mechanism into a single coherent pipeline”\n  - 证据 ID：S1-摘要\n  - 说明：主张的三个组件及“模块化整体管线”表述与摘要原文逐一对应，且主张已限定为作者主张。\n- **text-11｜有证据支持**：作者声称：速度提升 3,200×、精度提升 40%、高噪声区码率 1.6 bits/base（均为作者主张，完整评测细节未在已提供原文中给出）。\n  - 依据：摘要：“a 3,200× increase in speed and a 40% improvement in accuracy and offers a code rate of 1.6 bits per base in a high-noise regime”\n  - 证据 ID：S1-摘要\n  - 说明：三项数值在摘要中逐字出现；主张正确限定为作者主张并注明评测细节缺失，无扩大范围。判定 supported 指摘要确含该声称；其独立验证需方法/结果章节，当前不可得。\n- **规则预检查提示**：\n  - text-1：未引用 evidence ID 或来源章节，核验时需额外谨慎。\n  - text-2：未引用 evidence ID 或来源章节，核验时需额外谨慎。\n  - text-3：未引用 evidence ID 或来源章节，核验时需额外谨慎。\n  - text-4：未引用 evidence ID 或来源章节，核验时需额外谨慎。\n  - text-5：未引用 evidence ID 或来源章节，核验时需额外谨慎。\n  - text-6：未引用 evidence ID 或来源章节，核验时需额外谨慎。\n  - text-7：未引用 evidence ID 或来源章节，核验时需额外谨慎。\n  - text-8：未引用 evidence ID 或来源章节，核验时需额外谨慎。\n  - text-9：未引用 evidence ID 或来源章节，核验时需额外谨慎。\n  - text-10：未引用 evidence ID 或来源章节，核验时需额外谨慎。\n  - text-11：未引用 evidence ID 或来源章节，核验时需额外谨慎。\n\n## 8. 评价\n### 8.1 优点\n- 待核验：尚未建立与获支持主张的一致对应关系。\n- 待核验：尚未建立与获支持主张的一致对应关系。\n- 待核验：尚未建立与获支持主张的一致对应关系。\n- 待核验：尚未建立与获支持主张的一致对应关系。\n\n### 8.2 局限性\n- 待核验：尚未建立与获支持主张的一致对应关系。\n- 待核验：尚未建立与获支持主张的一致对应关系。\n- 待核验：尚未建立与获支持主张的一致对应关系。\n- 待核验：尚未建立与获支持主张的一致对应关系。\n- 待核验：尚未建立与获支持主张的一致对应关系。\n\n### 8.3 可复现性\n待核验：尚未建立与获支持主张的一致对应关系。\n\n## 9. 启发与参考价值\n### 9.1 适用场景\n该方法可优先参考于与 待核验：尚未建立与获支持主张的一致对应关系。 类似的数据或任务场景。\n\n### 9.2 对当前研究的启发\n待核验：尚未建立与获支持主张的一致对应关系。\n\n## 10. 总结\n暂无满足交付条件的主张，请查看 QC 问题清单。\n\n## 11. 领域结构化产物\n以下产物由已解析证据、主张清单和 QC 结果确定性组装；`verified` 仅表示通过本项目的引用/定位闸门，不代表专家正确性认证。\n### 11.1 覆盖状态\n- 候选章节：0；已读取：0；已核验主张：0/11。\n- 候选图表：0；已选择：0；已有直接复核支持：0。\n### 11.2 故事架构\n- 未形成可定位的故事节点。\n### 11.3 图组 Flow\n- 未形成可定位的图组节点。\n### 11.4 细节证据\n- 未形成细节证据矩阵。\n### 11.5 Benchmark\n- `not_reported`：尚未提取可定位的 benchmark 结构；不能据此生成排行榜。\n\n## 附录：原始生成草稿（待复核，不作为正式结论）\n\n完整原始结构保存在 JSON 的 qc_draft 中。\n\n### 原始摘要\n> 本文提出一种模块化、整体化的 DNA 存储信息检索流程，将基于模拟数据训练的深度神经网络、基于张量积的纠错码（tensor product-based error-correcting codes）以及安全裕度机制（safety margin mechanism）整合为单一管线。作者在 3.1 MB 信息上使用两种不同测序技术进行了演示，声称相比当前领先方案实现 3,200 倍的速度提升和 40% 的精度提升，并在高噪声环境下达到每碱基 1.6 比特的码率。需注意：当前可用原文仅包含标题、作者、摘要及引言开头，方法、实验细节与定量结果的完整证据未提供，因此部分结构化字段标注为“未明确说明”。\n\n### 原始要点\n> ['研究背景：全球数据量预计 2025 年达 180 zettabytes，现有磁/光存储技术难以同步扩展，DNA 存储因高密度、高耐久、近乎零功耗维护而成为候选方案。', 'DNA 存储标准流程：二进制数据编码为 {A,C,G,T} 四进制序列→合成（每条序列产生多条 oligo，链长通常限制在约 200–300 个核苷酸）→无序存储→取样、PCR 扩增、测序检索。', '核心方法（作者主张）：深度神经网络（基于模拟数据训练）+ 张量积纠错码 + 安全裕度机制的组合管线。', '主要结果（作者声称）：在 3.1 MB 信息、两种测序技术上演示；速度提升 3,200×，精度提升 40%，高噪声区码率 1.6 bits/base。', '检索过程的主要瓶颈是规模性与准确性之间的自然权衡，本文声称以整体化方案缓解该权衡。', '论文时间线：2024 年 6 月 12 日收稿，2025 年 1 月 23 日接收，2025 年 2 月 21 日在线发表。', '当前输入原文不完整：仅含摘要与引言开头，方法、实验设置、数据集细节与统计显著性均未明确说明。']\n\n### 原始提取\n> {'research_problem': '全球数据量预计 2025 年达 180 zettabytes，而现有存储技术难以同步扩展；DNA 存储的检索过程存在规模性与准确性之间的自然权衡瓶颈，需要可扩展且稳健的检索方案。', 'core_method': '作者主张的模块化整体管线：基于模拟数据训练的深度神经网络 + 张量积纠错码（tensor product-based error-correcting codes）+ 安全裕度机制（safety margin mechanism）。', 'datasets': ['3.1 MB 信息；使用两种不同测序技术（具体技术/数据集名称未明确说明）。'], 'experimental_setup': '编码→合成→无序存储→取样、PCR 扩增、测序的标准流程；演示规模 3.1 MB；其余条件（平台、深度、重复次数）未明确说明。', 'main_results': '作者声称：速度提升 3,200×、精度提升 40%、高噪声区码率 1.6 bits/base（均为作者主张，完整评测细节未在已提供原文中给出）。'}\n\n### 原始创新点\n> 将深度学习、张量积纠错码与安全裕度机制整合为单一连贯的模块化 DNA 检索管线（作者主张） 针对规模性-准确性权衡的整体化（holistic）设计思路（作者主张）\n",
+  "structured_data": {
+    "metadata": {
+      "title": "Scalable and robust DNA-based storage via coding theory and deep learning",
+      "authors": [
+        "Daniella Bar-Lev",
+        "Itai Orr",
+        "Omer Sabary",
+        "Tuvi Etzion",
+        "Eitan Yaakobi"
+      ],
+      "venue": "未明确说明（仅见收稿/接收/在线发表日期，期刊或会议名未在所提供原文中标明）",
+      "year": "2025"
+    },
+    "extracted_notes": {
+      "research_problem": "待核验：尚未建立与获支持主张的一致对应关系。",
+      "core_method": "待核验：尚未建立与获支持主张的一致对应关系。",
+      "datasets": [
+        "待核验：尚未建立与获支持主张的一致对应关系。"
+      ],
+      "experimental_setup": "待核验：尚未建立与获支持主张的一致对应关系。",
+      "main_results": "待核验：尚未建立与获支持主张的一致对应关系。"
+    },
+    "novelty": "待核验：尚未建立与获支持主张的一致对应关系。",
+    "strengths": [
+      "待核验：尚未建立与获支持主张的一致对应关系。",
+      "待核验：尚未建立与获支持主张的一致对应关系。",
+      "待核验：尚未建立与获支持主张的一致对应关系。",
+      "待核验：尚未建立与获支持主张的一致对应关系。"
+    ],
+    "limitations": [
+      "待核验：尚未建立与获支持主张的一致对应关系。",
+      "待核验：尚未建立与获支持主张的一致对应关系。",
+      "待核验：尚未建立与获支持主张的一致对应关系。",
+      "待核验：尚未建立与获支持主张的一致对应关系。",
+      "待核验：尚未建立与获支持主张的一致对应关系。"
+    ],
+    "reproducibility": "待核验：尚未建立与获支持主张的一致对应关系。",
+    "benchmark": {
+      "status": "not_reported",
+      "entries": [],
+      "reason": "已提供原文中除摘要级别的 3,200×、40%、1.6 bits/base 等作者声称数值外，没有多方法在同一任务/切分/单位下的对照表或逐项指标，无法构建符合 value_source=explicit 要求的正式比较条目。"
+    },
+    "claims": [
+      {
+        "claim_id": "C1",
+        "statement": "全球数据量预计 2025 年达到 180 zettabytes，而现有存储技术预计无法以相近速度扩展。",
+        "category": "background_fact",
+        "story_role": "problem",
+        "experiment": {
+          "sample_or_system": "",
+          "condition": "",
+          "assay": "",
+          "replicates": "",
+          "controls": "",
+          "effect_or_significance": ""
+        },
+        "source_sections": [
+          "摘要",
+          "引言"
+        ],
+        "evidence": [
+          {
+            "evidence_id": "E1",
+            "quote": "The global data sphere is expanding exponentially, projected to hit 180 zettabytes by 2025, whereas current technologies are not anticipated to scale at nearly the same rate."
+          },
+          {
+            "evidence_id": "E2",
+            "quote": "While the global data sphere is anticipated to reach 180 zettabytes by 2025, current storage solutions are not expected to scale at nearly the same pace owing to capacity limitations."
+          }
+        ],
+        "confidence": "高"
+      },
+      {
+        "claim_id": "C2",
+        "statement": "DNA 存储相比磁/光存储具有更高信息密度、更强数据耐久性，且维持数据完整性所需功耗可忽略。",
+        "category": "background_fact",
+        "story_role": "problem",
+        "experiment": {
+          "sample_or_system": "",
+          "condition": "",
+          "assay": "",
+          "replicates": "",
+          "controls": "",
+          "effect_or_significance": ""
+        },
+        "source_sections": [
+          "摘要"
+        ],
+        "evidence": [
+          {
+            "evidence_id": "E3",
+            "quote": "This method enjoys major advantages over magnetic and optical storage solutions such as exceptional information density, enhanced data durability and negligible power consumption to maintain data integrity."
+          }
+        ],
+        "confidence": "高"
+      },
+      {
+        "claim_id": "C3",
+        "statement": "DNA 检索过程的主要瓶颈是规模性与准确性，二者之间存在自然权衡。",
+        "category": "problem_statement",
+        "story_role": "problem",
+        "experiment": {
+          "sample_or_system": "",
+          "condition": "",
+          "assay": "",
+          "replicates": "",
+          "controls": "",
+          "effect_or_significance": ""
+        },
+        "source_sections": [
+          "摘要"
+        ],
+        "evidence": [
+          {
+            "evidence_id": "E4",
+            "quote": "some of the main bottlenecks are the scalability and accuracy, which have a natural tradeoff between the two"
+          }
+        ],
+        "confidence": "高"
+      },
+      {
+        "claim_id": "C4",
+        "statement": "作者提出一种模块化整体方案，将基于模拟数据训练的深度神经网络、张量积纠错码和安全裕度机制整合为单一连贯管线。",
+        "category": "method",
+        "story_role": "design",
+        "experiment": {
+          "sample_or_system": "a single coherent pipeline",
+          "condition": "",
+          "assay": "",
+          "replicates": "",
+          "controls": "",
+          "effect_or_significance": ""
+        },
+        "source_sections": [
+          "摘要"
+        ],
+        "evidence": [
+          {
+            "evidence_id": "E5",
+            "quote": "we show a modular and holistic approach that combines deep neural networks trained on simulated data, tensor product-based error-correcting codes and a safety margin mechanism into a single coherent pipeline"
+          }
+        ],
+        "confidence": "高（方法存在性）；方法细节完整性低（原文未提供）"
+      },
+      {
+        "claim_id": "C5",
+        "statement": "作者在 3.1 MB 信息上使用两种不同测序技术演示了该方案。",
+        "category": "experiment",
+        "story_role": "design",
+        "experiment": {
+          "sample_or_system": "3.1 MB of information",
+          "condition": "two different sequencing technologies",
+          "assay": "information retrieval demonstration",
+          "replicates": "",
+          "controls": "",
+          "effect_or_significance": ""
+        },
+        "source_sections": [
+          "摘要"
+        ],
+        "evidence": [
+          {
+            "evidence_id": "E6",
+            "quote": "We demonstrated our solution on 3.1 MB of information using two different sequencing technologies."
+          }
+        ],
+        "confidence": "中（演示事实为作者报告，细节未提供）"
+      },
+      {
+        "claim_id": "C6",
+        "statement": "该方案相比当前领先方案速度提升 3,200 倍、精度提升 40%。",
+        "category": "result",
+        "story_role": "result",
+        "experiment": {
+          "sample_or_system": "",
+          "condition": "high-noise regime（对应 C8）",
+          "assay": "",
+          "replicates": "",
+          "controls": "current leading solutions",
+          "effect_or_significance": ""
+        },
+        "source_sections": [
+          "摘要"
+        ],
+        "evidence": [
+          {
+            "evidence_id": "E7",
+            "quote": "Our work improves upon the current leading solutions with a 3,200× increase in speed and a 40% improvement in accuracy"
+          }
+        ],
+        "confidence": "中（数值为作者声称，比较基线与评测协议未在已提供原文中明确说明）"
+      },
+      {
+        "claim_id": "C7",
+        "statement": "在高噪声环境下，该方案码率达到每碱基 1.6 比特。",
+        "category": "result",
+        "story_role": "result",
+        "experiment": {
+          "sample_or_system": "",
+          "condition": "high-noise regime",
+          "assay": "",
+          "replicates": "",
+          "controls": "",
+          "effect_or_significance": ""
+        },
+        "source_sections": [
+          "摘要"
+        ],
+        "evidence": [
+          {
+            "evidence_id": "E8",
+            "quote": "offers a code rate of 1.6 bits per base in a high-noise regime"
+          }
+        ],
+        "confidence": "中（数值为作者声称，编码构造与噪声定义未在已提供原文中明确说明）"
+      },
+      {
+        "claim_id": "C8",
+        "statement": "标准体外 DNA 存储流程包括：二进制数据编码为 {A,C,G,T} 序列、合成（每条序列产生多条 oligo）、无序存储、取样后经 PCR 扩增并测序。",
+        "category": "background_fact",
+        "story_role": "design",
+        "experiment": {
+          "sample_or_system": "DNA synthesizer; PCR; DNA sequencer",
+          "condition": "standard in vitro DNA-based storage pipeline",
+          "assay": "",
+          "replicates": "",
+          "controls": "",
+          "effect_or_significance": ""
+        },
+        "source_sections": [
+          "引言"
+        ],
+        "evidence": [
+          {
+            "evidence_id": "E9",
+            "quote": "The standard in vitro DNA-based storage pipeline consists of several steps... First, the binary data are encoded into sequences over the DNA 4-ary alphabet... the encoded sequences are synthesized by a DNA synthesizer. Since current synthesis technologies cannot produce one single strand per sequence, multiple DNA strands (known as oligos) are produced per encoded sequence."
+          },
+          {
+            "evidence_id": "E10",
+            "quote": "The synthesized strands are then stored in a storage container in an unordered manner. To access the data, a sample of the strands is taken from the storage container, amplified using PCR and then sequenced by a DNA sequencer."
+          }
+        ],
+        "confidence": "高"
+      },
+      {
+        "claim_id": "C9",
+        "statement": "当前合成技术产生的链长通常限制在约 200–300 个核苷酸以维持可接受的错误率。",
+        "category": "background_fact",
+        "story_role": "problem",
+        "experiment": {
+          "sample_or_system": "current synthesis technologies",
+          "condition": "",
+          "assay": "",
+          "replicates": "",
+          "controls": "",
+          "effect_or_significance": ""
+        },
+        "source_sections": [
+          "引言"
+        ],
+        "evidence": [
+          {
+            "evidence_id": "E11",
+            "quote": "the length of the strands produced by the synthesizer is typically bounded by roughly 200–300 nucleotides to sustain an acceptable error rate"
+          }
+        ],
+        "confidence": "高"
+      },
+      {
+        "claim_id": "C10",
+        "statement": "作者声称该工作为受限于当前检索流程的商业化 DNA 存储方案展示了可行路径。",
+        "category": "conclusion",
+        "story_role": "conclusion",
+        "experiment": {
+          "sample_or_system": "",
+          "condition": "",
+          "assay": "",
+          "replicates": "",
+          "controls": "",
+          "effect_or_significance": ""
+        },
+        "source_sections": [
+          "摘要"
+        ],
+        "evidence": [
+          {
+            "evidence_id": "E12",
+            "quote": "our work shows a viable path to commercial DNA storage solutions hindered by current information retrieval processes"
+          }
+        ],
+        "confidence": "中（为作者结论性主张）"
+      }
+    ],
+    "story_edges": [
+      {
+        "source": "C1",
+        "target": "C4",
+        "supporting_claim_ids": [
+          "C2",
+          "C3"
+        ],
+        "relation": "研究背景与瓶颈引出方法设计"
+      },
+      {
+        "source": "C3",
+        "target": "C4",
+        "supporting_claim_ids": [],
+        "relation": "规模性-准确性权衡问题由整体化管线方案应对（作者论证）"
+      },
+      {
+        "source": "C4",
+        "target": "C5",
+        "supporting_claim_ids": [],
+        "relation": "方法设计通过实验演示进行验证（作者报告）"
+      },
+      {
+        "source": "C5",
+        "target": "C6",
+        "supporting_claim_ids": [
+          "C7"
+        ],
+        "relation": "演示实验支撑性能提升结论（作者主张）"
+      },
+      {
+        "source": "C5",
+        "target": "C7",
+        "supporting_claim_ids": [],
+        "relation": "演示实验支撑码率结果（作者主张）"
+      },
+      {
+        "source": "C6",
+        "target": "C10",
+        "supporting_claim_ids": [
+          "C7"
+        ],
+        "relation": "性能结果支撑商业化可行路径的结论（作者主张）"
+      }
+    ],
+    "report_visual_reviews": [],
+    "visually_reviewed_figures": [],
+    "report_rounds": [
+      {
+        "index": 0,
+        "accepted": [],
+        "issues": [
+          "invalid_claim",
+          "invalid_claim",
+          "invalid_claim",
+          "invalid_claim",
+          "invalid_claim",
+          "invalid_claim",
+          "invalid_claim",
+          "invalid_claim",
+          "invalid_claim",
+          "invalid_claim",
+          "invalid_evidence",
+          "invalid_evidence",
+          "invalid_evidence",
+          "invalid_evidence",
+          "invalid_evidence",
+          "invalid_evidence",
+          "invalid_evidence",
+          "invalid_evidence",
+          "invalid_evidence",
+          "invalid_evidence",
+          "invalid_evidence",
+          "unbound_report_field",
+          "unbound_report_field",
+          "unbound_report_field",
+          "unbound_report_field",
+          "unbound_report_field",
+          "unbound_report_field",
+          "unbound_report_field",
+          "unbound_report_field",
+          "unbound_report_field",
+          "unbound_report_field",
+          "unbound_report_field",
+          "unbound_report_field",
+          "unbound_report_field",
+          "unbound_report_field",
+          "unbound_report_field",
+          "unbound_report_field",
+          "unbound_report_field",
+          "unbound_report_field",
+          "unbound_report_field",
+          "unbound_report_field",
+          "unbound_report_field",
+          "unbound_report_field",
+          "unbound_report_field",
+          "unbound_report_field",
+          "unbound_report_field",
+          "unbound_report_field",
+          "unbound_report_field",
+          "unbound_report_field",
+          "unbound_report_field",
+          "unbound_report_field"
+        ]
+      }
+    ],
+    "execution_stop_reason": "round_limit",
+    "semantic_artifacts": [],
+    "figure_evidence": [],
+    "figure_analyses": [],
+    "fact_checks": [
+      {
+        "claim_id": "text-1",
+        "claim": "本文提出一种模块化、整体化的 DNA 存储信息检索流程，将基于模拟数据训练的深度神经网络、基于张量积的纠错码（tensor product-based error-correcting codes）以及安全裕度机制（safety margin mechanism）整合为单一管线。作者在 3.1 MB 信息上使用两种不同测序技术进行了演示，声称相比当前领先方案实现 3,200 倍的速度提升和 40% 的精度提升，并在高噪声环境下达到每碱基 1.6 比特的码率。需注意：当前可用原文仅包含标题、作者、摘要及引言开头，方法、实验细节与定量结果的完整证据未提供，因此部分结构化字段标注为“未明确说明”。",
+        "claim_source": "text",
+        "verdict": "supported",
+        "evidence_refs": [
+          "摘要：“Here we show a modular and holistic approach that combines deep neural networks trained on simulated data, tensor product-based error-correcting codes and a safety margin mechanism into a single coherent pipeline. We demonstrated our so",
+          "引言（仅开头）：方法与实验细节未包含在所提供材料中"
+        ],
+        "evidence_ids": [
+          "S1-摘要"
+        ],
+        "rationale": "摘要逐字包含主张中列出的所有方法要素（DNN、张量积纠错码、安全裕度）与全部定量主张（3.1 MB、两种测序技术、3,200×、40%、1.6 bits/base），证据直接。需要说明的是，这些定量结果目前仅有摘要级别的作者声称，尚无论文方法/实验细节的独立证据，但不影响“主张被摘要支持”这一判定；主张本身也已声明当前材料不完整。",
+        "confidence": "高（针对摘要是否含该声称）；定量结果的可重复性为低"
+      },
+      {
+        "claim_id": "text-2",
+        "claim": "研究背景：全球数据量预计 2025 年达 180 zettabytes，现有磁/光存储技术难以同步扩展，DNA 存储因高密度、高耐久、近乎零功耗维护而成为候选方案。",
+        "claim_source": "text",
+        "verdict": "supported",
+        "evidence_refs": [
+          "摘要：“The global data sphere is expanding exponentially, projected to hit 180 zettabytes by 2025, whereas current technologies are not anticipated to scale at nearly the same rate. DNA-based storage emerges as a crucial solution to this gap..",
+          "引言：“While the global data sphere is anticipated to reach 180 zettabytes by 2025, current storage solutions are not expected to scale at nearly the same pace... offering extraordinary data density and durability.”"
+        ],
+        "evidence_ids": [
+          "S1-摘要",
+          "S2-引言"
+        ],
+        "rationale": "摘要与引言均明确给出 180 zettabytes、现有技术扩展不足、以及 DNA 存储的高密度、高耐久、低维护功耗等优势，与主张逐项对应，其中“磁/光存储”直接对应摘要中的“magnetic and optical storage solutions”。",
+        "confidence": "高"
+      },
+      {
+        "claim_id": "text-3",
+        "claim": "DNA 存储标准流程：二进制数据编码为 {A,C,G,T} 四进制序列→合成（每条序列产生多条 oligo，链长通常限制在约 200–300 个核苷酸）→无序存储→取样、PCR 扩增、测序检索。",
+        "claim_source": "text",
+        "verdict": "supported",
+        "evidence_refs": [
+          "引言：“First, the binary data are encoded into sequences over the DNA 4-ary alphabet, which are referred to as encoded sequences. Next, the encoded sequences are synthesized by a DNA synthesizer... multiple DNA strands (known as oligos) are pr",
+          "引言：“The synthesized strands are then stored in a storage container in an unordered manner. To access the data, a sample of the strands is taken from the storage container, amplified using PCR and then sequenced by a DNA sequencer.”"
+        ],
+        "evidence_ids": [
+          "S2-引言"
+        ],
+        "rationale": "引言对 Fig. 1a 标准流程的描述与主张的每一步完全对应：四进制编码、每条序列多条 oligo、约 200–300 核苷酸长度上限、无序存储、取样+PCR+测序。",
+        "confidence": "高"
+      },
+      {
+        "claim_id": "text-4",
+        "claim": "核心方法（作者主张）：深度神经网络（基于模拟数据训练）+ 张量积纠错码 + 安全裕度机制的组合管线。",
+        "claim_source": "text",
+        "verdict": "supported",
+        "evidence_refs": [
+          "摘要：“Here we show a modular and holistic approach that combines deep neural networks trained on simulated data, tensor product-based error-correcting codes and a safety margin mechanism into a single coherent pipeline.”"
+        ],
+        "evidence_ids": [
+          "S1-摘要"
+        ],
+        "rationale": "摘要原文逐字覆盖主张的全部三个方法要素及“单一管线”表述；主张已正确标注为作者主张。",
+        "confidence": "高"
+      },
+      {
+        "claim_id": "text-5",
+        "claim": "主要结果（作者声称）：在 3.1 MB 信息、两种测序技术上演示；速度提升 3,200×，精度提升 40%，高噪声区码率 1.6 bits/base。",
+        "claim_source": "text",
+        "verdict": "supported",
+        "evidence_refs": [
+          "摘要：“We demonstrated our solution on 3.1 MB of information using two different sequencing technologies. Our work improves upon the current leading solutions with a 3,200× increase in speed and a 40% improvement in accuracy and offers a code"
+        ],
+        "evidence_ids": [
+          "S1-摘要"
+        ],
+        "rationale": "摘要直接包含全部数字与演示规模。判定 supported 指“这些数字确实出自作者声称”；由于方法、基线方案与统计细节未在所提供材料中出现，其独立可验证性仍受限，主张本身亦以“作者声称”限定，未扩大范围。",
+        "confidence": "中（摘要证据直接，但缺乏方法学细节佐证）"
+      },
+      {
+        "claim_id": "text-6",
+        "claim": "检索过程的主要瓶颈是规模性与准确性之间的自然权衡，本文声称以整体化方案缓解该权衡。",
+        "claim_source": "text",
+        "verdict": "supported",
+        "evidence_refs": [
+          "摘要：“an information retrieval process is employed, where some of the main bottlenecks are the scalability and accuracy, which have a natural tradeoff between the two.”",
+          "摘要：“Here we show a modular and holistic approach...”"
+        ],
+        "evidence_ids": [
+          "S1-摘要"
+        ],
+        "rationale": "摘要明确将 scalability 与 accuracy 的自然权衡称为主要瓶颈，并提出模块化整体化（holistic）方案，与主张一致。",
+        "confidence": "高"
+      },
+      {
+        "claim_id": "text-7",
+        "claim": "论文时间线：2024 年 6 月 12 日收稿，2025 年 1 月 23 日接收，2025 年 2 月 21 日在线发表。",
+        "claim_source": "text",
+        "verdict": "supported",
+        "evidence_refs": [
+          "原文出版信息：“Received: 12 June 2024 / Accepted: 23 January 2025 / Published online: 21 February 2025”"
+        ],
+        "evidence_ids": [
+          "S3-出版信息"
+        ],
+        "rationale": "收稿、接收与在线发表日期与主张完全一致。",
+        "confidence": "高"
+      },
+      {
+        "claim_id": "text-8",
+        "claim": "当前输入原文不完整：仅含摘要与引言开头，方法、实验设置、数据集细节与统计显著性均未明确说明。",
+        "claim_source": "text",
+        "verdict": "supported",
+        "evidence_refs": [
+          "所提供材料仅含标题、作者、摘要全文、引言开头三段及出版日期；引言在“The sequencer processes the strands and generates”处截断；方法、实验、数据集与统计显著性内容缺失"
+        ],
+        "evidence_ids": [
+          "S1-摘要",
+          "S2-引言"
+        ],
+        "rationale": "该主张是对所提供材料范围的事实描述，与当前输入内容直接相符：引言被截断、无任何方法或结果章节。",
+        "confidence": "高"
+      },
+      {
+        "claim_id": "text-9",
+        "claim": "全球数据量预计 2025 年达 180 zettabytes，而现有存储技术难以同步扩展；DNA 存储的检索过程存在规模性与准确性之间的自然权衡瓶颈，需要可扩展且稳健的检索方案。",
+        "claim_source": "text",
+        "verdict": "supported",
+        "evidence_refs": [
+          "摘要：“projected to hit 180 zettabytes by 2025, whereas current technologies are not anticipated to scale at nearly the same rate.”",
+          "摘要：“some of the main bottlenecks are the scalability and accuracy, which have a natural tradeoff between the two.”"
+        ],
+        "evidence_ids": [
+          "S1-摘要"
+        ],
+        "rationale": "180 zettabytes 与扩展瓶颈、scalability/accuracy 自然权衡均由摘要直接支持；“需要可扩展且稳健的检索方案”与摘要提出的整体化方案及标题中“Scalable and robust”定位一致。",
+        "confidence": "高"
+      },
+      {
+        "claim_id": "text-10",
+        "claim": "作者主张的模块化整体管线：基于模拟数据训练的深度神经网络 + 张量积纠错码（tensor product-based error-correcting codes）+ 安全裕度机制（safety margin mechanism）。",
+        "claim_source": "text",
+        "verdict": "supported",
+        "evidence_refs": [
+          "摘要：“a modular and holistic approach that combines deep neural networks trained on simulated data, tensor product-based error-correcting codes and a safety margin mechanism into a single coherent pipeline”"
+        ],
+        "evidence_ids": [
+          "S1-摘要"
+        ],
+        "rationale": "主张的三个组件及“模块化整体管线”表述与摘要原文逐一对应，且主张已限定为作者主张。",
+        "confidence": "高"
+      },
+      {
+        "claim_id": "text-11",
+        "claim": "作者声称：速度提升 3,200×、精度提升 40%、高噪声区码率 1.6 bits/base（均为作者主张，完整评测细节未在已提供原文中给出）。",
+        "claim_source": "text",
+        "verdict": "supported",
+        "evidence_refs": [
+          "摘要：“a 3,200× increase in speed and a 40% improvement in accuracy and offers a code rate of 1.6 bits per base in a high-noise regime”"
+        ],
+        "evidence_ids": [
+          "S1-摘要"
+        ],
+        "rationale": "三项数值在摘要中逐字出现；主张正确限定为作者主张并注明评测细节缺失，无扩大范围。判定 supported 指摘要确含该声称；其独立验证需方法/结果章节，当前不可得。",
+        "confidence": "中（针对声称存在性为高，针对结果可靠性为低）"
+      }
+    ],
+    "fact_check_summary": "全部 11 条主张均判为 supported：所有可核验内容（研究背景、标准流程描述、方法组合、定量结果声称、出版日期、材料完整性说明）均能在所提供的摘要、引言开头或出版信息中找到直接原文对应。但需注意整体证据强度有限：定量结果（3,200×、40%、1.6 bits/base）目前仅有摘要级作者声称，方法、实验设置、基线对比与统计细节均未在所提供材料中出现，因此这些结果的独立可验证性低；判定 supported 表示“论文确作此声称”，不构成对结果真实性的独立背书。",
+    "fact_check_rule_flags": [
+      "text-1：未引用 evidence ID 或来源章节，核验时需额外谨慎。",
+      "text-2：未引用 evidence ID 或来源章节，核验时需额外谨慎。",
+      "text-3：未引用 evidence ID 或来源章节，核验时需额外谨慎。",
+      "text-4：未引用 evidence ID 或来源章节，核验时需额外谨慎。",
+      "text-5：未引用 evidence ID 或来源章节，核验时需额外谨慎。",
+      "text-6：未引用 evidence ID 或来源章节，核验时需额外谨慎。",
+      "text-7：未引用 evidence ID 或来源章节，核验时需额外谨慎。",
+      "text-8：未引用 evidence ID 或来源章节，核验时需额外谨慎。",
+      "text-9：未引用 evidence ID 或来源章节，核验时需额外谨慎。",
+      "text-10：未引用 evidence ID 或来源章节，核验时需额外谨慎。",
+      "text-11：未引用 evidence ID 或来源章节，核验时需额外谨慎。"
+    ],
+    "selected_sections": [],
+    "source_structure": {
+      "parser_kind": "plain_text",
+      "page_count": null,
+      "doi": "",
+      "section_order": [],
+      "figure_count": 0
+    },
+    "qc_draft": {
+      "schema_version": "analysis-v2",
+      "title": "Scalable and robust DNA-based storage via coding theory and deep learning",
+      "summary": "本文提出一种模块化、整体化的 DNA 存储信息检索流程，将基于模拟数据训练的深度神经网络、基于张量积的纠错码（tensor product-based error-correcting codes）以及安全裕度机制（safety margin mechanism）整合为单一管线。作者在 3.1 MB 信息上使用两种不同测序技术进行了演示，声称相比当前领先方案实现 3,200 倍的速度提升和 40% 的精度提升，并在高噪声环境下达到每碱基 1.6 比特的码率。需注意：当前可用原文仅包含标题、作者、摘要及引言开头，方法、实验细节与定量结果的完整证据未提供，因此部分结构化字段标注为“未明确说明”。",
+      "key_points": [
+        "研究背景：全球数据量预计 2025 年达 180 zettabytes，现有磁/光存储技术难以同步扩展，DNA 存储因高密度、高耐久、近乎零功耗维护而成为候选方案。",
+        "DNA 存储标准流程：二进制数据编码为 {A,C,G,T} 四进制序列→合成（每条序列产生多条 oligo，链长通常限制在约 200–300 个核苷酸）→无序存储→取样、PCR 扩增、测序检索。",
+        "核心方法（作者主张）：深度神经网络（基于模拟数据训练）+ 张量积纠错码 + 安全裕度机制的组合管线。",
+        "主要结果（作者声称）：在 3.1 MB 信息、两种测序技术上演示；速度提升 3,200×，精度提升 40%，高噪声区码率 1.6 bits/base。",
+        "检索过程的主要瓶颈是规模性与准确性之间的自然权衡，本文声称以整体化方案缓解该权衡。",
+        "论文时间线：2024 年 6 月 12 日收稿，2025 年 1 月 23 日接收，2025 年 2 月 21 日在线发表。",
+        "当前输入原文不完整：仅含摘要与引言开头，方法、实验设置、数据集细节与统计显著性均未明确说明。"
+      ],
+      "limitations": [
+        "当前提供的原文仅含摘要与引言开头，方法细节、超参数、模型架构未明确说明。",
+        "“3,200× 速度提升”“40% 精度提升”的比较基线、基准方法与评测协议未明确说明。",
+        "3.1 MB 演示所用两种测序技术的具体型号与噪声条件未明确说明。",
+        "码率 1.6 bits/base 的编码构造细节与纠错能力未明确说明。",
+        "统计显著性、重复实验次数与误差范围未明确说明。",
+        "成本、写入（合成）吞吐量与端到端规模化验证未在已提供原文中说明。"
+      ],
+      "structured_data": {
+        "metadata": {
+          "title": "Scalable and robust DNA-based storage via coding theory and deep learning",
+          "authors": [
+            "Daniella Bar-Lev",
+            "Itai Orr",
+            "Omer Sabary",
+            "Tuvi Etzion",
+            "Eitan Yaakobi"
+          ],
+          "venue": "未明确说明（仅见收稿/接收/在线发表日期，期刊或会议名未在所提供原文中标明）",
+          "year": "2025"
+        },
+        "extracted_notes": {
+          "research_problem": "全球数据量预计 2025 年达 180 zettabytes，而现有存储技术难以同步扩展；DNA 存储的检索过程存在规模性与准确性之间的自然权衡瓶颈，需要可扩展且稳健的检索方案。",
+          "core_method": "作者主张的模块化整体管线：基于模拟数据训练的深度神经网络 + 张量积纠错码（tensor product-based error-correcting codes）+ 安全裕度机制（safety margin mechanism）。",
+          "datasets": [
+            "3.1 MB 信息；使用两种不同测序技术（具体技术/数据集名称未明确说明）。"
+          ],
+          "experimental_setup": "编码→合成→无序存储→取样、PCR 扩增、测序的标准流程；演示规模 3.1 MB；其余条件（平台、深度、重复次数）未明确说明。",
+          "main_results": "作者声称：速度提升 3,200×、精度提升 40%、高噪声区码率 1.6 bits/base（均为作者主张，完整评测细节未在已提供原文中给出）。"
+        },
+        "novelty": "将深度学习、张量积纠错码与安全裕度机制整合为单一连贯的模块化 DNA 检索管线（作者主张） 针对规模性-准确性权衡的整体化（holistic）设计思路（作者主张）",
+        "strengths": [
+          "整体化管线设计，模块化组合",
+          "结合编码理论与深度学习",
+          "在两种测序技术上验证（作者报告）",
+          "在高噪声区仍报告 1.6 bits/base 码率（作者报告）"
+        ],
+        "limitations": [
+          "已提供原文不完整，方法细节缺失",
+          "定量提升的比较基线未明确说明",
+          "测序平台与噪声条件细节未明确说明",
+          "统计显著性与重复性信息未明确说明",
+          "写入端（合成）成本与吞吐未讨论"
+        ],
+        "reproducibility": "复现信息不足：模型架构、训练模拟数据的生成方式、纠错码参数、超参数与代码/数据可用性均未在所提供原文中明确说明；仅知演示规模为 3.1 MB、使用两种测序技术。",
+        "benchmark": {
+          "status": "not_reported",
+          "entries": [],
+          "reason": "已提供原文中除摘要级别的 3,200×、40%、1.6 bits/base 等作者声称数值外，没有多方法在同一任务/切分/单位下的对照表或逐项指标，无法构建符合 value_source=explicit 要求的正式比较条目。"
+        },
+        "claims": [
+          {
+            "claim_id": "C1",
+            "statement": "全球数据量预计 2025 年达到 180 zettabytes，而现有存储技术预计无法以相近速度扩展。",
+            "category": "background_fact",
+            "story_role": "problem",
+            "experiment": {
+              "sample_or_system": "",
+              "condition": "",
+              "assay": "",
+              "replicates": "",
+              "controls": "",
+              "effect_or_significance": ""
+            },
+            "source_sections": [
+              "摘要",
+              "引言"
+            ],
+            "evidence": [
+              {
+                "evidence_id": "E1",
+                "quote": "The global data sphere is expanding exponentially, projected to hit 180 zettabytes by 2025, whereas current technologies are not anticipated to scale at nearly the same rate."
+              },
+              {
+                "evidence_id": "E2",
+                "quote": "While the global data sphere is anticipated to reach 180 zettabytes by 2025, current storage solutions are not expected to scale at nearly the same pace owing to capacity limitations."
+              }
+            ],
+            "confidence": "高"
+          },
+          {
+            "claim_id": "C2",
+            "statement": "DNA 存储相比磁/光存储具有更高信息密度、更强数据耐久性，且维持数据完整性所需功耗可忽略。",
+            "category": "background_fact",
+            "story_role": "problem",
+            "experiment": {
+              "sample_or_system": "",
+              "condition": "",
+              "assay": "",
+              "replicates": "",
+              "controls": "",
+              "effect_or_significance": ""
+            },
+            "source_sections": [
+              "摘要"
+            ],
+            "evidence": [
+              {
+                "evidence_id": "E3",
+                "quote": "This method enjoys major advantages over magnetic and optical storage solutions such as exceptional information density, enhanced data durability and negligible power consumption to maintain data integrity."
+              }
+            ],
+            "confidence": "高"
+          },
+          {
+            "claim_id": "C3",
+            "statement": "DNA 检索过程的主要瓶颈是规模性与准确性，二者之间存在自然权衡。",
+            "category": "problem_statement",
+            "story_role": "problem",
+            "experiment": {
+              "sample_or_system": "",
+              "condition": "",
+              "assay": "",
+              "replicates": "",
+              "controls": "",
+              "effect_or_significance": ""
+            },
+            "source_sections": [
+              "摘要"
+            ],
+            "evidence": [
+              {
+                "evidence_id": "E4",
+                "quote": "some of the main bottlenecks are the scalability and accuracy, which have a natural tradeoff between the two"
+              }
+            ],
+            "confidence": "高"
+          },
+          {
+            "claim_id": "C4",
+            "statement": "作者提出一种模块化整体方案，将基于模拟数据训练的深度神经网络、张量积纠错码和安全裕度机制整合为单一连贯管线。",
+            "category": "method",
+            "story_role": "design",
+            "experiment": {
+              "sample_or_system": "a single coherent pipeline",
+              "condition": "",
+              "assay": "",
+              "replicates": "",
+              "controls": "",
+              "effect_or_significance": ""
+            },
+            "source_sections": [
+              "摘要"
+            ],
+            "evidence": [
+              {
+                "evidence_id": "E5",
+                "quote": "we show a modular and holistic approach that combines deep neural networks trained on simulated data, tensor product-based error-correcting codes and a safety margin mechanism into a single coherent pipeline"
+              }
+            ],
+            "confidence": "高（方法存在性）；方法细节完整性低（原文未提供）"
+          },
+          {
+            "claim_id": "C5",
+            "statement": "作者在 3.1 MB 信息上使用两种不同测序技术演示了该方案。",
+            "category": "experiment",
+            "story_role": "design",
+            "experiment": {
+              "sample_or_system": "3.1 MB of information",
+              "condition": "two different sequencing technologies",
+              "assay": "information retrieval demonstration",
+              "replicates": "",
+              "controls": "",
+              "effect_or_significance": ""
+            },
+            "source_sections": [
+              "摘要"
+            ],
+            "evidence": [
+              {
+                "evidence_id": "E6",
+                "quote": "We demonstrated our solution on 3.1 MB of information using two different sequencing technologies."
+              }
+            ],
+            "confidence": "中（演示事实为作者报告，细节未提供）"
+          },
+          {
+            "claim_id": "C6",
+            "statement": "该方案相比当前领先方案速度提升 3,200 倍、精度提升 40%。",
+            "category": "result",
+            "story_role": "result",
+            "experiment": {
+              "sample_or_system": "",
+              "condition": "high-noise regime（对应 C8）",
+              "assay": "",
+              "replicates": "",
+              "controls": "current leading solutions",
+              "effect_or_significance": ""
+            },
+            "source_sections": [
+              "摘要"
+            ],
+            "evidence": [
+              {
+                "evidence_id": "E7",
+                "quote": "Our work improves upon the current leading solutions with a 3,200× increase in speed and a 40% improvement in accuracy"
+              }
+            ],
+            "confidence": "中（数值为作者声称，比较基线与评测协议未在已提供原文中明确说明）"
+          },
+          {
+            "claim_id": "C7",
+            "statement": "在高噪声环境下，该方案码率达到每碱基 1.6 比特。",
+            "category": "result",
+            "story_role": "result",
+            "experiment": {
+              "sample_or_system": "",
+              "condition": "high-noise regime",
+              "assay": "",
+              "replicates": "",
+              "controls": "",
+              "effect_or_significance": ""
+            },
+            "source_sections": [
+              "摘要"
+            ],
+            "evidence": [
+              {
+                "evidence_id": "E8",
+                "quote": "offers a code rate of 1.6 bits per base in a high-noise regime"
+              }
+            ],
+            "confidence": "中（数值为作者声称，编码构造与噪声定义未在已提供原文中明确说明）"
+          },
+          {
+            "claim_id": "C8",
+            "statement": "标准体外 DNA 存储流程包括：二进制数据编码为 {A,C,G,T} 序列、合成（每条序列产生多条 oligo）、无序存储、取样后经 PCR 扩增并测序。",
+            "category": "background_fact",
+            "story_role": "design",
+            "experiment": {
+              "sample_or_system": "DNA synthesizer; PCR; DNA sequencer",
+              "condition": "standard in vitro DNA-based storage pipeline",
+              "assay": "",
+              "replicates": "",
+              "controls": "",
+              "effect_or_significance": ""
+            },
+            "source_sections": [
+              "引言"
+            ],
+            "evidence": [
+              {
+                "evidence_id": "E9",
+                "quote": "The standard in vitro DNA-based storage pipeline consists of several steps... First, the binary data are encoded into sequences over the DNA 4-ary alphabet... the encoded sequences are synthesized by a DNA synthesizer. Since current synthesis technologies cannot produce one single strand per sequence, multiple DNA strands (known as oligos) are produced per encoded sequence."
+              },
+              {
+                "evidence_id": "E10",
+                "quote": "The synthesized strands are then stored in a storage container in an unordered manner. To access the data, a sample of the strands is taken from the storage container, amplified using PCR and then sequenced by a DNA sequencer."
+              }
+            ],
+            "confidence": "高"
+          },
+          {
+            "claim_id": "C9",
+            "statement": "当前合成技术产生的链长通常限制在约 200–300 个核苷酸以维持可接受的错误率。",
+            "category": "background_fact",
+            "story_role": "problem",
+            "experiment": {
+              "sample_or_system": "current synthesis technologies",
+              "condition": "",
+              "assay": "",
+              "replicates": "",
+              "controls": "",
+              "effect_or_significance": ""
+            },
+            "source_sections": [
+              "引言"
+            ],
+            "evidence": [
+              {
+                "evidence_id": "E11",
+                "quote": "the length of the strands produced by the synthesizer is typically bounded by roughly 200–300 nucleotides to sustain an acceptable error rate"
+              }
+            ],
+            "confidence": "高"
+          },
+          {
+            "claim_id": "C10",
+            "statement": "作者声称该工作为受限于当前检索流程的商业化 DNA 存储方案展示了可行路径。",
+            "category": "conclusion",
+            "story_role": "conclusion",
+            "experiment": {
+              "sample_or_system": "",
+              "condition": "",
+              "assay": "",
+              "replicates": "",
+              "controls": "",
+              "effect_or_significance": ""
+            },
+            "source_sections": [
+              "摘要"
+            ],
+            "evidence": [
+              {
+                "evidence_id": "E12",
+                "quote": "our work shows a viable path to commercial DNA storage solutions hindered by current information retrieval processes"
+              }
+            ],
+            "confidence": "中（为作者结论性主张）"
+          }
+        ],
+        "story_edges": [
+          {
+            "source": "C1",
+            "target": "C4",
+            "supporting_claim_ids": [
+              "C2",
+              "C3"
+            ],
+            "relation": "研究背景与瓶颈引出方法设计"
+          },
+          {
+            "source": "C3",
+            "target": "C4",
+            "supporting_claim_ids": [],
+            "relation": "规模性-准确性权衡问题由整体化管线方案应对（作者论证）"
+          },
+          {
+            "source": "C4",
+            "target": "C5",
+            "supporting_claim_ids": [],
+            "relation": "方法设计通过实验演示进行验证（作者报告）"
+          },
+          {
+            "source": "C5",
+            "target": "C6",
+            "supporting_claim_ids": [
+              "C7"
+            ],
+            "relation": "演示实验支撑性能提升结论（作者主张）"
+          },
+          {
+            "source": "C5",
+            "target": "C7",
+            "supporting_claim_ids": [],
+            "relation": "演示实验支撑码率结果（作者主张）"
+          },
+          {
+            "source": "C6",
+            "target": "C10",
+            "supporting_claim_ids": [
+              "C7"
+            ],
+            "relation": "性能结果支撑商业化可行路径的结论（作者主张）"
+          }
+        ],
+        "report_visual_reviews": [],
+        "visually_reviewed_figures": [],
+        "report_rounds": [
+          {
+            "index": 0,
+            "accepted": [],
+            "issues": [
+              "invalid_claim",
+              "invalid_claim",
+              "invalid_claim",
+              "invalid_claim",
+              "invalid_claim",
+              "invalid_claim",
+              "invalid_claim",
+              "invalid_claim",
+              "invalid_claim",
+              "invalid_claim",
+              "invalid_evidence",
+              "invalid_evidence",
+              "invalid_evidence",
+              "invalid_evidence",
+              "invalid_evidence",
+              "invalid_evidence",
+              "invalid_evidence",
+              "invalid_evidence",
+              "invalid_evidence",
+              "invalid_evidence",
+              "invalid_evidence",
+              "unbound_report_field",
+              "unbound_report_field",
+              "unbound_report_field",
+              "unbound_report_field",
+              "unbound_report_field",
+              "unbound_report_field",
+              "unbound_report_field",
+              "unbound_report_field",
+              "unbound_report_field",
+              "unbound_report_field",
+              "unbound_report_field",
+              "unbound_report_field",
+              "unbound_report_field",
+              "unbound_report_field",
+              "unbound_report_field",
+              "unbound_report_field",
+              "unbound_report_field",
+              "unbound_report_field",
+              "unbound_report_field",
+              "unbound_report_field",
+              "unbound_report_field",
+              "unbound_report_field",
+              "unbound_report_field",
+              "unbound_report_field",
+              "unbound_report_field",
+              "unbound_report_field",
+              "unbound_report_field",
+              "unbound_report_field",
+              "unbound_report_field",
+              "unbound_report_field"
+            ]
+          }
+        ],
+        "execution_stop_reason": "round_limit",
+        "semantic_artifacts": [],
+        "figure_evidence": [],
+        "figure_analyses": [],
+        "fact_checks": [
+          {
+            "claim_id": "text-1",
+            "claim": "本文提出一种模块化、整体化的 DNA 存储信息检索流程，将基于模拟数据训练的深度神经网络、基于张量积的纠错码（tensor product-based error-correcting codes）以及安全裕度机制（safety margin mechanism）整合为单一管线。作者在 3.1 MB 信息上使用两种不同测序技术进行了演示，声称相比当前领先方案实现 3,200 倍的速度提升和 40% 的精度提升，并在高噪声环境下达到每碱基 1.6 比特的码率。需注意：当前可用原文仅包含标题、作者、摘要及引言开头，方法、实验细节与定量结果的完整证据未提供，因此部分结构化字段标注为“未明确说明”。",
+            "claim_source": "text",
+            "verdict": "supported",
+            "evidence_refs": [
+              "摘要：“Here we show a modular and holistic approach that combines deep neural networks trained on simulated data, tensor product-based error-correcting codes and a safety margin mechanism into a single coherent pipeline. We demonstrated our so",
+              "引言（仅开头）：方法与实验细节未包含在所提供材料中"
+            ],
+            "evidence_ids": [
+              "S1-摘要"
+            ],
+            "rationale": "摘要逐字包含主张中列出的所有方法要素（DNN、张量积纠错码、安全裕度）与全部定量主张（3.1 MB、两种测序技术、3,200×、40%、1.6 bits/base），证据直接。需要说明的是，这些定量结果目前仅有摘要级别的作者声称，尚无论文方法/实验细节的独立证据，但不影响“主张被摘要支持”这一判定；主张本身也已声明当前材料不完整。",
+            "confidence": "高（针对摘要是否含该声称）；定量结果的可重复性为低"
+          },
+          {
+            "claim_id": "text-2",
+            "claim": "研究背景：全球数据量预计 2025 年达 180 zettabytes，现有磁/光存储技术难以同步扩展，DNA 存储因高密度、高耐久、近乎零功耗维护而成为候选方案。",
+            "claim_source": "text",
+            "verdict": "supported",
+            "evidence_refs": [
+              "摘要：“The global data sphere is expanding exponentially, projected to hit 180 zettabytes by 2025, whereas current technologies are not anticipated to scale at nearly the same rate. DNA-based storage emerges as a crucial solution to this gap..",
+              "引言：“While the global data sphere is anticipated to reach 180 zettabytes by 2025, current storage solutions are not expected to scale at nearly the same pace... offering extraordinary data density and durability.”"
+            ],
+            "evidence_ids": [
+              "S1-摘要",
+              "S2-引言"
+            ],
+            "rationale": "摘要与引言均明确给出 180 zettabytes、现有技术扩展不足、以及 DNA 存储的高密度、高耐久、低维护功耗等优势，与主张逐项对应，其中“磁/光存储”直接对应摘要中的“magnetic and optical storage solutions”。",
+            "confidence": "高"
+          },
+          {
+            "claim_id": "text-3",
+            "claim": "DNA 存储标准流程：二进制数据编码为 {A,C,G,T} 四进制序列→合成（每条序列产生多条 oligo，链长通常限制在约 200–300 个核苷酸）→无序存储→取样、PCR 扩增、测序检索。",
+            "claim_source": "text",
+            "verdict": "supported",
+            "evidence_refs": [
+              "引言：“First, the binary data are encoded into sequences over the DNA 4-ary alphabet, which are referred to as encoded sequences. Next, the encoded sequences are synthesized by a DNA synthesizer... multiple DNA strands (known as oligos) are pr",
+              "引言：“The synthesized strands are then stored in a storage container in an unordered manner. To access the data, a sample of the strands is taken from the storage container, amplified using PCR and then sequenced by a DNA sequencer.”"
+            ],
+            "evidence_ids": [
+              "S2-引言"
+            ],
+            "rationale": "引言对 Fig. 1a 标准流程的描述与主张的每一步完全对应：四进制编码、每条序列多条 oligo、约 200–300 核苷酸长度上限、无序存储、取样+PCR+测序。",
+            "confidence": "高"
+          },
+          {
+            "claim_id": "text-4",
+            "claim": "核心方法（作者主张）：深度神经网络（基于模拟数据训练）+ 张量积纠错码 + 安全裕度机制的组合管线。",
+            "claim_source": "text",
+            "verdict": "supported",
+            "evidence_refs": [
+              "摘要：“Here we show a modular and holistic approach that combines deep neural networks trained on simulated data, tensor product-based error-correcting codes and a safety margin mechanism into a single coherent pipeline.”"
+            ],
+            "evidence_ids": [
+              "S1-摘要"
+            ],
+            "rationale": "摘要原文逐字覆盖主张的全部三个方法要素及“单一管线”表述；主张已正确标注为作者主张。",
+            "confidence": "高"
+          },
+          {
+            "claim_id": "text-5",
+            "claim": "主要结果（作者声称）：在 3.1 MB 信息、两种测序技术上演示；速度提升 3,200×，精度提升 40%，高噪声区码率 1.6 bits/base。",
+            "claim_source": "text",
+            "verdict": "supported",
+            "evidence_refs": [
+              "摘要：“We demonstrated our solution on 3.1 MB of information using two different sequencing technologies. Our work improves upon the current leading solutions with a 3,200× increase in speed and a 40% improvement in accuracy and offers a code"
+            ],
+            "evidence_ids": [
+              "S1-摘要"
+            ],
+            "rationale": "摘要直接包含全部数字与演示规模。判定 supported 指“这些数字确实出自作者声称”；由于方法、基线方案与统计细节未在所提供材料中出现，其独立可验证性仍受限，主张本身亦以“作者声称”限定，未扩大范围。",
+            "confidence": "中（摘要证据直接，但缺乏方法学细节佐证）"
+          },
+          {
+            "claim_id": "text-6",
+            "claim": "检索过程的主要瓶颈是规模性与准确性之间的自然权衡，本文声称以整体化方案缓解该权衡。",
+            "claim_source": "text",
+            "verdict": "supported",
+            "evidence_refs": [
+              "摘要：“an information retrieval process is employed, where some of the main bottlenecks are the scalability and accuracy, which have a natural tradeoff between the two.”",
+              "摘要：“Here we show a modular and holistic approach...”"
+            ],
+            "evidence_ids": [
+              "S1-摘要"
+            ],
+            "rationale": "摘要明确将 scalability 与 accuracy 的自然权衡称为主要瓶颈，并提出模块化整体化（holistic）方案，与主张一致。",
+            "confidence": "高"
+          },
+          {
+            "claim_id": "text-7",
+            "claim": "论文时间线：2024 年 6 月 12 日收稿，2025 年 1 月 23 日接收，2025 年 2 月 21 日在线发表。",
+            "claim_source": "text",
+            "verdict": "supported",
+            "evidence_refs": [
+              "原文出版信息：“Received: 12 June 2024 / Accepted: 23 January 2025 / Published online: 21 February 2025”"
+            ],
+            "evidence_ids": [
+              "S3-出版信息"
+            ],
+            "rationale": "收稿、接收与在线发表日期与主张完全一致。",
+            "confidence": "高"
+          },
+          {
+            "claim_id": "text-8",
+            "claim": "当前输入原文不完整：仅含摘要与引言开头，方法、实验设置、数据集细节与统计显著性均未明确说明。",
+            "claim_source": "text",
+            "verdict": "supported",
+            "evidence_refs": [
+              "所提供材料仅含标题、作者、摘要全文、引言开头三段及出版日期；引言在“The sequencer processes the strands and generates”处截断；方法、实验、数据集与统计显著性内容缺失"
+            ],
+            "evidence_ids": [
+              "S1-摘要",
+              "S2-引言"
+            ],
+            "rationale": "该主张是对所提供材料范围的事实描述，与当前输入内容直接相符：引言被截断、无任何方法或结果章节。",
+            "confidence": "高"
+          },
+          {
+            "claim_id": "text-9",
+            "claim": "全球数据量预计 2025 年达 180 zettabytes，而现有存储技术难以同步扩展；DNA 存储的检索过程存在规模性与准确性之间的自然权衡瓶颈，需要可扩展且稳健的检索方案。",
+            "claim_source": "text",
+            "verdict": "supported",
+            "evidence_refs": [
+              "摘要：“projected to hit 180 zettabytes by 2025, whereas current technologies are not anticipated to scale at nearly the same rate.”",
+              "摘要：“some of the main bottlenecks are the scalability and accuracy, which have a natural tradeoff between the two.”"
+            ],
+            "evidence_ids": [
+              "S1-摘要"
+            ],
+            "rationale": "180 zettabytes 与扩展瓶颈、scalability/accuracy 自然权衡均由摘要直接支持；“需要可扩展且稳健的检索方案”与摘要提出的整体化方案及标题中“Scalable and robust”定位一致。",
+            "confidence": "高"
+          },
+          {
+            "claim_id": "text-10",
+            "claim": "作者主张的模块化整体管线：基于模拟数据训练的深度神经网络 + 张量积纠错码（tensor product-based error-correcting codes）+ 安全裕度机制（safety margin mechanism）。",
+            "claim_source": "text",
+            "verdict": "supported",
+            "evidence_refs": [
+              "摘要：“a modular and holistic approach that combines deep neural networks trained on simulated data, tensor product-based error-correcting codes and a safety margin mechanism into a single coherent pipeline”"
+            ],
+            "evidence_ids": [
+              "S1-摘要"
+            ],
+            "rationale": "主张的三个组件及“模块化整体管线”表述与摘要原文逐一对应，且主张已限定为作者主张。",
+            "confidence": "高"
+          },
+          {
+            "claim_id": "text-11",
+            "claim": "作者声称：速度提升 3,200×、精度提升 40%、高噪声区码率 1.6 bits/base（均为作者主张，完整评测细节未在已提供原文中给出）。",
+            "claim_source": "text",
+            "verdict": "supported",
+            "evidence_refs": [
+              "摘要：“a 3,200× increase in speed and a 40% improvement in accuracy and offers a code rate of 1.6 bits per base in a high-noise regime”"
+            ],
+            "evidence_ids": [
+              "S1-摘要"
+            ],
+            "rationale": "三项数值在摘要中逐字出现；主张正确限定为作者主张并注明评测细节缺失，无扩大范围。判定 supported 指摘要确含该声称；其独立验证需方法/结果章节，当前不可得。",
+            "confidence": "中（针对声称存在性为高，针对结果可靠性为低）"
+          }
+        ],
+        "fact_check_summary": "全部 11 条主张均判为 supported：所有可核验内容（研究背景、标准流程描述、方法组合、定量结果声称、出版日期、材料完整性说明）均能在所提供的摘要、引言开头或出版信息中找到直接原文对应。但需注意整体证据强度有限：定量结果（3,200×、40%、1.6 bits/base）目前仅有摘要级作者声称，方法、实验设置、基线对比与统计细节均未在所提供材料中出现，因此这些结果的独立可验证性低；判定 supported 表示“论文确作此声称”，不构成对结果真实性的独立背书。",
+        "fact_check_rule_flags": [
+          "text-1：未引用 evidence ID 或来源章节，核验时需额外谨慎。",
+          "text-2：未引用 evidence ID 或来源章节，核验时需额外谨慎。",
+          "text-3：未引用 evidence ID 或来源章节，核验时需额外谨慎。",
+          "text-4：未引用 evidence ID 或来源章节，核验时需额外谨慎。",
+          "text-5：未引用 evidence ID 或来源章节，核验时需额外谨慎。",
+          "text-6：未引用 evidence ID 或来源章节，核验时需额外谨慎。",
+          "text-7：未引用 evidence ID 或来源章节，核验时需额外谨慎。",
+          "text-8：未引用 evidence ID 或来源章节，核验时需额外谨慎。",
+          "text-9：未引用 evidence ID 或来源章节，核验时需额外谨慎。",
+          "text-10：未引用 evidence ID 或来源章节，核验时需额外谨慎。",
+          "text-11：未引用 evidence ID 或来源章节，核验时需额外谨慎。"
+        ],
+        "selected_sections": [],
+        "source_structure": {
+          "parser_kind": "plain_text",
+          "page_count": null,
+          "doi": "",
+          "section_order": [],
+          "figure_count": 0
+        }
+      },
+      "policy": null,
+      "execution": null,
+      "research_products": null
+    },
+    "qc_original_evidence_fingerprint": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "research_products": {
+      "schema_version": "execution-v1",
+      "findings": [
+        {
+          "schema_version": "execution-v1",
+          "finding_id": "text-1",
+          "statement": "暂无满足交付条件的主张，请查看 QC 问题清单。",
+          "claim_ids": [
+            "text-1"
+          ],
+          "evidence_ids": [],
+          "kind": "fact",
+          "verification_status": "unverified"
+        },
+        {
+          "schema_version": "execution-v1",
+          "finding_id": "text-2",
+          "statement": "待核验：尚未建立与获支持主张的一致对应关系。",
+          "claim_ids": [
+            "text-2"
+          ],
+          "evidence_ids": [],
+          "kind": "fact",
+          "verification_status": "unverified"
+        },
+        {
+          "schema_version": "execution-v1",
+          "finding_id": "text-3",
+          "statement": "待核验：尚未建立与获支持主张的一致对应关系。",
+          "claim_ids": [
+            "text-3"
+          ],
+          "evidence_ids": [],
+          "kind": "fact",
+          "verification_status": "unverified"
+        },
+        {
+          "schema_version": "execution-v1",
+          "finding_id": "text-4",
+          "statement": "待核验：尚未建立与获支持主张的一致对应关系。",
+          "claim_ids": [
+            "text-4"
+          ],
+          "evidence_ids": [],
+          "kind": "fact",
+          "verification_status": "unverified"
+        },
+        {
+          "schema_version": "execution-v1",
+          "finding_id": "text-5",
+          "statement": "待核验：尚未建立与获支持主张的一致对应关系。",
+          "claim_ids": [
+            "text-5"
+          ],
+          "evidence_ids": [],
+          "kind": "fact",
+          "verification_status": "unverified"
+        },
+        {
+          "schema_version": "execution-v1",
+          "finding_id": "text-6",
+          "statement": "待核验：尚未建立与获支持主张的一致对应关系。",
+          "claim_ids": [
+            "text-6"
+          ],
+          "evidence_ids": [],
+          "kind": "fact",
+          "verification_status": "unverified"
+        },
+        {
+          "schema_version": "execution-v1",
+          "finding_id": "text-7",
+          "statement": "待核验：尚未建立与获支持主张的一致对应关系。",
+          "claim_ids": [
+            "text-7"
+          ],
+          "evidence_ids": [],
+          "kind": "fact",
+          "verification_status": "unverified"
+        },
+        {
+          "schema_version": "execution-v1",
+          "finding_id": "text-8",
+          "statement": "待核验：尚未建立与获支持主张的一致对应关系。",
+          "claim_ids": [
+            "text-8"
+          ],
+          "evidence_ids": [],
+          "kind": "fact",
+          "verification_status": "unverified"
+        },
+        {
+          "schema_version": "execution-v1",
+          "finding_id": "text-9",
+          "statement": "待核验：尚未建立与获支持主张的一致对应关系。",
+          "claim_ids": [
+            "text-9"
+          ],
+          "evidence_ids": [],
+          "kind": "fact",
+          "verification_status": "unverified"
+        },
+        {
+          "schema_version": "execution-v1",
+          "finding_id": "text-10",
+          "statement": "待核验：尚未建立与获支持主张的一致对应关系。",
+          "claim_ids": [
+            "text-10"
+          ],
+          "evidence_ids": [],
+          "kind": "fact",
+          "verification_status": "unverified"
+        },
+        {
+          "schema_version": "execution-v1",
+          "finding_id": "text-11",
+          "statement": "待核验：尚未建立与获支持主张的一致对应关系。",
+          "claim_ids": [
+            "text-11"
+          ],
+          "evidence_ids": [],
+          "kind": "fact",
+          "verification_status": "unverified"
+        }
+      ],
+      "story": {
+        "schema_version": "execution-v1",
+        "nodes": [],
+        "edges": []
+      },
+      "figure_flow": {
+        "schema_version": "execution-v1",
+        "nodes": [],
+        "edges": []
+      },
+      "evidence_matrix": [],
+      "benchmark": {
+        "status": "not_reported",
+        "reason": "尚未提取可定位的 benchmark 结构；不能据此生成排行榜。",
+        "entries": []
+      },
+      "evidence": [],
+      "coverage": {
+        "schema_version": "execution-v1",
+        "candidate": {
+          "sections": [],
+          "figures": [],
+          "panels": [],
+          "claims": [
+            "text-1",
+            "text-2",
+            "text-3",
+            "text-4",
+            "text-5",
+            "text-6",
+            "text-7",
+            "text-8",
+            "text-9",
+            "text-10",
+            "text-11"
+          ]
+        },
+        "selected": {
+          "sections": [],
+          "figures": [],
+          "panels": [],
+          "claims": [
+            "text-1",
+            "text-2",
+            "text-3",
+            "text-4",
+            "text-5",
+            "text-6",
+            "text-7",
+            "text-8",
+            "text-9",
+            "text-10",
+            "text-11"
+          ]
+        },
+        "read": {
+          "sections": [],
+          "figures": [],
+          "panels": [],
+          "claims": [
+            "text-1",
+            "text-2",
+            "text-3",
+            "text-4",
+            "text-5",
+            "text-6",
+            "text-7",
+            "text-8",
+            "text-9",
+            "text-10",
+            "text-11"
+          ]
+        },
+        "verified": {
+          "sections": [],
+          "figures": [],
+          "panels": [],
+          "claims": []
+        },
+        "skipped": {
+          "sections": [],
+          "figures": [],
+          "claims": [
+            "text-1",
+            "text-2",
+            "text-3",
+            "text-4",
+            "text-5",
+            "text-6",
+            "text-7",
+            "text-8",
+            "text-9",
+            "text-10",
+            "text-11"
+          ]
+        }
+      }
+    }
+  },
+  "quality": {
+    "version": "qc-v1",
+    "status": "blocked",
+    "document_fingerprint": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "evidence_ids": [],
+    "expected_claims": 11,
+    "invalid_claims": 10,
+    "checked_claims": 11,
+    "accepted_claim_ids": [],
+    "issues": [
+      {
+        "code": "invalid_claim",
+        "severity": "major",
+        "location": "claims[0]",
+        "claim_id": "",
+        "message": "主张结构无效或陈述为空，未纳入有效核验。",
+        "action": "请核对原文证据后重新确认。"
+      },
+      {
+        "code": "invalid_claim",
+        "severity": "major",
+        "location": "claims[1]",
+        "claim_id": "",
+        "message": "主张结构无效或陈述为空，未纳入有效核验。",
+        "action": "请核对原文证据后重新确认。"
+      },
+      {
+        "code": "invalid_claim",
+        "severity": "major",
+        "location": "claims[2]",
+        "claim_id": "",
+        "message": "主张结构无效或陈述为空，未纳入有效核验。",
+        "action": "请核对原文证据后重新确认。"
+      },
+      {
+        "code": "invalid_claim",
+        "severity": "major",
+        "location": "claims[3]",
+        "claim_id": "",
+        "message": "主张结构无效或陈述为空，未纳入有效核验。",
+        "action": "请核对原文证据后重新确认。"
+      },
+      {
+        "code": "invalid_claim",
+        "severity": "major",
+        "location": "claims[4]",
+        "claim_id": "",
+        "message": "主张结构无效或陈述为空，未纳入有效核验。",
+        "action": "请核对原文证据后重新确认。"
+      },
+      {
+        "code": "invalid_claim",
+        "severity": "major",
+        "location": "claims[5]",
+        "claim_id": "",
+        "message": "主张结构无效或陈述为空，未纳入有效核验。",
+        "action": "请核对原文证据后重新确认。"
+      },
+      {
+        "code": "invalid_claim",
+        "severity": "major",
+        "location": "claims[6]",
+        "claim_id": "",
+        "message": "主张结构无效或陈述为空，未纳入有效核验。",
+        "action": "请核对原文证据后重新确认。"
+      },
+      {
+        "code": "invalid_claim",
+        "severity": "major",
+        "location": "claims[7]",
+        "claim_id": "",
+        "message": "主张结构无效或陈述为空，未纳入有效核验。",
+        "action": "请核对原文证据后重新确认。"
+      },
+      {
+        "code": "invalid_claim",
+        "severity": "major",
+        "location": "claims[8]",
+        "claim_id": "",
+        "message": "主张结构无效或陈述为空，未纳入有效核验。",
+        "action": "请核对原文证据后重新确认。"
+      },
+      {
+        "code": "invalid_claim",
+        "severity": "major",
+        "location": "claims[9]",
+        "claim_id": "",
+        "message": "主张结构无效或陈述为空，未纳入有效核验。",
+        "action": "请核对原文证据后重新确认。"
+      },
+      {
+        "code": "invalid_evidence",
+        "severity": "major",
+        "location": "claims.text-1",
+        "claim_id": "text-1",
+        "message": "证据 ID 不存在于当前文档：S1-摘要。",
+        "action": "请核对原文证据后重新确认。"
+      },
+      {
+        "code": "invalid_evidence",
+        "severity": "major",
+        "location": "claims.text-2",
+        "claim_id": "text-2",
+        "message": "证据 ID 不存在于当前文档：S1-摘要、S2-引言。",
+        "action": "请核对原文证据后重新确认。"
+      },
+      {
+        "code": "invalid_evidence",
+        "severity": "major",
+        "location": "claims.text-3",
+        "claim_id": "text-3",
+        "message": "证据 ID 不存在于当前文档：S2-引言。",
+        "action": "请核对原文证据后重新确认。"
+      },
+      {
+        "code": "invalid_evidence",
+        "severity": "major",
+        "location": "claims.text-4",
+        "claim_id": "text-4",
+        "message": "证据 ID 不存在于当前文档：S1-摘要。",
+        "action": "请核对原文证据后重新确认。"
+      },
+      {
+        "code": "invalid_evidence",
+        "severity": "major",
+        "location": "claims.text-5",
+        "claim_id": "text-5",
+        "message": "证据 ID 不存在于当前文档：S1-摘要。",
+        "action": "请核对原文证据后重新确认。"
+      },
+      {
+        "code": "invalid_evidence",
+        "severity": "major",
+        "location": "claims.text-6",
+        "claim_id": "text-6",
+        "message": "证据 ID 不存在于当前文档：S1-摘要。",
+        "action": "请核对原文证据后重新确认。"
+      },
+      {
+        "code": "invalid_evidence",
+        "severity": "major",
+        "location": "claims.text-7",
+        "claim_id": "text-7",
+        "message": "证据 ID 不存在于当前文档：S3-出版信息。",
+        "action": "请核对原文证据后重新确认。"
+      },
+      {
+        "code": "invalid_evidence",
+        "severity": "major",
+        "location": "claims.text-8",
+        "claim_id": "text-8",
+        "message": "证据 ID 不存在于当前文档：S1-摘要、S2-引言。",
+        "action": "请核对原文证据后重新确认。"
+      },
+      {
+        "code": "invalid_evidence",
+        "severity": "major",
+        "location": "claims.text-9",
+        "claim_id": "text-9",
+        "message": "证据 ID 不存在于当前文档：S1-摘要。",
+        "action": "请核对原文证据后重新确认。"
+      },
+      {
+        "code": "invalid_evidence",
+        "severity": "major",
+        "location": "claims.text-10",
+        "claim_id": "text-10",
+        "message": "证据 ID 不存在于当前文档：S1-摘要。",
+        "action": "请核对原文证据后重新确认。"
+      },
+      {
+        "code": "invalid_evidence",
+        "severity": "major",
+        "location": "claims.text-11",
+        "claim_id": "text-11",
+        "message": "证据 ID 不存在于当前文档：S1-摘要。",
+        "action": "请核对原文证据后重新确认。"
+      },
+      {
+        "code": "unbound_report_field",
+        "severity": "major",
+        "location": "draft.summary",
+        "claim_id": "",
+        "message": "报告文本未与可交付主张精确对应，已移入原始草稿。",
+        "action": "请核对原文证据后重新确认。"
+      },
+      {
+        "code": "unbound_report_field",
+        "severity": "major",
+        "location": "key_points[0]",
+        "claim_id": "",
+        "message": "报告文本未与可交付主张精确对应，已移入原始草稿。",
+        "action": "请核对原文证据后重新确认。"
+      },
+      {
+        "code": "unbound_report_field",
+        "severity": "major",
+        "location": "key_points[1]",
+        "claim_id": "",
+        "message": "报告文本未与可交付主张精确对应，已移入原始草稿。",
+        "action": "请核对原文证据后重新确认。"
+      },
+      {
+        "code": "unbound_report_field",
+        "severity": "major",
+        "location": "key_points[2]",
+        "claim_id": "",
+        "message": "报告文本未与可交付主张精确对应，已移入原始草稿。",
+        "action": "请核对原文证据后重新确认。"
+      },
+      {
+        "code": "unbound_report_field",
+        "severity": "major",
+        "location": "key_points[3]",
+        "claim_id": "",
+        "message": "报告文本未与可交付主张精确对应，已移入原始草稿。",
+        "action": "请核对原文证据后重新确认。"
+      },
+      {
+        "code": "unbound_report_field",
+        "severity": "major",
+        "location": "key_points[4]",
+        "claim_id": "",
+        "message": "报告文本未与可交付主张精确对应，已移入原始草稿。",
+        "action": "请核对原文证据后重新确认。"
+      },
+      {
+        "code": "unbound_report_field",
+        "severity": "major",
+        "location": "key_points[5]",
+        "claim_id": "",
+        "message": "报告文本未与可交付主张精确对应，已移入原始草稿。",
+        "action": "请核对原文证据后重新确认。"
+      },
+      {
+        "code": "unbound_report_field",
+        "severity": "major",
+        "location": "key_points[6]",
+        "claim_id": "",
+        "message": "报告文本未与可交付主张精确对应，已移入原始草稿。",
+        "action": "请核对原文证据后重新确认。"
+      },
+      {
+        "code": "unbound_report_field",
+        "severity": "major",
+        "location": "limitations[0]",
+        "claim_id": "",
+        "message": "报告文本未与可交付主张精确对应，已移入原始草稿。",
+        "action": "请核对原文证据后重新确认。"
+      },
+      {
+        "code": "unbound_report_field",
+        "severity": "major",
+        "location": "limitations[1]",
+        "claim_id": "",
+        "message": "报告文本未与可交付主张精确对应，已移入原始草稿。",
+        "action": "请核对原文证据后重新确认。"
+      },
+      {
+        "code": "unbound_report_field",
+        "severity": "major",
+        "location": "limitations[2]",
+        "claim_id": "",
+        "message": "报告文本未与可交付主张精确对应，已移入原始草稿。",
+        "action": "请核对原文证据后重新确认。"
+      },
+      {
+        "code": "unbound_report_field",
+        "severity": "major",
+        "location": "limitations[3]",
+        "claim_id": "",
+        "message": "报告文本未与可交付主张精确对应，已移入原始草稿。",
+        "action": "请核对原文证据后重新确认。"
+      },
+      {
+        "code": "unbound_report_field",
+        "severity": "major",
+        "location": "limitations[4]",
+        "claim_id": "",
+        "message": "报告文本未与可交付主张精确对应，已移入原始草稿。",
+        "action": "请核对原文证据后重新确认。"
+      },
+      {
+        "code": "unbound_report_field",
+        "severity": "major",
+        "location": "limitations[5]",
+        "claim_id": "",
+        "message": "报告文本未与可交付主张精确对应，已移入原始草稿。",
+        "action": "请核对原文证据后重新确认。"
+      },
+      {
+        "code": "unbound_report_field",
+        "severity": "major",
+        "location": "extracted_notes.research_problem",
+        "claim_id": "",
+        "message": "报告文本未与可交付主张精确对应，已移入原始草稿。",
+        "action": "请核对原文证据后重新确认。"
+      },
+      {
+        "code": "unbound_report_field",
+        "severity": "major",
+        "location": "extracted_notes.core_method",
+        "claim_id": "",
+        "message": "报告文本未与可交付主张精确对应，已移入原始草稿。",
+        "action": "请核对原文证据后重新确认。"
+      },
+      {
+        "code": "unbound_report_field",
+        "severity": "major",
+        "location": "extracted_notes.datasets[0]",
+        "claim_id": "",
+        "message": "报告文本未与可交付主张精确对应，已移入原始草稿。",
+        "action": "请核对原文证据后重新确认。"
+      },
+      {
+        "code": "unbound_report_field",
+        "severity": "major",
+        "location": "extracted_notes.experimental_setup",
+        "claim_id": "",
+        "message": "报告文本未与可交付主张精确对应，已移入原始草稿。",
+        "action": "请核对原文证据后重新确认。"
+      },
+      {
+        "code": "unbound_report_field",
+        "severity": "major",
+        "location": "extracted_notes.main_results",
+        "claim_id": "",
+        "message": "报告文本未与可交付主张精确对应，已移入原始草稿。",
+        "action": "请核对原文证据后重新确认。"
+      },
+      {
+        "code": "unbound_report_field",
+        "severity": "major",
+        "location": "novelty",
+        "claim_id": "",
+        "message": "报告文本未与可交付主张精确对应，已移入原始草稿。",
+        "action": "请核对原文证据后重新确认。"
+      },
+      {
+        "code": "unbound_report_field",
+        "severity": "major",
+        "location": "reproducibility",
+        "claim_id": "",
+        "message": "报告文本未与可交付主张精确对应，已移入原始草稿。",
+        "action": "请核对原文证据后重新确认。"
+      },
+      {
+        "code": "unbound_report_field",
+        "severity": "major",
+        "location": "strengths[0]",
+        "claim_id": "",
+        "message": "报告文本未与可交付主张精确对应，已移入原始草稿。",
+        "action": "请核对原文证据后重新确认。"
+      },
+      {
+        "code": "unbound_report_field",
+        "severity": "major",
+        "location": "strengths[1]",
+        "claim_id": "",
+        "message": "报告文本未与可交付主张精确对应，已移入原始草稿。",
+        "action": "请核对原文证据后重新确认。"
+      },
+      {
+        "code": "unbound_report_field",
+        "severity": "major",
+        "location": "strengths[2]",
+        "claim_id": "",
+        "message": "报告文本未与可交付主张精确对应，已移入原始草稿。",
+        "action": "请核对原文证据后重新确认。"
+      },
+      {
+        "code": "unbound_report_field",
+        "severity": "major",
+        "location": "strengths[3]",
+        "claim_id": "",
+        "message": "报告文本未与可交付主张精确对应，已移入原始草稿。",
+        "action": "请核对原文证据后重新确认。"
+      },
+      {
+        "code": "unbound_report_field",
+        "severity": "major",
+        "location": "limitations[0]",
+        "claim_id": "",
+        "message": "报告文本未与可交付主张精确对应，已移入原始草稿。",
+        "action": "请核对原文证据后重新确认。"
+      },
+      {
+        "code": "unbound_report_field",
+        "severity": "major",
+        "location": "limitations[1]",
+        "claim_id": "",
+        "message": "报告文本未与可交付主张精确对应，已移入原始草稿。",
+        "action": "请核对原文证据后重新确认。"
+      },
+      {
+        "code": "unbound_report_field",
+        "severity": "major",
+        "location": "limitations[2]",
+        "claim_id": "",
+        "message": "报告文本未与可交付主张精确对应，已移入原始草稿。",
+        "action": "请核对原文证据后重新确认。"
+      },
+      {
+        "code": "unbound_report_field",
+        "severity": "major",
+        "location": "limitations[3]",
+        "claim_id": "",
+        "message": "报告文本未与可交付主张精确对应，已移入原始草稿。",
+        "action": "请核对原文证据后重新确认。"
+      },
+      {
+        "code": "unbound_report_field",
+        "severity": "major",
+        "location": "limitations[4]",
+        "claim_id": "",
+        "message": "报告文本未与可交付主张精确对应，已移入原始草稿。",
+        "action": "请核对原文证据后重新确认。"
+      }
+    ],
+    "bindings": [
+      {
+        "location": "draft.summary",
+        "claim_ids": [],
+        "released": false
+      },
+      {
+        "location": "summary",
+        "claim_ids": [],
+        "released": false
+      },
+      {
+        "location": "conclusion",
+        "claim_ids": [],
+        "released": false
+      },
+      {
+        "location": "key_points[0]",
+        "claim_ids": [],
+        "released": false
+      },
+      {
+        "location": "key_points[1]",
+        "claim_ids": [],
+        "released": false
+      },
+      {
+        "location": "key_points[2]",
+        "claim_ids": [],
+        "released": false
+      },
+      {
+        "location": "key_points[3]",
+        "claim_ids": [],
+        "released": false
+      },
+      {
+        "location": "key_points[4]",
+        "claim_ids": [],
+        "released": false
+      },
+      {
+        "location": "key_points[5]",
+        "claim_ids": [],
+        "released": false
+      },
+      {
+        "location": "key_points[6]",
+        "claim_ids": [],
+        "released": false
+      },
+      {
+        "location": "limitations[0]",
+        "claim_ids": [],
+        "released": false
+      },
+      {
+        "location": "limitations[1]",
+        "claim_ids": [],
+        "released": false
+      },
+      {
+        "location": "limitations[2]",
+        "claim_ids": [],
+        "released": false
+      },
+      {
+        "location": "limitations[3]",
+        "claim_ids": [],
+        "released": false
+      },
+      {
+        "location": "limitations[4]",
+        "claim_ids": [],
+        "released": false
+      },
+      {
+        "location": "limitations[5]",
+        "claim_ids": [],
+        "released": false
+      },
+      {
+        "location": "extracted_notes.research_problem",
+        "claim_ids": [],
+        "released": false
+      },
+      {
+        "location": "extracted_notes.core_method",
+        "claim_ids": [],
+        "released": false
+      },
+      {
+        "location": "extracted_notes.datasets[0]",
+        "claim_ids": [],
+        "released": false
+      },
+      {
+        "location": "extracted_notes.experimental_setup",
+        "claim_ids": [],
+        "released": false
+      },
+      {
+        "location": "extracted_notes.main_results",
+        "claim_ids": [],
+        "released": false
+      },
+      {
+        "location": "novelty",
+        "claim_ids": [],
+        "released": false
+      },
+      {
+        "location": "reproducibility",
+        "claim_ids": [],
+        "released": false
+      },
+      {
+        "location": "strengths[0]",
+        "claim_ids": [],
+        "released": false
+      },
+      {
+        "location": "strengths[1]",
+        "claim_ids": [],
+        "released": false
+      },
+      {
+        "location": "strengths[2]",
+        "claim_ids": [],
+        "released": false
+      },
+      {
+        "location": "strengths[3]",
+        "claim_ids": [],
+        "released": false
+      },
+      {
+        "location": "limitations[0]",
+        "claim_ids": [],
+        "released": false
+      },
+      {
+        "location": "limitations[1]",
+        "claim_ids": [],
+        "released": false
+      },
+      {
+        "location": "limitations[2]",
+        "claim_ids": [],
+        "released": false
+      },
+      {
+        "location": "limitations[3]",
+        "claim_ids": [],
+        "released": false
+      },
+      {
+        "location": "limitations[4]",
+        "claim_ids": [],
+        "released": false
+      }
+    ],
+    "scope": "主张对应关系、证据引用定位和报告交付；不代表独立语义正确性或医学质量认证。",
+    "coverage": 1.0
+  },
+  "policy": {
+    "schema_version": "execution-v1",
+    "requested": {
+      "intensity": "standard",
+      "report_followups": null,
+      "token_budget": 200000,
+      "max_calls": 32,
+      "max_output_tokens": 8192,
+      "timeout_seconds": 900.0,
+      "max_followups": 1,
+      "max_figures": null,
+      "max_visual_reviews": null
+    },
+    "server_limits": {
+      "schema_version": "execution-v1",
+      "intensity": "standard",
+      "report_followups": 2,
+      "token_budget": 120000,
+      "max_calls": 128,
+      "max_output_tokens": 12000,
+      "timeout_seconds": 900.0,
+      "max_followups": 10,
+      "max_figures": 12,
+      "max_visual_reviews": 8
+    },
+    "effective": {
+      "schema_version": "execution-v1",
+      "intensity": "standard",
+      "report_followups": 0,
+      "token_budget": 120000,
+      "max_calls": 32,
+      "max_output_tokens": 8192,
+      "timeout_seconds": 900.0,
+      "max_followups": 1,
+      "max_figures": 4,
+      "max_visual_reviews": 2
+    },
+    "policy_version": "policy-v1",
+    "configuration_fingerprint": "afb421d4d8a185c98a5f8fac06d1a2b6239dbea8cdd81b3abcfff51c5dc4c737"
+  },
+  "execution": {
+    "schema_version": "execution-v1",
+    "actual_usage": {
+      "input": 6634,
+      "output": 6557,
+      "total": 13191,
+      "cached": 2304,
+      "reasoning": 729,
+      "estimated": false,
+      "reserved": null,
+      "unknown": false
+    },
+    "estimated_usage": {
+      "input": null,
+      "output": null,
+      "total": null,
+      "cached": null,
+      "reasoning": null,
+      "estimated": false,
+      "reserved": null,
+      "unknown": false
+    },
+    "unknown_usage": false,
+    "call_count": 2,
+    "retry_count": 0,
+    "cache_hits": 0,
+    "budget": {
+      "schema_version": "execution-v1",
+      "intensity": "standard",
+      "report_followups": 0,
+      "token_budget": 120000,
+      "max_calls": 32,
+      "max_output_tokens": 8192,
+      "timeout_seconds": 900.0,
+      "max_followups": 1,
+      "max_figures": 4,
+      "max_visual_reviews": 2
+    },
+    "elapsed_seconds": 153.03,
+    "stop_reason": "round_limit",
+    "calls": [
+      {
+        "schema_version": "execution-v1",
+        "call_id": "3e3b37a656c24a849f088430fc2d04a6",
+        "job_id": "analysis",
+        "attempt": 1,
+        "stage": "text_http",
+        "role": "text",
+        "model": "kimi-for-coding",
+        "endpoint_id": "https://api.kimi.com/coding/v1",
+        "started_at": "2026-10-09T06:32:26.633902Z",
+        "ended_at": "2026-10-09T06:33:35.875521Z",
+        "status": "succeeded",
+        "usage_source": "provider",
+        "usage": {
+          "input": 2753,
+          "output": 2885,
+          "total": 5638,
+          "cached": 1792,
+          "reasoning": 74,
+          "estimated": false,
+          "reserved": null,
+          "unknown": false
+        },
+        "reservation": 11380
+      },
+      {
+        "schema_version": "execution-v1",
+        "call_id": "2322d4d6afe7405b92a864c4ab8d2ee0",
+        "job_id": "analysis",
+        "attempt": 1,
+        "stage": "text_http",
+        "role": "fact_checker",
+        "model": "kimi-for-coding",
+        "endpoint_id": "https://api.kimi.com/coding/v1",
+        "started_at": "2026-10-09T06:33:36.013069Z",
+        "ended_at": "2026-10-09T06:34:59.243149Z",
+        "status": "succeeded",
+        "usage_source": "provider",
+        "usage": {
+          "input": 3881,
+          "output": 3672,
+          "total": 7553,
+          "cached": 512,
+          "reasoning": 655,
+          "estimated": false,
+          "reserved": null,
+          "unknown": false
+        },
+        "reservation": 12800
+      }
+    ]
+  },
+  "research_products": {
+    "schema_version": "execution-v1",
+    "findings": [
+      {
+        "schema_version": "execution-v1",
+        "finding_id": "text-1",
+        "statement": "暂无满足交付条件的主张，请查看 QC 问题清单。",
+        "claim_ids": [
+          "text-1"
+        ],
+        "evidence_ids": [],
+        "kind": "fact",
+        "verification_status": "unverified"
+      },
+      {
+        "schema_version": "execution-v1",
+        "finding_id": "text-2",
+        "statement": "待核验：尚未建立与获支持主张的一致对应关系。",
+        "claim_ids": [
+          "text-2"
+        ],
+        "evidence_ids": [],
+        "kind": "fact",
+        "verification_status": "unverified"
+      },
+      {
+        "schema_version": "execution-v1",
+        "finding_id": "text-3",
+        "statement": "待核验：尚未建立与获支持主张的一致对应关系。",
+        "claim_ids": [
+          "text-3"
+        ],
+        "evidence_ids": [],
+        "kind": "fact",
+        "verification_status": "unverified"
+      },
+      {
+        "schema_version": "execution-v1",
+        "finding_id": "text-4",
+        "statement": "待核验：尚未建立与获支持主张的一致对应关系。",
+        "claim_ids": [
+          "text-4"
+        ],
+        "evidence_ids": [],
+        "kind": "fact",
+        "verification_status": "unverified"
+      },
+      {
+        "schema_version": "execution-v1",
+        "finding_id": "text-5",
+        "statement": "待核验：尚未建立与获支持主张的一致对应关系。",
+        "claim_ids": [
+          "text-5"
+        ],
+        "evidence_ids": [],
+        "kind": "fact",
+        "verification_status": "unverified"
+      },
+      {
+        "schema_version": "execution-v1",
+        "finding_id": "text-6",
+        "statement": "待核验：尚未建立与获支持主张的一致对应关系。",
+        "claim_ids": [
+          "text-6"
+        ],
+        "evidence_ids": [],
+        "kind": "fact",
+        "verification_status": "unverified"
+      },
+      {
+        "schema_version": "execution-v1",
+        "finding_id": "text-7",
+        "statement": "待核验：尚未建立与获支持主张的一致对应关系。",
+        "claim_ids": [
+          "text-7"
+        ],
+        "evidence_ids": [],
+        "kind": "fact",
+        "verification_status": "unverified"
+      },
+      {
+        "schema_version": "execution-v1",
+        "finding_id": "text-8",
+        "statement": "待核验：尚未建立与获支持主张的一致对应关系。",
+        "claim_ids": [
+          "text-8"
+        ],
+        "evidence_ids": [],
+        "kind": "fact",
+        "verification_status": "unverified"
+      },
+      {
+        "schema_version": "execution-v1",
+        "finding_id": "text-9",
+        "statement": "待核验：尚未建立与获支持主张的一致对应关系。",
+        "claim_ids": [
+          "text-9"
+        ],
+        "evidence_ids": [],
+        "kind": "fact",
+        "verification_status": "unverified"
+      },
+      {
+        "schema_version": "execution-v1",
+        "finding_id": "text-10",
+        "statement": "待核验：尚未建立与获支持主张的一致对应关系。",
+        "claim_ids": [
+          "text-10"
+        ],
+        "evidence_ids": [],
+        "kind": "fact",
+        "verification_status": "unverified"
+      },
+      {
+        "schema_version": "execution-v1",
+        "finding_id": "text-11",
+        "statement": "待核验：尚未建立与获支持主张的一致对应关系。",
+        "claim_ids": [
+          "text-11"
+        ],
+        "evidence_ids": [],
+        "kind": "fact",
+        "verification_status": "unverified"
+      }
+    ],
+    "story": {
+      "schema_version": "execution-v1",
+      "nodes": [],
+      "edges": []
+    },
+    "figure_flow": {
+      "schema_version": "execution-v1",
+      "nodes": [],
+      "edges": []
+    },
+    "evidence_matrix": [],
+    "benchmark": {
+      "status": "not_reported",
+      "reason": "尚未提取可定位的 benchmark 结构；不能据此生成排行榜。",
+      "entries": []
+    },
+    "evidence": [],
+    "coverage": {
+      "schema_version": "execution-v1",
+      "candidate": {
+        "sections": [],
+        "figures": [],
+        "panels": [],
+        "claims": [
+          "text-1",
+          "text-2",
+          "text-3",
+          "text-4",
+          "text-5",
+          "text-6",
+          "text-7",
+          "text-8",
+          "text-9",
+          "text-10",
+          "text-11"
+        ]
+      },
+      "selected": {
+        "sections": [],
+        "figures": [],
+        "panels": [],
+        "claims": [
+          "text-1",
+          "text-2",
+          "text-3",
+          "text-4",
+          "text-5",
+          "text-6",
+          "text-7",
+          "text-8",
+          "text-9",
+          "text-10",
+          "text-11"
+        ]
+      },
+      "read": {
+        "sections": [],
+        "figures": [],
+        "panels": [],
+        "claims": [
+          "text-1",
+          "text-2",
+          "text-3",
+          "text-4",
+          "text-5",
+          "text-6",
+          "text-7",
+          "text-8",
+          "text-9",
+          "text-10",
+          "text-11"
+        ]
+      },
+      "verified": {
+        "sections": [],
+        "figures": [],
+        "panels": [],
+        "claims": []
+      },
+      "skipped": {
+        "sections": [],
+        "figures": [],
+        "claims": [
+          "text-1",
+          "text-2",
+          "text-3",
+          "text-4",
+          "text-5",
+          "text-6",
+          "text-7",
+          "text-8",
+          "text-9",
+          "text-10",
+          "text-11"
+        ]
+      }
+    }
+  }
+}

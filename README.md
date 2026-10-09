@@ -220,6 +220,7 @@ OPENAI_VISION_MODEL="your-vision-model"    # 可选
 ```bash
 PAPER_ANALYSIS_PARALLEL_STAGES=1  # 正文理解与图表分析两个 LLM 阶段并行（默认串行）
 VISION_REQUEST_TIMEOUT=240       # 可选；视觉 HTTP 请求超时秒数，默认 120；复杂多面板图可增加
+TEXT_REQUEST_TIMEOUT=300         # 可选；文本 HTTP 请求单次超时秒数，默认 120；大输出限额或慢端点可增加
 ```
 
 如果你的运行环境需要代理，也请在当前 shell 中提前设置代理变量；`scripts/run.sh` 默认已把 `api.moonshot.cn` / `api.moonshot.ai` 加入 `NO_PROXY`。

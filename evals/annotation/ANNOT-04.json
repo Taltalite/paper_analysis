@@ -3,41 +3,222 @@
   "candidate_id": "ANNOT-04",
   "paper": {
     "source_path": "ref_baseline/gkaf795.pdf",
-    "title": null,
+    "title": "MoDorado: enhanced detection of tRNA modifications in nanopore sequencing by off-label use of modification callers",
     "doi": "10.1093/nar/gkaf795",
-    "sha256": "b8b9addf31732c1f3fd3f56b3009b9cbc9d22b0f5c03afecfe48355376cd5dee"
+    "sha256": "f47a24c8b1717944ca1a7bef018778290c8a86851709e44a1ffa63db5df02e75"
   },
   "question": "Figure 4a 的 wt 与 elp6Δ 图例颜色如何对应？哪些曲线差异可以直接观察，哪些解释需要正文或图注支持？",
   "figure": "4",
   "panel": "a",
   "annotator_id": null,
-  "annotation_state": "未标注",
-  "expected_status": null,
+  "annotation_state": "单人初标待复核",
+  "expected_status": "answered",
   "gold_claims": [
     {
       "claim_id": "G1",
-      "statement": null,
-      "basis": null,
-      "evidence_ids": [],
-      "required": null
+      "statement": "Figure 4a 图例中 wt 对应青绿色（teal）。",
+      "basis": "visual",
+      "evidence_ids": [
+        "E1"
+      ],
+      "required": true
+    },
+    {
+      "claim_id": "G2",
+      "statement": "Figure 4a 图例中 elp6Δ 对应浅橙色（salmon/orange）。",
+      "basis": "visual",
+      "evidence_ids": [
+        "E1"
+      ],
+      "required": true
+    },
+    {
+      "claim_id": "G3",
+      "statement": "U33 至 ncm⁵U34 附近，橙色 elp6Δ 实线高于青绿色 wt 实线。",
+      "basis": "visual",
+      "evidence_ids": [
+        "E2"
+      ],
+      "required": true
+    },
+    {
+      "claim_id": "G4",
+      "statement": "G35–C39 的部分位置，两条实线较为接近或交叉。",
+      "basis": "visual",
+      "evidence_ids": [
+        "E2"
+      ],
+      "required": false
+    },
+    {
+      "claim_id": "G5",
+      "statement": "两组半透明阴影在多个位置重叠。",
+      "basis": "visual",
+      "evidence_ids": [
+        "E2"
+      ],
+      "required": false
+    },
+    {
+      "claim_id": "G6",
+      "statement": "Figure 4 图注说明，实线表示相应核苷酸位置上跨 reads 的平均信号强度。",
+      "basis": "text",
+      "evidence_ids": [
+        "E3"
+      ],
+      "required": true
+    },
+    {
+      "claim_id": "G7",
+      "statement": "Figure 4 图注说明，阴影表示信号强度的一个标准差。",
+      "basis": "text",
+      "evidence_ids": [
+        "E3"
+      ],
+      "required": true
+    },
+    {
+      "claim_id": "G8",
+      "statement": "论文正文说明 elp6Δ 突变体缺少执行多种 U34 修饰所必需的 Elongator 复合体。",
+      "basis": "text",
+      "evidence_ids": [
+        "E4"
+      ],
+      "required": true
+    },
+    {
+      "claim_id": "G9",
+      "statement": "论文正文报告 WT 与 elp6Δ 在 U34 处的原始信号强度呈现可区分的模式。",
+      "basis": "text",
+      "evidence_ids": [
+        "E4"
+      ],
+      "required": false
+    },
+    {
+      "claim_id": "G10",
+      "statement": "论文正文报告 WT 与 elp6Δ 在 U34 处的 Dorado Ψ 预测分数呈现可区分的模式。",
+      "basis": "text",
+      "evidence_ids": [
+        "E4"
+      ],
+      "required": false
+    },
+    {
+      "claim_id": "G11",
+      "statement": "论文方法说明，对突变体信号应用了按每种 tRNA 计算的垂直平移参数，以抵消样本间固有信号差异。",
+      "basis": "text",
+      "evidence_ids": [
+        "E5"
+      ],
+      "required": false
     }
   ],
   "gold_evidence": [
     {
       "evidence_id": "E1",
-      "source_kind": null,
-      "pdf_page_1_based": null,
+      "source_kind": "vision",
+      "pdf_page_1_based": 9,
       "block_id": null,
-      "bbox": null,
+      "bbox": [
+        58.0,
+        56.0,
+        224.0,
+        208.0
+      ],
+      "figure": "4",
+      "panel": "a",
+      "verbatim_quote": null,
+      "visual_observation": "Panel A 顶部图例直接标注 wt 和 elp6Δ。wt 图例的线段为青绿色，elp6Δ 图例的线段为浅橙色。图内存在与两种图例颜色对应的实线和半透明阴影。",
+      "legibility": "clear"
+    },
+    {
+      "evidence_id": "E2",
+      "source_kind": "vision",
+      "pdf_page_1_based": 9,
+      "block_id": null,
+      "bbox": [
+        58.0,
+        56.0,
+        224.0,
+        208.0
+      ],
+      "figure": "4",
+      "panel": "a",
+      "verbatim_quote": null,
+      "visual_observation": "图中横轴从 U29 延伸至 C39，纵轴为 Signal intensity。两组实线并不完全重合。在 U33 至红色标注的 ncm⁵U34 附近，橙色 elp6Δ 实线位于青绿色 wt 实线上方；在 G35–C39 的多个位置，两条实线趋于接近或局部交叉。两组半透明阴影在多个位置存在重叠。图中未显示用于直接判断显著性的 p 值或显著性标记。",
+      "legibility": "clear"
+    },
+    {
+      "evidence_id": "E3",
+      "source_kind": "caption",
+      "pdf_page_1_based": 9,
+      "block_id": null,
+      "bbox": [
+        47.98,
+        638.98,
+        556.59,
+        657.89
+      ],
+      "figure": "4",
+      "panel": "a",
+      "verbatim_quote": "Solid lines represent the mean signal intensity at a given position across reads. The shaded area represents one standard deviation of the signal intensity.",
+      "visual_observation": null,
+      "legibility": "clear"
+    },
+    {
+      "evidence_id": "E4",
+      "source_kind": "text",
+      "pdf_page_1_based": 7,
+      "block_id": null,
+      "bbox": [
+        309.23,
+        494.89,
+        556.15,
+        570.21
+      ],
       "figure": null,
       "panel": null,
-      "verbatim_quote": null,
+      "verbatim_quote": "To test the off-label prediction strategy, we first compared the tRNAs from a wt strain and an elp6Δ mutant, which lacks the Elongator complex required for performing several U34 modifications (ncm5U, mcm5U, and mcm5s2U) [42, 43]. Raw signal intensities as well as Dorado Ψ probability scores showed clearly distinguishable patterns between wt and elp6Δ at U34",
       "visual_observation": null,
-      "legibility": null
+      "legibility": "clear"
+    },
+    {
+      "evidence_id": "E5",
+      "source_kind": "text",
+      "pdf_page_1_based": 6,
+      "block_id": null,
+      "bbox": [
+        59.09,
+        382.85,
+        306.28,
+        469.17
+      ],
+      "figure": null,
+      "panel": null,
+      "verbatim_quote": "Lastly, to offset the intrinsic signal differences between two samples, we computed for each tRNA, (i) the differences in median signal intensity for each position between samples, and then (ii) the median of these differences across all positions on the tRNA, which resulted in a single scaler number and was used as a vertical shift parameter to add to the signals of the mutant sample.",
+      "visual_observation": null,
+      "legibility": "clear"
     }
   ],
-  "required_uncertainties": [],
-  "forbidden_inferences": [],
+  "required_uncertainties": [
+    "图例颜色与曲线的相对位置可以从图像直接判断，但不能仅凭视觉证据确定其统计显著性。",
+    "实线表示均值、阴影表示一个标准差的定义来自 Figure 4 图注，而不是图像直接给出的统计说明。",
+    "局部曲线分离可能与 U34 修饰有关，但修饰缺失及 Elongator 的作用需要正文支持。"
+  ],
+  "forbidden_inferences": [
+    "不得将 wt 识别为橙色或将 elp6Δ 识别为青绿色。",
+    "不得把两组曲线的颜色与横轴核苷酸修饰标签的文字颜色混淆。",
+    "不得把阴影解释为 95% 置信区间、标准误或完整数据范围。",
+    "不得将局部曲线分离直接认定为统计显著差异。",
+    "不得仅凭 Figure 4a 推断 Elp6 的分子功能或修饰合成机制。",
+    "不得仅凭曲线高低断言 wt 或 elp6Δ 具有更高的 RNA 修饰比例。",
+    "不得仅依据该面板声称曲线差异能够单独确定 ncm5U 的化学身份。",
+    "不得将 Dorado 修饰概率预测分数曲线与 Figure 4a 的信号强度曲线混为一谈。",
+    "不得将该图中的曲线视为单条 read 的原始电流轨迹。",
+    "不得在没有数据支持时声称两组在 U34 以外完全不存在差异。",
+    "不得将图中曲线高度直接解释为未经调整的样本间绝对电流差异。"
+  ],
   "adjudication": {
     "reviewer_ids": [],
     "disagreements": [],

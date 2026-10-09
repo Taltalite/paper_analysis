@@ -80,6 +80,21 @@ class AnalysisResult(BaseModel):
     research_products: ResearchProducts | None = None
 
 
+class TextUnderstandingResult(BaseModel):
+    """text_understanding 的 LLM 输出契约。
+
+    只包含允许模型填写的字段；quality / policy / execution / research_products
+    等服务端字段由管线注入，避免模型按完整 AnalysisResult schema 编造内容。
+    """
+
+    title: str = ""
+    summary: str = ""
+    key_points: list[str] = Field(default_factory=list)
+    limitations: list[str] = Field(default_factory=list)
+    markdown_report: str = ""
+    structured_data: dict[str, Any] = Field(default_factory=dict)
+
+
 class AnalysisExecution(BaseModel):
     document: ParsedDocument
     result: AnalysisResult

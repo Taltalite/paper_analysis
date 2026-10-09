@@ -31,7 +31,7 @@ class ArtifactService:
         document: ParsedDocument | None = None,
     ) -> AnalysisArtifact:
         markdown_report_path = await self.save_markdown_report(markdown_path, result.markdown_report)
-        json_report_path = await self.save_json_report(json_path, result.model_dump())
+        json_report_path = await self.save_json_report(json_path, result.model_dump(mode="json"))
         parsed_markdown_path: str | None = None
         if document is not None and document.metadata.get("parser_kind") == "pdf" and document.markdown:
             parsed_path = markdown_path.with_name(f"{markdown_path.stem}.parsed.md")

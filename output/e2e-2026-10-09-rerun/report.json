@@ -1,0 +1,106 @@
+{
+  "schema_version": "analysis-v2",
+  "title": "Scalable and robust DNA-based storage via",
+  "summary": "执行预算或时限已达到。",
+  "key_points": [],
+  "limitations": [],
+  "markdown_report": "# 分析未完成\n\n执行预算或时限已达到，未交付未核验内容。",
+  "structured_data": {},
+  "quality": {
+    "version": "qc-v1",
+    "status": "blocked",
+    "document_fingerprint": "",
+    "evidence_ids": [],
+    "expected_claims": 0,
+    "invalid_claims": 0,
+    "checked_claims": 0,
+    "accepted_claim_ids": [],
+    "issues": [],
+    "bindings": [],
+    "scope": "主张对应关系、证据引用定位和报告交付；不代表独立语义正确性或医学质量认证。",
+    "coverage": 0.0
+  },
+  "policy": {
+    "schema_version": "execution-v1",
+    "requested": {
+      "intensity": "standard",
+      "report_followups": null,
+      "token_budget": null,
+      "max_calls": null,
+      "max_output_tokens": null,
+      "timeout_seconds": null,
+      "max_followups": null,
+      "max_figures": null,
+      "max_visual_reviews": null
+    },
+    "server_limits": {
+      "schema_version": "execution-v1",
+      "intensity": "standard",
+      "report_followups": 2,
+      "token_budget": 120000,
+      "max_calls": 128,
+      "max_output_tokens": 12000,
+      "timeout_seconds": 900.0,
+      "max_followups": 10,
+      "max_figures": 12,
+      "max_visual_reviews": 8
+    },
+    "effective": {
+      "schema_version": "execution-v1",
+      "intensity": "standard",
+      "report_followups": 0,
+      "token_budget": 30000,
+      "max_calls": 16,
+      "max_output_tokens": 4096,
+      "timeout_seconds": 420.0,
+      "max_followups": 1,
+      "max_figures": 4,
+      "max_visual_reviews": 2
+    },
+    "policy_version": "policy-v1",
+    "configuration_fingerprint": "acbdd34236f920a661c10a21bfd3a8e6aabea29fd0d86c722fc00167ed4f10e3"
+  },
+  "execution": {
+    "schema_version": "execution-v1",
+    "actual_usage": {
+      "input": null,
+      "output": null,
+      "total": null,
+      "cached": null,
+      "reasoning": null,
+      "estimated": false,
+      "reserved": null,
+      "unknown": false
+    },
+    "estimated_usage": {
+      "input": null,
+      "output": null,
+      "total": null,
+      "cached": null,
+      "reasoning": null,
+      "estimated": false,
+      "reserved": null,
+      "unknown": false
+    },
+    "unknown_usage": false,
+    "call_count": 0,
+    "retry_count": 0,
+    "cache_hits": 0,
+    "budget": {
+      "schema_version": "execution-v1",
+      "intensity": "standard",
+      "report_followups": 0,
+      "token_budget": 30000,
+      "max_calls": 16,
+      "max_output_tokens": 4096,
+      "timeout_seconds": 420.0,
+      "max_followups": 1,
+      "max_figures": 4,
+      "max_visual_reviews": 2
+    },
+    "elapsed_seconds": 0.423,
+    "stop_reason": "token_budget_exhausted",
+    "calls": []
+  },
+  "research_products": null
+}

@@ -3,41 +3,196 @@
   "candidate_id": "ANNOT-01",
   "paper": {
     "source_path": "ref_baseline/gkaf795.pdf",
-    "title": null,
+    "title": "MoDorado: enhanced detection of tRNA modifications in nanopore sequencing by off-label use of modification callers",
     "doi": "10.1093/nar/gkaf795",
-    "sha256": "b8b9addf31732c1f3fd3f56b3009b9cbc9d22b0f5c03afecfe48355376cd5dee"
+    "sha256": "f47a24c8b1717944ca1a7bef018778290c8a86851709e44a1ffa63db5df02e75"
   },
   "question": "MoDorado 使用 KL divergence 比较哪些预测分布？请只根据论文正文解释。",
   "figure": null,
   "panel": null,
   "annotator_id": null,
-  "annotation_state": "未标注",
-  "expected_status": null,
+  "annotation_state": "单人初标待复核",
+  "expected_status": "answered",
   "gold_claims": [
     {
       "claim_id": "G1",
-      "statement": null,
-      "basis": null,
-      "evidence_ids": [],
-      "required": null
+      "statement": "MoDorado 比较同一核苷酸位点在修饰 RNA 样本与未修饰对照样本之间的预测分数分布。",
+      "basis": "text",
+      "evidence_ids": [
+        "E1"
+      ],
+      "required": true
+    },
+    {
+      "claim_id": "G2",
+      "statement": "比较中的修饰 RNA 样本可以是野生型 WT，未修饰对照可以是缺失相应修饰的基因缺失株 RNA。",
+      "basis": "text",
+      "evidence_ids": [
+        "E1"
+      ],
+      "required": true
+    },
+    {
+      "claim_id": "G3",
+      "statement": "IVT RNA 也可以作为未修饰对照。",
+      "basis": "text",
+      "evidence_ids": [
+        "E1"
+      ],
+      "required": false
+    },
+    {
+      "claim_id": "G4",
+      "statement": "P 和 Q 分别表示 WT 与突变体样本的平滑预测分数直方图分布。",
+      "basis": "text",
+      "evidence_ids": [
+        "E2"
+      ],
+      "required": false
+    },
+    {
+      "claim_id": "G5",
+      "statement": "预测分数直方图使用 10 个等间隔 bins，边界范围为 11–256。",
+      "basis": "text",
+      "evidence_ids": [
+        "E3"
+      ],
+      "required": false
+    },
+    {
+      "claim_id": "G6",
+      "statement": "分布差异使用对称 KL divergence，即 D_KL(P||Q) + D_KL(Q||P)。",
+      "basis": "text",
+      "evidence_ids": [
+        "E4"
+      ],
+      "required": false
+    },
+    {
+      "claim_id": "G7",
+      "statement": "所比较的 Dorado 输出分数表示模型预测的修饰概率。",
+      "basis": "text",
+      "evidence_ids": [
+        "E6"
+      ],
+      "required": true
+    },
+    {
+      "claim_id": "G8",
+      "statement": "论文对 RNA004 数据使用的四种 Dorado 修饰模型为 Ψ、m⁶A、I（inosine）和 m⁵C。",
+      "basis": "text",
+      "evidence_ids": [
+        "E5"
+      ],
+      "required": false
     }
   ],
   "gold_evidence": [
     {
       "evidence_id": "E1",
-      "source_kind": null,
-      "pdf_page_1_based": null,
+      "source_kind": "text",
+      "pdf_page_1_based": 7,
+      "block_id": null,
+      "bbox": [
+        309.0,
+        318.5,
+        556.5,
+        372.5
+      ],
+      "figure": null,
+      "panel": null,
+      "verbatim_quote": "As a “sample comparison” method, MoDorado compares the distribution of prediction scores at a particular position between a modified RNA (i.e. wt) and an unmodified control (such as RNA from a gene deletion strain, or IVT RNA).",
+      "visual_observation": null,
+      "legibility": "clear"
+    },
+    {
+      "evidence_id": "E2",
+      "source_kind": "text",
+      "pdf_page_1_based": 6,
+      "block_id": null,
+      "bbox": [
+        59.1,
+        150.6,
+        306.0,
+        215.0
+      ],
+      "figure": null,
+      "panel": null,
+      "verbatim_quote": "where P and Q represent the smoothed histogram distributions of the wt and the mutant samples, respectively. As the KL divergence are nonsymmetric, the order of input distributions P and Q affect D_KL. In MoDorado, the sum of D_KL(P || Q) and D_KL(Q || P) as a symmetric version of the KL divergence was used.",
+      "visual_observation": null,
+      "legibility": "clear"
+    },
+    {
+      "evidence_id": "E3",
+      "source_kind": "text",
+      "pdf_page_1_based": 6,
+      "block_id": null,
+      "bbox": [
+        59.1,
+        53.7,
+        306.0,
+        107.2
+      ],
+      "figure": null,
+      "panel": null,
+      "verbatim_quote": "histograms with a fixed number of bins (n_bins = 10) of equal spacing between 11 and 256. To compare the similarity of the smoothed prediction score distributions between samples, the Kullback–Leibler (KL) divergence for discrete probability distributions was used, which is given by equation 2.",
+      "visual_observation": null,
+      "legibility": "clear"
+    },
+    {
+      "evidence_id": "E4",
+      "source_kind": "text",
+      "pdf_page_1_based": 6,
+      "block_id": null,
+      "bbox": [
+        63.2,
+        224.5,
+        298.4,
+        234.8
+      ],
+      "figure": null,
+      "panel": null,
+      "verbatim_quote": "Symmetric KL divergence = D_KL(P || Q) + D_KL(Q || P)",
+      "visual_observation": null,
+      "legibility": "clear"
+    },
+    {
+      "evidence_id": "E5",
+      "source_kind": "text",
+      "pdf_page_1_based": 4,
+      "block_id": null,
+      "bbox": [
+        59.1,
+        646.9,
+        306.1,
+        746.2
+      ],
+      "figure": null,
+      "panel": null,
+      "verbatim_quote": "For RNA004 data, the option to perform modification calling with the four currently available RNA modification models (Ψ/m6A/I/m5C) was used.",
+      "visual_observation": null,
+      "legibility": "clear"
+    },
+    {
+      "evidence_id": "E6",
+      "source_kind": "text",
+      "pdf_page_1_based": 4,
       "block_id": null,
       "bbox": null,
       "figure": null,
       "panel": null,
-      "verbatim_quote": null,
+      "verbatim_quote": "For each individual read, the modification callers assign a discretized prediction score with integer value from 0 to 255 (representing a predicted probability of modification from 0 to 1; 0%–100%) at positions of the corresponding canonical base (e.g. the Ψ model will only output scores for basecalled U positions).",
       "visual_observation": null,
-      "legibility": null
+      "legibility": "clear"
     }
   ],
   "required_uncertainties": [],
-  "forbidden_inferences": [],
+  "forbidden_inferences": [
+    "不得将 KL divergence 的比较对象解释为不同 Dorado 修饰模型之间的预测分布，例如 Ψ 模型与 m6A 模型的相互比较。",
+    "不得声称 MoDorado 在此直接计算 WT 与 mutant 的原始纳米孔电流信号分布之间的 KL divergence。",
+    "不得将比较对象解释为修饰碱基与非修饰碱基的真实类别标签分布。",
+    "不得将较大的 KL divergence 直接解释为某种特定化学修饰的确定性鉴定结果。"
+  ],
   "adjudication": {
     "reviewer_ids": [],
     "disagreements": [],

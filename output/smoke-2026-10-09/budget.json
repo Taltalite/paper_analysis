@@ -1,0 +1,93 @@
+{
+  "schema_version": "execution-v1",
+  "actual_usage": {
+    "input": 112,
+    "output": 59,
+    "total": 171,
+    "cached": null,
+    "reasoning": 19,
+    "estimated": false,
+    "reserved": null,
+    "unknown": false
+  },
+  "estimated_usage": {
+    "input": null,
+    "output": null,
+    "total": 2071,
+    "cached": null,
+    "reasoning": null,
+    "estimated": true,
+    "reserved": null,
+    "unknown": false
+  },
+  "unknown_usage": true,
+  "call_count": 2,
+  "retry_count": 0,
+  "cache_hits": 0,
+  "budget": {
+    "schema_version": "execution-v1",
+    "intensity": "standard",
+    "report_followups": 0,
+    "token_budget": 8000,
+    "max_calls": 2,
+    "max_output_tokens": 1024,
+    "timeout_seconds": 120.0,
+    "max_followups": 1,
+    "max_figures": 4,
+    "max_visual_reviews": 2
+  },
+  "elapsed_seconds": 2.171,
+  "stop_reason": "running",
+  "calls": [
+    {
+      "schema_version": "execution-v1",
+      "call_id": "0bd3f5af825848b6983a56b6b525b893",
+      "job_id": "synthetic-model-smoke",
+      "attempt": 1,
+      "stage": "text_http",
+      "role": "text",
+      "model": "kimi-for-coding",
+      "endpoint_id": "https://api.kimi.com/coding/v1",
+      "started_at": "2026-10-09T06:05:12.206627Z",
+      "ended_at": "2026-10-09T06:05:13.948728Z",
+      "status": "succeeded",
+      "usage_source": "provider",
+      "usage": {
+        "input": 112,
+        "output": 59,
+        "total": 171,
+        "cached": null,
+        "reasoning": 19,
+        "estimated": false,
+        "reserved": null,
+        "unknown": false
+      },
+      "reservation": 1100
+    },
+    {
+      "schema_version": "execution-v1",
+      "call_id": "737a9e65494a446c8ced01669c4a63fc",
+      "job_id": "synthetic-model-smoke",
+      "attempt": 1,
+      "stage": "vision",
+      "role": "image_observer",
+      "model": "qwen3.8-flash",
+      "endpoint_id": "https://token-plan.maas.qianwenaiapi.com/compatible-mode/v1",
+      "started_at": "2026-10-09T06:05:14.000819Z",
+      "ended_at": "2026-10-09T06:05:14.013512Z",
+      "status": "timeout",
+      "usage_source": "unknown",
+      "usage": {
+        "input": null,
+        "output": null,
+        "total": null,
+        "cached": null,
+        "reasoning": null,
+        "estimated": false,
+        "reserved": 2071,
+        "unknown": true
+      },
+      "reservation": 2071
+    }
+  ]
+}

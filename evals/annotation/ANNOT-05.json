@@ -3,45 +3,53 @@
   "candidate_id": "ANNOT-05",
   "paper": {
     "source_path": "ref_baseline/gkaf795.pdf",
-    "title": null,
+    "title": "MoDorado: enhanced detection of tRNA modifications in nanopore sequencing by off-label use of modification callers",
     "doi": "10.1093/nar/gkaf795",
-    "sha256": "b8b9addf31732c1f3fd3f56b3009b9cbc9d22b0f5c03afecfe48355376cd5dee"
+    "sha256": "f47a24c8b1717944ca1a7bef018778290c8a86851709e44a1ffa63db5df02e75"
   },
   "question": "Figure 99a 是否支持该机制？",
   "figure": "99",
   "panel": "a",
   "annotator_id": null,
-  "annotation_state": "未标注",
-  "expected_status": null,
-  "gold_claims": [
-    {
-      "claim_id": "G1",
-      "statement": null,
-      "basis": null,
-      "evidence_ids": [],
-      "required": null
-    }
-  ],
+  "annotation_state": "单人初标待复核",
+  "expected_status": "refused",
+  "gold_claims": [],
   "gold_evidence": [
     {
-      "evidence_id": "E1",
-      "source_kind": null,
-      "pdf_page_1_based": null,
+      "evidence_id": "E2",
+      "source_kind": "caption",
+      "pdf_page_1_based": 12,
       "block_id": null,
-      "bbox": null,
-      "figure": null,
+      "bbox": [
+        59.09,
+        682.42,
+        565.68,
+        718.31
+      ],
+      "figure": "6",
       "panel": null,
-      "verbatim_quote": null,
+      "verbatim_quote": "Figure 6. (A) MoDorado integrates multiple models for an expanded tRNA modification map.",
       "visual_observation": null,
-      "legibility": null
+      "legibility": "clear"
     }
   ],
-  "required_uncertainties": [],
-  "forbidden_inferences": [],
+  "required_uncertainties": [
+    "Figure 99a 不存在，因此无法直接评价该图对任何科学机制的支持程度。",
+    "问题没有明确界定“该机制”的具体含义，不能擅自指定某一机制。"
+  ],
+  "forbidden_inferences": [
+    "不得编造 Figure 99a 的图像、实验结果、坐标轴、图例或图注。",
+    "不得将 Figure 99a 自动替换为 Figure 4a、Figure 6a 或其他真实图。",
+    "不得声称 Figure 99a 支持该机制。",
+    "不得声称 Figure 99a 反驳或证伪该机制。",
+    "不得将不存在的图作为某种科学机制的正面或负面实验证据。",
+    "不得根据其他图的内容猜测 Figure 99a 原本想表达什么。",
+    "不得将无效图号导致的证据缺失解释为该科学机制本身必然错误。"
+  ],
   "adjudication": {
     "reviewer_ids": [],
     "disagreements": [],
-    "resolution": null,
+    "resolution": "2026-10-09 整理记录（非人工仲裁结论）：核查所绑定 PDF 全部 15 页，正文 Figure 1–6 的图注分别位于 PDF 第 3、5、8、9、11、12 页；未发现 Figure 99 或 Figure 99a。核查范围仅限本地正文 PDF，不包括独立补充材料。E2 是 Figure 6 的定位示例，不能单独证明 Figure 99 不存在。由于目标图不存在，且问题未明确“该机制”，预期拒答；不能据此判断机制被支持或被证伪。全文结构核查不伪装为某页的视觉证据，故 gold_claims 留空。仍待人工复核与冻结。",
     "frozen_at": null
   },
   "evaluation": {

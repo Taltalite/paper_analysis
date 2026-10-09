@@ -1,5 +1,23 @@
 # PLANS
 
+## 2026-10-09：五条人工问答标注规范化
+
+- [x] 核对 `gkaf795.pdf` 与五条标注的 SHA-256，规范字段枚举、拆分参考主张、区分必需项与可选补充。
+- [x] 补齐预测概率证据，修正引文坐标范围，清除提取模式不一致的局部块编号；拒答题保留全文核查范围。
+- [x] 同步人工标注说明，记录主张重新编号、AI 辅助整理范围及金标准尚未冻结的边界。
+- [ ] 实际标注人补填匿名 `annotator_id`，开展独立人工复核与仲裁后冻结；再进行模型效果评价。
+
+## 2026-10-09：真实端到端复验与三处缺陷修复
+
+- [x] Kimi 文本 + Qwen 视觉合成 smoke 双双通过（2 次调用，1,596 tokens）；记录 `output/smoke-2026-10-09-noproxy/`。注意：本机 `127.0.0.1:7890` 代理未运行时，qianwen 端点需 `PAPER_ANALYSIS_DISABLE_PROXY=1` 或将其加入 `NO_PROXY`。
+- [x] 离线回归：137 项单元 + 6 项集成通过（修复后复跑仍全绿）。
+- [x] 修复 `artifact_service.save_analysis_result` 未用 `model_dump(mode="json")` 导致含 execution 账本（datetime）时 CLI 保存 JSON 崩溃。
+- [x] 新增 `TEXT_REQUEST_TIMEOUT`（默认 120 秒不变），解除文本计量钩子硬编码 120 秒与大输出限额的不匹配；README 已同步。
+- [x] `text_understanding` 的 LLM 输出契约由完整 `AnalysisResult` 收窄为 `TextUnderstandingResult`（仅模型可填字段），避免模型编造 execution/quality/research_products 触发校验失败；与其他 crew 的专用输出模型模式一致。
+- [x] 真实端到端（`input/sample_paper.txt`，显式 200k 预算 / 8,192 输出上限 / 300 秒超时）全链路完成：2 次调用、13,191 tokens，报告与 JSON 产物保存至 `output/e2e-2026-10-09-full/`。QC 闸门按设计拦截（模型把证据 ID 写成 `S1-摘要` 形式，与 parser 注册的 `S1` 不匹配），质量状态 blocked，未交付未核验内容。
+- [ ] 已知缺口待决策：CLI 默认 standard 预算 30,000 不足以覆盖首个研究模式请求（估算需约 28,016，可用 22,500），默认 `bash scripts/run.sh` 必然 blocked；需提高默认预算或压缩提示词，改动会影响成本暴露，留待确认。
+- [ ] 证据 ID 鲁棒性：模型输出 `S1-摘要` 这类带后缀 ID 时，可在 QC 前做确定性归一化，当前由闸门拦截属预期行为。
+
 ## 2026-10-05：审核缺口修复与本轮验收
 
 - [x] HTTP request/response 计量接入，禁用 SDK 隐式重试，文本/视觉输出限额贯通；账本逐请求落盘并跨 attempt 复用。

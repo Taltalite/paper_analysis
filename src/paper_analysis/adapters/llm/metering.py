@@ -2,11 +2,24 @@
 from __future__ import annotations
 
 import json
+import math
+import os
 from typing import Any
 
 import httpx
 
 from paper_analysis.domain.execution import CallStatus, TokenUsage
+
+
+def _text_request_timeout() -> float:
+    """文本请求单次超时上限（秒），默认 120，可用 TEXT_REQUEST_TIMEOUT 覆盖。"""
+    try:
+        timeout = float(os.getenv("TEXT_REQUEST_TIMEOUT", "120"))
+    except ValueError as exc:
+        raise ValueError("TEXT_REQUEST_TIMEOUT 必须是大于零的秒数。") from exc
+    if not math.isfinite(timeout) or timeout <= 0:
+        raise ValueError("TEXT_REQUEST_TIMEOUT 必须是大于零的有限秒数。")
+    return timeout
 
 
 class RequestMeter:
@@ -26,7 +39,8 @@ class RequestMeter:
         request._content = content
         request.headers["content-length"] = str(len(content))
         limit = self.ledger.remaining_seconds()
-        request.extensions["timeout"] = {k: min(limit, 120.0) for k in ("connect", "read", "write", "pool")}
+        cap = _text_request_timeout()
+        request.extensions["timeout"] = {k: min(limit, cap) for k in ("connect", "read", "write", "pool")}
         reservation = self.ledger.reserve(input_tokens=estimate_text_tokens(content.decode()),
             stage="text_http", role=self.role, model=self.model, endpoint_id=self.endpoint)
         request.extensions["paper_reservation"] = reservation

@@ -3,41 +3,126 @@
   "candidate_id": "ANNOT-03",
   "paper": {
     "source_path": "ref_baseline/gkaf795.pdf",
-    "title": null,
+    "title": "MoDorado: enhanced detection of tRNA modifications in nanopore sequencing by off-label use of modification callers",
     "doi": "10.1093/nar/gkaf795",
-    "sha256": "b8b9addf31732c1f3fd3f56b3009b9cbc9d22b0f5c03afecfe48355376cd5dee"
+    "sha256": "f47a24c8b1717944ca1a7bef018778290c8a86851709e44a1ffa63db5df02e75"
   },
   "question": "Figure 4a 横轴位置 34 和 37 的完整标签分别是什么，颜色分别是什么？若上标无法辨认请明确说明。",
   "figure": "4",
   "panel": "a",
   "annotator_id": null,
-  "annotation_state": "未标注",
-  "expected_status": null,
+  "annotation_state": "单人初标待复核",
+  "expected_status": "answered",
   "gold_claims": [
     {
       "claim_id": "G1",
-      "statement": null,
-      "basis": null,
-      "evidence_ids": [],
-      "required": null
+      "statement": "Figure 4a 横轴位置 34 的完整标签为 ncm⁵U34，其中 5 为上标。",
+      "basis": "visual",
+      "evidence_ids": [
+        "E1"
+      ],
+      "required": true
+    },
+    {
+      "claim_id": "G2",
+      "statement": "Figure 4a 横轴位置 34 的标签为红色。",
+      "basis": "visual",
+      "evidence_ids": [
+        "E1"
+      ],
+      "required": true
+    },
+    {
+      "claim_id": "G3",
+      "statement": "Figure 4a 横轴位置 37 的完整标签为 m¹G37，其中 1 为上标。",
+      "basis": "visual",
+      "evidence_ids": [
+        "E2"
+      ],
+      "required": true
+    },
+    {
+      "claim_id": "G4",
+      "statement": "Figure 4a 横轴位置 37 的标签为深灰黑色。",
+      "basis": "visual",
+      "evidence_ids": [
+        "E2"
+      ],
+      "required": true
+    },
+    {
+      "claim_id": "G5",
+      "statement": "Figure 4 图注注明 tRNA-Pro-TGG 第 34 位携带 ncm⁵U 修饰。",
+      "basis": "text",
+      "evidence_ids": [
+        "E3"
+      ],
+      "required": false
     }
   ],
   "gold_evidence": [
     {
       "evidence_id": "E1",
-      "source_kind": null,
-      "pdf_page_1_based": null,
+      "source_kind": "vision",
+      "pdf_page_1_based": 9,
       "block_id": null,
-      "bbox": null,
-      "figure": null,
-      "panel": null,
+      "bbox": [
+        128.36,
+        166.2,
+        149.8,
+        187.64
+      ],
+      "figure": "4",
+      "panel": "a",
       "verbatim_quote": null,
+      "visual_observation": "横轴位置 34 的完整文字为 ncm⁵U34。ncm 后的 5 明显采用上标排版，后接 U34。标签整体为红色。上标清晰可辨。",
+      "legibility": "clear"
+    },
+    {
+      "evidence_id": "E2",
+      "source_kind": "vision",
+      "pdf_page_1_based": 9,
+      "block_id": null,
+      "bbox": [
+        166.75,
+        166.02,
+        183.3,
+        183.19
+      ],
+      "figure": "4",
+      "panel": "a",
+      "verbatim_quote": null,
+      "visual_observation": "横轴位置 37 的完整文字为 m¹G37。m 后的 1 明显采用上标排版，后接 G37。标签整体为深灰黑色。上标清晰可辨。",
+      "legibility": "clear"
+    },
+    {
+      "evidence_id": "E3",
+      "source_kind": "caption",
+      "pdf_page_1_based": 9,
+      "block_id": null,
+      "bbox": [
+        48.0,
+        639.0,
+        556.6,
+        648.4
+      ],
+      "figure": "4",
+      "panel": "a",
+      "verbatim_quote": "(A) Raw signals for U29-C39 for tRNA-Pro-TGG from wt and elp6Δ, which carries ncm5U at position 34.",
       "visual_observation": null,
-      "legibility": null
+      "legibility": "clear"
     }
   ],
   "required_uncertainties": [],
-  "forbidden_inferences": [],
+  "forbidden_inferences": [
+    "不得将位置 34 的标签 ncm⁵U34 错写为 mcm⁵U34。",
+    "不得将位置 37 的标签 m¹G37 错写为 m⁷G37 或其他修饰标签。",
+    "不得忽略或错误识别数字 5、1 的上标属性。",
+    "不得将位置 34 描述为黑色或将位置 37 描述为红色。",
+    "不得将横轴标签的文字颜色与 WT、elp6Δ 两组信号曲线的颜色混淆。",
+    "不得声称 Figure 4 图注明确给出了位置 37 的完整标签及其颜色。",
+    "不得在上标无法辨认的情况下，根据领域知识强行补全并声称为直接视觉观察。"
+  ],
   "adjudication": {
     "reviewer_ids": [],
     "disagreements": [],

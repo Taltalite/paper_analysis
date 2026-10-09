@@ -7,7 +7,7 @@ from paper_analysis.domain.execution_context import agent_limits
 from crewai import Agent, Crew, Process, Task
 
 from paper_analysis.adapters.llm.base import LLMClient
-from paper_analysis.domain.schemas import AnalysisResult, ParsedDocument
+from paper_analysis.domain.schemas import AnalysisResult, ParsedDocument, TextUnderstandingResult
 from paper_analysis.runtime.pipelines.profiles import TextAnalysisProfile
 from paper_analysis.tools.document_tools import build_document_tools
 
@@ -62,10 +62,10 @@ class CrewAITextUnderstandingRunner:
                 document=document,
             ),
             expected_output=(
-                "一个有效 AnalysisResult；研究论文模式下 structured_data 还包含可追溯的 claims 列表。"
+                "一个有效 TextUnderstandingResult；研究论文模式下 structured_data 还包含可追溯的 claims 列表。"
             ),
             agent=agent,
-            output_pydantic=AnalysisResult,
+            output_pydantic=TextUnderstandingResult,
         )
         return Crew(
             agents=[agent],
@@ -136,8 +136,8 @@ class CrewAITextUnderstandingRunner:
             payload = result.to_dict()
             if isinstance(payload, dict):
                 structured = payload
+        if isinstance(structured, TextUnderstandingResult):
+            return AnalysisResult(**structured.model_dump())
         if isinstance(structured, dict):
-            structured = AnalysisResult.model_validate(structured)
-        if not isinstance(structured, AnalysisResult):
-            raise ValueError("文本理解 agent 未返回有效的 AnalysisResult。")
-        return structured
+            return AnalysisResult(**TextUnderstandingResult.model_validate(structured).model_dump())
+        raise ValueError("文本理解 agent 未返回有效的 TextUnderstandingResult。")

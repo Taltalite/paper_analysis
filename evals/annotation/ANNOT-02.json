@@ -3,41 +3,145 @@
   "candidate_id": "ANNOT-02",
   "paper": {
     "source_path": "ref_baseline/gkaf795.pdf",
-    "title": null,
+    "title": "MoDorado: enhanced detection of tRNA modifications in nanopore sequencing by off-label use of modification callers",
     "doi": "10.1093/nar/gkaf795",
-    "sha256": "b8b9addf31732c1f3fd3f56b3009b9cbc9d22b0f5c03afecfe48355376cd5dee"
+    "sha256": "f47a24c8b1717944ca1a7bef018778290c8a86851709e44a1ffa63db5df02e75"
   },
   "question": "Figure 4a 的实线和阴影分别表示什么？请区分图注说明和实际图像观察。",
   "figure": "4",
   "panel": "a",
   "annotator_id": null,
-  "annotation_state": "未标注",
-  "expected_status": null,
+  "annotation_state": "单人初标待复核",
+  "expected_status": "answered",
   "gold_claims": [
     {
       "claim_id": "G1",
-      "statement": null,
-      "basis": null,
-      "evidence_ids": [],
-      "required": null
+      "statement": "Figure 4 图注说明，实线代表给定核苷酸位置上跨 reads 的平均信号强度。",
+      "basis": "text",
+      "evidence_ids": [
+        "E1"
+      ],
+      "required": true
+    },
+    {
+      "claim_id": "G2",
+      "statement": "Figure 4 图注说明，阴影区域代表信号强度的一个标准差。",
+      "basis": "text",
+      "evidence_ids": [
+        "E1"
+      ],
+      "required": true
+    },
+    {
+      "claim_id": "G3",
+      "statement": "Figure 4a 图像中可以看到两组不同颜色的实线。",
+      "basis": "visual",
+      "evidence_ids": [
+        "E2"
+      ],
+      "required": true
+    },
+    {
+      "claim_id": "G4",
+      "statement": "Figure 4a 图像中可以看到实线周围的半透明阴影。",
+      "basis": "visual",
+      "evidence_ids": [
+        "E2"
+      ],
+      "required": true
+    },
+    {
+      "claim_id": "G5",
+      "statement": "Figure 4a 图例中的 WT 对应青绿色。",
+      "basis": "visual",
+      "evidence_ids": [
+        "E2"
+      ],
+      "required": false
+    },
+    {
+      "claim_id": "G6",
+      "statement": "Figure 4a 图例中的 elp6Δ 对应橙色。",
+      "basis": "visual",
+      "evidence_ids": [
+        "E2"
+      ],
+      "required": false
+    },
+    {
+      "claim_id": "G7",
+      "statement": "图注将 Figure 4a 描述为 tRNA-Pro-TGG 的 U29–C39 区域中 WT 与 elp6Δ 的原始信号。",
+      "basis": "text",
+      "evidence_ids": [
+        "E3"
+      ],
+      "required": false
     }
   ],
   "gold_evidence": [
     {
       "evidence_id": "E1",
-      "source_kind": null,
-      "pdf_page_1_based": null,
+      "source_kind": "caption",
+      "pdf_page_1_based": 9,
       "block_id": null,
-      "bbox": null,
-      "figure": null,
-      "panel": null,
-      "verbatim_quote": null,
+      "bbox": [
+        48.0,
+        640.9,
+        556.8,
+        657.8
+      ],
+      "figure": "4",
+      "panel": "a",
+      "verbatim_quote": "Solid lines represent the mean signal intensity at a given position across reads. The shaded area represents one standard deviation of the signal intensity.",
       "visual_observation": null,
-      "legibility": null
+      "legibility": "clear"
+    },
+    {
+      "evidence_id": "E2",
+      "source_kind": "vision",
+      "pdf_page_1_based": 9,
+      "block_id": null,
+      "bbox": [
+        58.0,
+        56.0,
+        224.0,
+        208.0
+      ],
+      "figure": "4",
+      "panel": "a",
+      "verbatim_quote": null,
+      "visual_observation": "Panel A 位于页面左上方。横轴为 U29–C39 区域的核苷酸位置，纵轴标注 Signal intensity。图中有两条不同颜色的连续曲线，分别为青绿色 WT 和橙色 elp6Δ；两条曲线周围都有半透明阴影。图上标出了 ncm5U34。两组曲线局部重叠，也存在可见差异。图像未在坐标轴或图例内单独注明 mean 或 SD 的统计定义。",
+      "legibility": "clear"
+    },
+    {
+      "evidence_id": "E3",
+      "source_kind": "caption",
+      "pdf_page_1_based": 9,
+      "block_id": null,
+      "bbox": [
+        48.0,
+        640.9,
+        391.9,
+        648.5
+      ],
+      "figure": "4",
+      "panel": "a",
+      "verbatim_quote": "(A) Raw signals for U29-C39 for tRNA-Pro-TGG from wt and elp6Δ, which carries ncm5U at position 34.",
+      "visual_observation": null,
+      "legibility": "clear"
     }
   ],
-  "required_uncertainties": [],
-  "forbidden_inferences": [],
+  "required_uncertainties": [
+    "图像本身不能独立证明实线为均值、阴影为一个标准差；这两个统计定义必须依据图注。"
+  ],
+  "forbidden_inferences": [
+    "不得把阴影区域解释为 95% confidence interval、standard error of the mean 或其他未由图注支持的统计量。",
+    "不得把实线解释为单条 read 的原始电流轨迹或中位数。",
+    "不得将阴影范围解释为原始信号的最大值到最小值。",
+    "不得声称仅通过视觉观察就能确定均值和标准差的统计定义。",
+    "不得将阴影区域的宽度直接解释为 RNA 修饰比例或修饰检测置信度。",
+    "不得仅依据两组曲线的视觉分离程度推断统计显著性。"
+  ],
   "adjudication": {
     "reviewer_ids": [],
     "disagreements": [],
