@@ -14,7 +14,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
 SCHEMA_VERSION = "execution-v1"
-POLICY_VERSION = "policy-v1"
+POLICY_VERSION = "policy-v2"
 
 
 class AnalysisIntensity(StrEnum):
@@ -97,27 +97,27 @@ class ExecutionPolicy(StrictModel):
 
 _INTENSITY_DEFAULTS: dict[AnalysisIntensity, dict[str, int | float]] = {
     AnalysisIntensity.LIGHT: {
-        "token_budget": 12_000,
+        "token_budget": 100_000,
         "max_calls": 8,
-        "max_output_tokens": 2_048,
+        "max_output_tokens": 16_384,
         "timeout_seconds": 180.0,
         "max_followups": 0,
         "max_figures": 2,
         "max_visual_reviews": 1,
     },
     AnalysisIntensity.STANDARD: {
-        "token_budget": 30_000,
+        "token_budget": 300_000,
         "max_calls": 16,
-        "max_output_tokens": 4_096,
+        "max_output_tokens": 65_536,
         "timeout_seconds": 420.0,
         "max_followups": 1,
         "max_figures": 4,
         "max_visual_reviews": 2,
     },
     AnalysisIntensity.DEEP: {
-        "token_budget": 60_000,
+        "token_budget": 600_000,
         "max_calls": 32,
-        "max_output_tokens": 6_144,
+        "max_output_tokens": 98_304,
         "timeout_seconds": 720.0,
         "max_followups": 2,
         "max_figures": 6,
@@ -128,9 +128,9 @@ _INTENSITY_DEFAULTS: dict[AnalysisIntensity, dict[str, int | float]] = {
 
 DEFAULT_SERVER_LIMITS = ExecutionPolicy(
     intensity=AnalysisIntensity.STANDARD,
-    token_budget=120_000,
+    token_budget=600_000,
     max_calls=128,
-    max_output_tokens=12_000,
+    max_output_tokens=98_304,
     timeout_seconds=900.0,
     max_followups=10,
     max_figures=12,

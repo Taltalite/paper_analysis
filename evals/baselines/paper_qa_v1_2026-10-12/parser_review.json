@@ -1,0 +1,580 @@
+[
+  {
+    "paper_id": "DS",
+    "parsed_title": "DeepSignal: detecting DNA methylation state from Nanopore sequencing reads using deep-learning",
+    "reference_title": "DeepSignal: detecting DNA methylation state from Nanopore sequencing reads using deep-learning",
+    "parsed_doi": "10.1093/bioinformatics/btz276",
+    "figures": [
+      {
+        "id": "Figure 1",
+        "caption_page": 3
+      },
+      {
+        "id": "Figure 2",
+        "caption_page": 7
+      },
+      {
+        "id": "Figure 3",
+        "caption_page": 8
+      }
+    ],
+    "text_anchors": [
+      {
+        "case_id": "DS-01",
+        "evidence_id": "E1",
+        "found_block_ids": [
+          "p2_b5"
+        ]
+      },
+      {
+        "case_id": "DS-01",
+        "evidence_id": "E2",
+        "found_block_ids": [
+          "p2_b5"
+        ]
+      },
+      {
+        "case_id": "DS-01",
+        "evidence_id": "E3",
+        "found_block_ids": [
+          "p2_b5"
+        ]
+      },
+      {
+        "case_id": "DS-02",
+        "evidence_id": "E1",
+        "found_block_ids": [
+          "p1_b7"
+        ]
+      },
+      {
+        "case_id": "DS-02",
+        "evidence_id": "E2",
+        "found_block_ids": [
+          "p1_b7"
+        ]
+      }
+    ]
+  },
+  {
+    "paper_id": "APN",
+    "parsed_title": "pubs.acs.org/Biomac",
+    "reference_title": "Enzymatic Synthesis of Aptamer-Polynucleotide Nanoparticles with High Anticancer Drug Loading for Targeted Delivery",
+    "parsed_doi": "10.1021/acs.biomac.3c00888",
+    "figures": [
+      {
+        "id": "Figure 1",
+        "caption_page": 2
+      },
+      {
+        "id": "Figure 2",
+        "caption_page": 3
+      },
+      {
+        "id": "Figure 3",
+        "caption_page": 4
+      }
+    ],
+    "text_anchors": [
+      {
+        "case_id": "APN-01",
+        "evidence_id": "E1",
+        "found_block_ids": [
+          "p1_b5"
+        ]
+      },
+      {
+        "case_id": "APN-01",
+        "evidence_id": "E2",
+        "found_block_ids": [
+          "p5_b2"
+        ]
+      },
+      {
+        "case_id": "APN-02",
+        "evidence_id": "E1",
+        "found_block_ids": [
+          "p7_b0"
+        ]
+      },
+      {
+        "case_id": "APN-02",
+        "evidence_id": "E2",
+        "found_block_ids": [
+          "p7_b0"
+        ]
+      },
+      {
+        "case_id": "APN-02",
+        "evidence_id": "E3",
+        "found_block_ids": [
+          "p7_b0"
+        ]
+      }
+    ]
+  },
+  {
+    "paper_id": "ENDO",
+    "parsed_title": "ENDO-Pore: high-throughput linked-end mapping of single DNA cleavage events using nanopore sequencing",
+    "reference_title": "ENDO-Pore: high-throughput linked-end mapping of single DNA cleavage events using nanopore sequencing",
+    "parsed_doi": "10.1093/nar/gkab727",
+    "figures": [
+      {
+        "id": "Figure 1",
+        "caption_page": 4
+      },
+      {
+        "id": "Figure 2",
+        "caption_page": 5
+      },
+      {
+        "id": "Figure 3",
+        "caption_page": 6
+      },
+      {
+        "id": "Figure 4",
+        "caption_page": 7
+      },
+      {
+        "id": "Figure 5",
+        "caption_page": 9
+      }
+    ],
+    "text_anchors": [
+      {
+        "case_id": "ENDO-01",
+        "evidence_id": "E1",
+        "found_block_ids": [
+          "p4_b2"
+        ]
+      },
+      {
+        "case_id": "ENDO-01",
+        "evidence_id": "E2",
+        "found_block_ids": [
+          "p3_b9"
+        ]
+      },
+      {
+        "case_id": "ENDO-02",
+        "evidence_id": "E1",
+        "found_block_ids": [
+          "p4_b6"
+        ]
+      },
+      {
+        "case_id": "ENDO-02",
+        "evidence_id": "E2",
+        "found_block_ids": [
+          "p5_b4"
+        ]
+      }
+    ]
+  },
+  {
+    "paper_id": "MOD",
+    "parsed_title": "MoDor ado: enhanced det ection of tRNA modifications in nanopore sequencing by off-label use of modification callers",
+    "reference_title": "MoDorado: enhanced detection of tRNA modifications in nanopore sequencing by off-label use of modification callers",
+    "parsed_doi": "10.1093/nar/gkaf795",
+    "figures": [
+      {
+        "id": "Figure 1",
+        "caption_page": 3
+      },
+      {
+        "id": "Figure 2",
+        "caption_page": 5
+      },
+      {
+        "id": "Figure 3",
+        "caption_page": 8
+      },
+      {
+        "id": "Figure 4",
+        "caption_page": 9
+      },
+      {
+        "id": "Figure 5",
+        "caption_page": 11
+      },
+      {
+        "id": "Figure 6",
+        "caption_page": 12
+      }
+    ],
+    "text_anchors": [
+      {
+        "case_id": "MOD-01",
+        "evidence_id": "E1",
+        "found_block_ids": [
+          "p7_b3"
+        ]
+      },
+      {
+        "case_id": "MOD-01",
+        "evidence_id": "E2",
+        "found_block_ids": [
+          "p7_b3"
+        ]
+      },
+      {
+        "case_id": "MOD-01",
+        "evidence_id": "E3",
+        "found_block_ids": []
+      },
+      {
+        "case_id": "MOD-02",
+        "evidence_id": "E1",
+        "found_block_ids": [
+          "p10_b1"
+        ]
+      },
+      {
+        "case_id": "MOD-02",
+        "evidence_id": "E2",
+        "found_block_ids": [
+          "p10_b1"
+        ]
+      }
+    ]
+  },
+  {
+    "paper_id": "HIST",
+    "parsed_title": "HISTORICAL PERSPECTIVE",
+    "reference_title": "Three decades of nanopore sequencing",
+    "parsed_doi": "10.1038/nbt.3423",
+    "figures": [
+      {
+        "id": "Figure 1",
+        "caption_page": 2
+      },
+      {
+        "id": "Figure 2",
+        "caption_page": 2
+      },
+      {
+        "id": "Figure 3",
+        "caption_page": 3
+      },
+      {
+        "id": "Figure 5",
+        "caption_page": 4
+      },
+      {
+        "id": "Figure 4",
+        "caption_page": 4
+      },
+      {
+        "id": "Figure 6",
+        "caption_page": 5
+      }
+    ],
+    "text_anchors": [
+      {
+        "case_id": "HIST-01",
+        "evidence_id": "E1",
+        "found_block_ids": [
+          "p2_b6"
+        ]
+      },
+      {
+        "case_id": "HIST-01",
+        "evidence_id": "E2",
+        "found_block_ids": [
+          "p2_b6"
+        ]
+      },
+      {
+        "case_id": "HIST-02",
+        "evidence_id": "E1",
+        "found_block_ids": [
+          "p2_b4"
+        ]
+      },
+      {
+        "case_id": "HIST-02",
+        "evidence_id": "E2",
+        "found_block_ids": [
+          "p2_b4"
+        ]
+      }
+    ]
+  },
+  {
+    "paper_id": "HMM",
+    "parsed_title": "Detecting DNA cytosine methylation using nanopore sequencing",
+    "reference_title": "Detecting DNA cytosine methylation using nanopore sequencing",
+    "parsed_doi": "10.1038/nmeth.4184",
+    "figures": [
+      {
+        "id": "Figure 1",
+        "caption_page": 2
+      },
+      {
+        "id": "Figure 2",
+        "caption_page": 3
+      },
+      {
+        "id": "Figure 3",
+        "caption_page": 4
+      }
+    ],
+    "text_anchors": [
+      {
+        "case_id": "HMM-01",
+        "evidence_id": "E1",
+        "found_block_ids": [
+          "p1_b10"
+        ]
+      },
+      {
+        "case_id": "HMM-01",
+        "evidence_id": "E2",
+        "found_block_ids": [
+          "p1_b5"
+        ]
+      },
+      {
+        "case_id": "HMM-01",
+        "evidence_id": "E3",
+        "found_block_ids": [
+          "p1_b3"
+        ]
+      },
+      {
+        "case_id": "HMM-02",
+        "evidence_id": "E1",
+        "found_block_ids": [
+          "p2_b7"
+        ]
+      },
+      {
+        "case_id": "HMM-02",
+        "evidence_id": "E2",
+        "found_block_ids": [
+          "p2_b7"
+        ]
+      },
+      {
+        "case_id": "HMM-02",
+        "evidence_id": "E3",
+        "found_block_ids": [
+          "p2_b7"
+        ]
+      }
+    ]
+  },
+  {
+    "paper_id": "CHN",
+    "parsed_title": "Composite Hedges Nanopores codec system for rapid and portable DNA data readout with high INDEL-Correction",
+    "reference_title": "Composite Hedges Nanopores codec system for rapid and portable DNA data readout with high INDEL-Correction",
+    "parsed_doi": "10.1038/s41467-024-53455-3",
+    "figures": [
+      {
+        "id": "Figure 1",
+        "caption_page": 3
+      },
+      {
+        "id": "Figure 2",
+        "caption_page": 5
+      },
+      {
+        "id": "Figure 3",
+        "caption_page": 6
+      },
+      {
+        "id": "Figure 4",
+        "caption_page": 8
+      }
+    ],
+    "text_anchors": [
+      {
+        "case_id": "CHN-01",
+        "evidence_id": "E1",
+        "found_block_ids": [
+          "p1_b2"
+        ]
+      },
+      {
+        "case_id": "CHN-01",
+        "evidence_id": "E2",
+        "found_block_ids": [
+          "p1_b2"
+        ]
+      },
+      {
+        "case_id": "CHN-02",
+        "evidence_id": "E1",
+        "found_block_ids": [
+          "p1_b2"
+        ]
+      },
+      {
+        "case_id": "CHN-02",
+        "evidence_id": "E2",
+        "found_block_ids": [
+          "p1_b2"
+        ]
+      }
+    ]
+  },
+  {
+    "paper_id": "SUS",
+    "parsed_title": "Empowering low-crosstalk, dynamicdecision random access of DNA storage via 384-multiplexed nanopore signatures",
+    "reference_title": "Empowering low-crosstalk, dynamic-decision random access of DNA storage via 384-multiplexed nanopore signatures",
+    "parsed_doi": "10.1038/s41467-025-64293-2",
+    "figures": [
+      {
+        "id": "Figure 1",
+        "caption_page": 3
+      },
+      {
+        "id": "Figure 2",
+        "caption_page": 5
+      },
+      {
+        "id": "Figure 3",
+        "caption_page": 6
+      },
+      {
+        "id": "Figure 4",
+        "caption_page": 8
+      }
+    ],
+    "text_anchors": [
+      {
+        "case_id": "SUS-01",
+        "evidence_id": "E1",
+        "found_block_ids": [
+          "p2_b2"
+        ]
+      },
+      {
+        "case_id": "SUS-01",
+        "evidence_id": "E2",
+        "found_block_ids": [
+          "p4_b1"
+        ]
+      },
+      {
+        "case_id": "SUS-02",
+        "evidence_id": "E1",
+        "found_block_ids": [
+          "p1_b2"
+        ]
+      },
+      {
+        "case_id": "SUS-02",
+        "evidence_id": "E2",
+        "found_block_ids": [
+          "p1_b2"
+        ]
+      }
+    ]
+  },
+  {
+    "paper_id": "RARE",
+    "parsed_title": "An agentic system for rare disease diagnosis with traceable reasoning",
+    "reference_title": "An agentic system for rare disease diagnosis with traceable reasoning",
+    "parsed_doi": "10.1038/s41586-025-10097-9",
+    "figures": [
+      {
+        "id": "Figure 1",
+        "caption_page": 3
+      },
+      {
+        "id": "Figure 1C",
+        "caption_page": 4
+      },
+      {
+        "id": "Figure 2",
+        "caption_page": 5
+      },
+      {
+        "id": "Figure 3",
+        "caption_page": 6
+      },
+      {
+        "id": "Figure 4",
+        "caption_page": 7
+      },
+      {
+        "id": "Figure 5B",
+        "caption_page": 8
+      },
+      {
+        "id": "Figure 5",
+        "caption_page": 8
+      }
+    ],
+    "text_anchors": [
+      {
+        "case_id": "RARE-01",
+        "evidence_id": "E1",
+        "found_block_ids": [
+          "p4_b5"
+        ]
+      },
+      {
+        "case_id": "RARE-02",
+        "evidence_id": "E1",
+        "found_block_ids": [
+          "p7_b3"
+        ]
+      },
+      {
+        "case_id": "RARE-02",
+        "evidence_id": "E2",
+        "found_block_ids": [
+          "p7_b3"
+        ]
+      }
+    ]
+  },
+  {
+    "paper_id": "ADDUCT",
+    "parsed_title": "toxics",
+    "reference_title": "Current and Future Methodology for Quantitation and Site-Specific Mapping the Location of DNA Adducts",
+    "parsed_doi": "10.3390/toxics10020045",
+    "figures": [
+      {
+        "id": "Figure 1",
+        "caption_page": 4
+      },
+      {
+        "id": "Figure 2",
+        "caption_page": 5
+      }
+    ],
+    "text_anchors": [
+      {
+        "case_id": "ADDUCT-01",
+        "evidence_id": "E1",
+        "found_block_ids": [
+          "p2_b4"
+        ]
+      },
+      {
+        "case_id": "ADDUCT-01",
+        "evidence_id": "E2",
+        "found_block_ids": [
+          "p3_b1"
+        ]
+      },
+      {
+        "case_id": "ADDUCT-02",
+        "evidence_id": "E1",
+        "found_block_ids": [
+          "p7_b2"
+        ]
+      },
+      {
+        "case_id": "ADDUCT-02",
+        "evidence_id": "E2",
+        "found_block_ids": [
+          "p7_b2"
+        ]
+      }
+    ]
+  }
+]

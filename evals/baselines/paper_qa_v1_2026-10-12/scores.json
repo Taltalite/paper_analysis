@@ -1,0 +1,1303 @@
+{
+  "schema_version": "qa-score-v1",
+  "dataset_id": "paper-qa-10-v1.1",
+  "dataset_sha256": "39f4fc6e2466660d2e884781e551d46e11882613f8ec4419324badc2b31eafaa",
+  "run_id": "87a0d445-1223-4a67-bc09-dd3581b34a45",
+  "reference_status": "ai_provisional",
+  "review_kind": "ai_assisted",
+  "scope": "相对版本化参考集的评价；AI 暂定参考与专家评测分别标识。",
+  "metrics": {
+    "review_coverage": {
+      "numerator": 40,
+      "denominator": 40
+    },
+    "claim_correctness": {
+      "numerator": 65,
+      "denominator": 69
+    },
+    "required_claim_recall": {
+      "numerator": 36,
+      "denominator": 67
+    },
+    "citation_correctness": {
+      "numerator": 65,
+      "denominator": 69
+    },
+    "panel_alignment": {
+      "numerator": 8,
+      "denominator": 8
+    },
+    "status_match": {
+      "numerator": 20,
+      "denominator": 40
+    },
+    "complete_answerable": {
+      "numerator": 0,
+      "denominator": 30
+    },
+    "correct_refusal": {
+      "numerator": 10,
+      "denominator": 10
+    },
+    "text_evidence_recall": {
+      "numerator": 30,
+      "denominator": 44
+    },
+    "visual_input_coverage": {
+      "numerator": 12,
+      "denominator": 12
+    }
+  },
+  "by_task": {
+    "absence": {
+      "review_coverage": {
+        "numerator": 10,
+        "denominator": 10
+      },
+      "claim_correctness": {
+        "numerator": 0,
+        "denominator": 0
+      },
+      "required_claim_recall": {
+        "numerator": 0,
+        "denominator": 0
+      },
+      "citation_correctness": {
+        "numerator": 0,
+        "denominator": 0
+      },
+      "panel_alignment": {
+        "numerator": 0,
+        "denominator": 0
+      },
+      "status_match": {
+        "numerator": 10,
+        "denominator": 10
+      },
+      "complete_answerable": {
+        "numerator": 0,
+        "denominator": 0
+      },
+      "correct_refusal": {
+        "numerator": 10,
+        "denominator": 10
+      },
+      "text_evidence_recall": {
+        "numerator": 0,
+        "denominator": 0
+      },
+      "visual_input_coverage": {
+        "numerator": 0,
+        "denominator": 0
+      }
+    },
+    "numeric": {
+      "review_coverage": {
+        "numerator": 9,
+        "denominator": 9
+      },
+      "claim_correctness": {
+        "numerator": 22,
+        "denominator": 24
+      },
+      "required_claim_recall": {
+        "numerator": 18,
+        "denominator": 20
+      },
+      "citation_correctness": {
+        "numerator": 22,
+        "denominator": 24
+      },
+      "panel_alignment": {
+        "numerator": 0,
+        "denominator": 0
+      },
+      "status_match": {
+        "numerator": 7,
+        "denominator": 9
+      },
+      "complete_answerable": {
+        "numerator": 0,
+        "denominator": 9
+      },
+      "correct_refusal": {
+        "numerator": 0,
+        "denominator": 0
+      },
+      "text_evidence_recall": {
+        "numerator": 16,
+        "denominator": 19
+      },
+      "visual_input_coverage": {
+        "numerator": 0,
+        "denominator": 0
+      }
+    },
+    "text": {
+      "review_coverage": {
+        "numerator": 11,
+        "denominator": 11
+      },
+      "claim_correctness": {
+        "numerator": 34,
+        "denominator": 36
+      },
+      "required_claim_recall": {
+        "numerator": 13,
+        "denominator": 25
+      },
+      "citation_correctness": {
+        "numerator": 34,
+        "denominator": 36
+      },
+      "panel_alignment": {
+        "numerator": 0,
+        "denominator": 0
+      },
+      "status_match": {
+        "numerator": 2,
+        "denominator": 11
+      },
+      "complete_answerable": {
+        "numerator": 0,
+        "denominator": 11
+      },
+      "correct_refusal": {
+        "numerator": 0,
+        "denominator": 0
+      },
+      "text_evidence_recall": {
+        "numerator": 14,
+        "denominator": 25
+      },
+      "visual_input_coverage": {
+        "numerator": 0,
+        "denominator": 0
+      }
+    },
+    "visual": {
+      "review_coverage": {
+        "numerator": 10,
+        "denominator": 10
+      },
+      "claim_correctness": {
+        "numerator": 9,
+        "denominator": 9
+      },
+      "required_claim_recall": {
+        "numerator": 5,
+        "denominator": 22
+      },
+      "citation_correctness": {
+        "numerator": 9,
+        "denominator": 9
+      },
+      "panel_alignment": {
+        "numerator": 8,
+        "denominator": 8
+      },
+      "status_match": {
+        "numerator": 1,
+        "denominator": 10
+      },
+      "complete_answerable": {
+        "numerator": 0,
+        "denominator": 10
+      },
+      "correct_refusal": {
+        "numerator": 0,
+        "denominator": 0
+      },
+      "text_evidence_recall": {
+        "numerator": 0,
+        "denominator": 0
+      },
+      "visual_input_coverage": {
+        "numerator": 12,
+        "denominator": 12
+      }
+    }
+  },
+  "error_counts": {
+    "verification": 4,
+    "answer": 1,
+    "execution": 4,
+    "status": 9,
+    "citation": 1,
+    "retrieval": 4,
+    "vision": 5,
+    "parser": 2
+  },
+  "error_denominator": 30,
+  "optimization_priority": [
+    "vision",
+    "retrieval",
+    "answer"
+  ],
+  "cases": [
+    {
+      "candidate_id": "DS-01",
+      "paper_id": "DS",
+      "task_kind": "text",
+      "execution": "real_runtime_executed",
+      "reviewed": true,
+      "status_match": false,
+      "matched_required_claim_ids": [
+        "G1",
+        "G3"
+      ],
+      "missed_required_claim_ids": [
+        "G2"
+      ],
+      "retrieved_evidence_ids": [
+        "E1",
+        "E2",
+        "E3"
+      ],
+      "correct_claims": 3,
+      "output_claims": 3,
+      "citation_correct": 3,
+      "citation_evaluated": 3,
+      "panel_aligned": 0,
+      "panel_evaluated": 0,
+      "complete": false,
+      "primary_error": "verification",
+      "secondary_errors": [
+        "status"
+      ],
+      "rationale": "最终漏掉 BRNN 必需主张。草稿 c2 的 BRNN 与四个 17 长度输入向量均有当前输入支持，核验为 supported；确定性闸门因草稿引文写成 nucleo- tides、摘录为 nucleotides 而剔除整条。是断词差异触发的核验误杀，不是必要证据未检索到。仅使用 9,491 tokens、2 次调用，却返回 budget_exhausted，停止原因也需修正。"
+    },
+    {
+      "candidate_id": "DS-02",
+      "paper_id": "DS",
+      "task_kind": "numeric",
+      "execution": "real_runtime_executed",
+      "reviewed": true,
+      "status_match": true,
+      "matched_required_claim_ids": [
+        "G1",
+        "G2"
+      ],
+      "missed_required_claim_ids": [],
+      "retrieved_evidence_ids": [
+        "E1",
+        "E2"
+      ],
+      "correct_claims": 3,
+      "output_claims": 4,
+      "citation_correct": 3,
+      "citation_evaluated": 4,
+      "panel_aligned": 0,
+      "panel_evaluated": 0,
+      "complete": false,
+      "primary_error": "answer",
+      "secondary_errors": [
+        "verification",
+        "status"
+      ],
+      "rationale": "两条必需摘要指标回答正确，但增加了错误的 read-level 限定；内部 checker 仍判 supported、QC passed，不能替代独立正确性评价。输入已含正确摘要，问题要求未要求推断评价粒度，主因是回答扩展越界。"
+    },
+    {
+      "candidate_id": "DS-03",
+      "paper_id": "DS",
+      "task_kind": "visual",
+      "execution": "real_runtime_executed",
+      "reviewed": true,
+      "status_match": false,
+      "matched_required_claim_ids": [],
+      "missed_required_claim_ids": [
+        "G1",
+        "G2"
+      ],
+      "retrieved_evidence_ids": [
+        "E1",
+        "E2"
+      ],
+      "correct_claims": 0,
+      "output_claims": 0,
+      "citation_correct": 0,
+      "citation_evaluated": 0,
+      "panel_aligned": 0,
+      "panel_evaluated": 0,
+      "complete": false,
+      "primary_error": "execution",
+      "secondary_errors": [
+        "vision"
+      ],
+      "rationale": "目标 PDF 第 7 页实际输入 Qwen 成功；其输出投影只保留 general direct_evidence，没有把 cor 标签送入回答证据。之后 Kimi HTTP 成功但草稿未形成，audit.draft=null、model_error；无完整类型诊断，不能断言具体 JSON 错因。主要失败为生成/结构化阶段，视觉证据投影遗漏记次要问题。"
+    },
+    {
+      "candidate_id": "DS-04",
+      "paper_id": "DS",
+      "task_kind": "absence",
+      "execution": "no_generation_early_refusal",
+      "reviewed": true,
+      "status_match": true,
+      "matched_required_claim_ids": [],
+      "missed_required_claim_ids": [],
+      "retrieved_evidence_ids": [],
+      "correct_claims": 0,
+      "output_claims": 0,
+      "citation_correct": 0,
+      "citation_evaluated": 0,
+      "panel_aligned": 0,
+      "panel_evaluated": 0,
+      "complete": true,
+      "primary_error": null,
+      "secondary_errors": [],
+      "rationale": "独立检查本 PDF 全文没有 Figure 99a，系统明确拒答、无其他图替代、无虚构主张，说明解析范围限制。"
+    },
+    {
+      "candidate_id": "APN-01",
+      "paper_id": "APN",
+      "task_kind": "text",
+      "execution": "real_runtime_executed",
+      "reviewed": true,
+      "status_match": false,
+      "matched_required_claim_ids": [],
+      "missed_required_claim_ids": [
+        "G1",
+        "G2"
+      ],
+      "retrieved_evidence_ids": [
+        "E2"
+      ],
+      "correct_claims": 0,
+      "output_claims": 0,
+      "citation_correct": 0,
+      "citation_evaluated": 0,
+      "panel_aligned": 0,
+      "panel_evaluated": 0,
+      "complete": false,
+      "primary_error": "execution",
+      "secondary_errors": [],
+      "rationale": "所选第 2 页 Figure 1 图注及第 5 页正文已包含 TdT/FdUTP 聚合与 3′端 Atto 疏水嵌段自组装的完整机制。Kimi HTTP 成功（6,126 tokens）后未形成可用草稿，audit.draft=null、model_error；现有脱敏审计未保存具体结构化异常类型。主因是生成/输出契约阶段失败，不能因参考第 1 页锚点未命中就归为检索缺失。"
+    },
+    {
+      "candidate_id": "APN-02",
+      "paper_id": "APN",
+      "task_kind": "numeric",
+      "execution": "real_runtime_executed",
+      "reviewed": true,
+      "status_match": true,
+      "matched_required_claim_ids": [
+        "G1",
+        "G2",
+        "G3"
+      ],
+      "missed_required_claim_ids": [],
+      "retrieved_evidence_ids": [
+        "E1",
+        "E2",
+        "E3"
+      ],
+      "correct_claims": 3,
+      "output_claims": 3,
+      "citation_correct": 3,
+      "citation_evaluated": 3,
+      "panel_aligned": 0,
+      "panel_evaluated": 0,
+      "complete": false,
+      "primary_error": "status",
+      "secondary_errors": [],
+      "rationale": "三条实验结果及条件有原文支持、必需内容已覆盖，无患者疗效外推；但最终在 answered、QC passed 时仍声称“相关草稿尚未核实”，draft.sufficient=true、evidence_gaps=[]，该限制表达与实际交付矛盾。主错误记为状态/不确定性表达，不记为科学数值错误。"
+    },
+    {
+      "candidate_id": "APN-03",
+      "paper_id": "APN",
+      "task_kind": "visual",
+      "execution": "real_runtime_executed",
+      "reviewed": true,
+      "status_match": false,
+      "matched_required_claim_ids": [],
+      "missed_required_claim_ids": [
+        "G1"
+      ],
+      "retrieved_evidence_ids": [
+        "E1"
+      ],
+      "correct_claims": 0,
+      "output_claims": 0,
+      "citation_correct": 0,
+      "citation_evaluated": 0,
+      "panel_aligned": 0,
+      "panel_evaluated": 0,
+      "complete": false,
+      "primary_error": "verification",
+      "secondary_errors": [
+        "status"
+      ],
+      "rationale": "原图、Qwen 的子图 b OCR/summary、回答草稿都正确给出 Kd*:53.8 nM，并区分未归一化 323 nM。由于规范化后标签仅 10 字符，quality_control 和 qa_quality 的 ≥12 字符定位阈值丢弃唯一引文，整条视觉主张被剔除；直接看图复核甚至没有启动。低用量返回 budget_exhausted 是附带停止原因错误，主因核验误杀。"
+    },
+    {
+      "candidate_id": "APN-04",
+      "paper_id": "APN",
+      "task_kind": "absence",
+      "execution": "no_generation_early_refusal",
+      "reviewed": true,
+      "status_match": true,
+      "matched_required_claim_ids": [],
+      "missed_required_claim_ids": [],
+      "retrieved_evidence_ids": [],
+      "correct_claims": 0,
+      "output_claims": 0,
+      "citation_correct": 0,
+      "citation_evaluated": 0,
+      "panel_aligned": 0,
+      "panel_evaluated": 0,
+      "complete": true,
+      "primary_error": null,
+      "secondary_errors": [],
+      "rationale": "完整检查该 PDF 不存在 Figure 99a；最终明确拒答，没有其他图替代或虚构主张，并声明解析范围限制。"
+    },
+    {
+      "candidate_id": "ENDO-01",
+      "paper_id": "ENDO",
+      "task_kind": "text",
+      "execution": "real_runtime_executed",
+      "reviewed": true,
+      "status_match": false,
+      "matched_required_claim_ids": [
+        "G1",
+        "G2"
+      ],
+      "missed_required_claim_ids": [],
+      "retrieved_evidence_ids": [
+        "E1"
+      ],
+      "correct_claims": 3,
+      "output_claims": 3,
+      "citation_correct": 3,
+      "citation_evaluated": 3,
+      "panel_aligned": 0,
+      "panel_evaluated": 0,
+      "complete": false,
+      "primary_error": "status",
+      "secondary_errors": [
+        "retrieval"
+      ],
+      "rationale": "最终已正确覆盖 end repair 与重复/末端加工定位限制，额外 CSI 主张也正确。未发布的可选 claim_4 被部分支持判定剔除后，系统仍把已满足核心问题的交付标为 partial，并笼统声称不足以完整回答；主因状态/限制与问题需求不对齐。"
+    },
+    {
+      "candidate_id": "ENDO-02",
+      "paper_id": "ENDO",
+      "task_kind": "numeric",
+      "execution": "real_runtime_executed",
+      "reviewed": true,
+      "status_match": false,
+      "matched_required_claim_ids": [
+        "G1"
+      ],
+      "missed_required_claim_ids": [
+        "G2"
+      ],
+      "retrieved_evidence_ids": [
+        "E1"
+      ],
+      "correct_claims": 1,
+      "output_claims": 1,
+      "citation_correct": 1,
+      "citation_evaluated": 1,
+      "panel_aligned": 0,
+      "panel_evaluated": 0,
+      "complete": false,
+      "primary_error": "verification",
+      "secondary_errors": [
+        "retrieval",
+        "parser",
+        "status"
+      ],
+      "rationale": "提高 cut-off 导致数据减少的草稿 c2 原文机制/图注可支持，checker 判 supported，仅将中文内引号“it also”改成 ASCII 双引号；确定性 claim_mismatch 因这种文字差异剔除整条。主因核验误杀。输入对跨页句子截断、正文误归图注是次要 parser/retrieval 问题。"
+    },
+    {
+      "candidate_id": "ENDO-03",
+      "paper_id": "ENDO",
+      "task_kind": "visual",
+      "execution": "real_runtime_executed",
+      "reviewed": true,
+      "status_match": false,
+      "matched_required_claim_ids": [],
+      "missed_required_claim_ids": [
+        "G1",
+        "G2"
+      ],
+      "retrieved_evidence_ids": [
+        "E1"
+      ],
+      "correct_claims": 0,
+      "output_claims": 0,
+      "citation_correct": 0,
+      "citation_evaluated": 0,
+      "panel_aligned": 0,
+      "panel_evaluated": 0,
+      "complete": false,
+      "primary_error": "execution",
+      "secondary_errors": [
+        "vision"
+      ],
+      "rationale": "PDF 第 6 页目标子图进入 Qwen，视觉观察有单调下降趋势，但送入回答模型的 summary/OCR 未保留端点近似值，不能独立确认最高 cut-off 的比例。随后生成阶段 HTTP 已结算却无可用 draft，model_error；主因执行/输出契约失败，视觉证据投影的缺失另记。"
+    },
+    {
+      "candidate_id": "ENDO-04",
+      "paper_id": "ENDO",
+      "task_kind": "absence",
+      "execution": "no_generation_early_refusal",
+      "reviewed": true,
+      "status_match": true,
+      "matched_required_claim_ids": [],
+      "missed_required_claim_ids": [],
+      "retrieved_evidence_ids": [],
+      "correct_claims": 0,
+      "output_claims": 0,
+      "citation_correct": 0,
+      "citation_evaluated": 0,
+      "panel_aligned": 0,
+      "panel_evaluated": 0,
+      "complete": true,
+      "primary_error": null,
+      "secondary_errors": [],
+      "rationale": "独立全文检查没有 Figure 99a；最终明确拒答、无虚构或其他图替代，说明解析范围限制。"
+    },
+    {
+      "candidate_id": "MOD-01",
+      "paper_id": "MOD",
+      "task_kind": "text",
+      "execution": "real_runtime_executed",
+      "reviewed": true,
+      "status_match": false,
+      "matched_required_claim_ids": [
+        "G1",
+        "G2"
+      ],
+      "missed_required_claim_ids": [
+        "G3"
+      ],
+      "retrieved_evidence_ids": [
+        "E1",
+        "E2"
+      ],
+      "correct_claims": 4,
+      "output_claims": 4,
+      "citation_correct": 4,
+      "citation_evaluated": 4,
+      "panel_aligned": 0,
+      "panel_evaluated": 0,
+      "complete": false,
+      "primary_error": "citation",
+      "secondary_errors": [
+        "status"
+      ],
+      "rationale": "最终未明确 prediction score 是 Dorado 的修饰概率。正确草稿 c3 的两条引文都位于 p3_b54，却同时引用 p7_b3，后者没有对应引文，确定性闸门因此正确拒绝这组引文绑定。主因草稿过度引用导致必需定义被撤回，记 citation；不把每一次剔除都算作核验误杀。"
+    },
+    {
+      "candidate_id": "MOD-02",
+      "paper_id": "MOD",
+      "task_kind": "text",
+      "execution": "real_runtime_executed",
+      "reviewed": true,
+      "status_match": true,
+      "matched_required_claim_ids": [
+        "G2"
+      ],
+      "missed_required_claim_ids": [
+        "G1"
+      ],
+      "retrieved_evidence_ids": [],
+      "correct_claims": 4,
+      "output_claims": 4,
+      "citation_correct": 4,
+      "citation_evaluated": 4,
+      "panel_aligned": 0,
+      "panel_evaluated": 0,
+      "complete": false,
+      "primary_error": "retrieval",
+      "secondary_errors": [
+        "status"
+      ],
+      "rationale": "位置、对照和邻位效应基本正确，但未明确 U47 的 Ψ 概率分布/KL divergence 比较这一必需参考要求。PDF 第 10 页独立段落完整说明该机制和 elevated KL at U47，parsed 有该段，当前选取只到 p10_b1 的其他修饰邻位效应，未取到目标段落；主因检索漏段。仍标 answered 且通用未核实提示是附带状态问题。"
+    },
+    {
+      "candidate_id": "MOD-03",
+      "paper_id": "MOD",
+      "task_kind": "visual",
+      "execution": "real_runtime_executed",
+      "reviewed": true,
+      "status_match": false,
+      "matched_required_claim_ids": [],
+      "missed_required_claim_ids": [
+        "G1",
+        "G2",
+        "G3",
+        "G4"
+      ],
+      "retrieved_evidence_ids": [
+        "E1",
+        "E2"
+      ],
+      "correct_claims": 0,
+      "output_claims": 0,
+      "citation_correct": 0,
+      "citation_evaluated": 0,
+      "panel_aligned": 0,
+      "panel_evaluated": 0,
+      "complete": false,
+      "primary_error": "vision",
+      "secondary_errors": [
+        "verification",
+        "status"
+      ],
+      "rationale": "Qwen 初次观察识别 ncm5U34/m1G37，但送入 Kimi 的目标 panel summary/OCR 未表达标签颜色及上标排版，无法覆盖 4 条视觉要求。Kimi 对摘录的上标缺失作出保守限定；直接图像复核却把“摘录无法确认”当作“原图无法辨认”判冲突，进一步撤回已知标签。主因视觉属性提取/投影不完整；核验对证据层级的混淆是次要问题。"
+    },
+    {
+      "candidate_id": "MOD-04",
+      "paper_id": "MOD",
+      "task_kind": "absence",
+      "execution": "no_generation_early_refusal",
+      "reviewed": true,
+      "status_match": true,
+      "matched_required_claim_ids": [],
+      "missed_required_claim_ids": [],
+      "retrieved_evidence_ids": [],
+      "correct_claims": 0,
+      "output_claims": 0,
+      "citation_correct": 0,
+      "citation_evaluated": 0,
+      "panel_aligned": 0,
+      "panel_evaluated": 0,
+      "complete": true,
+      "primary_error": null,
+      "secondary_errors": [],
+      "rationale": "本 PDF 全文没有 Figure 99a；最终明确拒答、无替代图或虚构主张，声明解析范围限制。"
+    },
+    {
+      "candidate_id": "HIST-01",
+      "paper_id": "HIST",
+      "task_kind": "text",
+      "execution": "real_runtime_executed",
+      "reviewed": true,
+      "status_match": false,
+      "matched_required_claim_ids": [],
+      "missed_required_claim_ids": [
+        "G1",
+        "G2"
+      ],
+      "retrieved_evidence_ids": [],
+      "correct_claims": 0,
+      "output_claims": 0,
+      "citation_correct": 0,
+      "citation_evaluated": 0,
+      "panel_aligned": 0,
+      "panel_evaluated": 0,
+      "complete": false,
+      "primary_error": "retrieval",
+      "secondary_errors": [
+        "status"
+      ],
+      "rationale": "Box 1 的第 2 页正文 p2_b6 在 parsed.json 完整存在，明确 constant voltage、enzyme ratchet 和 ionic current；当前只检索到 Box 1 标题、文章标题和引言背景，未把框内正文送入回答模型。模型因此合理拒答；主因检索漏掉标题邻接正文，非 parser 无法提取。"
+    },
+    {
+      "candidate_id": "HIST-02",
+      "paper_id": "HIST",
+      "task_kind": "text",
+      "execution": "real_runtime_executed",
+      "reviewed": true,
+      "status_match": false,
+      "matched_required_claim_ids": [
+        "G1",
+        "G2"
+      ],
+      "missed_required_claim_ids": [],
+      "retrieved_evidence_ids": [
+        "E1",
+        "E2"
+      ],
+      "correct_claims": 5,
+      "output_claims": 6,
+      "citation_correct": 5,
+      "citation_evaluated": 6,
+      "panel_aligned": 0,
+      "panel_evaluated": 0,
+      "complete": false,
+      "primary_error": "parser",
+      "secondary_errors": [
+        "citation",
+        "status"
+      ],
+      "rationale": "机制与不能证明单碱基分辨率的两条核心要求正确，额外实验细节也正确；但把时间线框内文字当作正式图注，源自 parser 的 caption 边界过度吸纳。主错误为 parser 导致的来源误标；另有核心已覆盖却 partial 的状态问题。"
+    },
+    {
+      "candidate_id": "HIST-03",
+      "paper_id": "HIST",
+      "task_kind": "visual",
+      "execution": "real_runtime_executed",
+      "reviewed": true,
+      "status_match": false,
+      "matched_required_claim_ids": [],
+      "missed_required_claim_ids": [
+        "G1",
+        "G2"
+      ],
+      "retrieved_evidence_ids": [
+        "E1"
+      ],
+      "correct_claims": 0,
+      "output_claims": 0,
+      "citation_correct": 0,
+      "citation_evaluated": 0,
+      "panel_aligned": 0,
+      "panel_evaluated": 0,
+      "complete": false,
+      "primary_error": "vision",
+      "secondary_errors": [
+        "verification",
+        "status"
+      ],
+      "rationale": "实际原图中 2014 MAP、2015 E.coli 组装 99.4% 清晰；初次 Qwen 的全图 evidence 投影仅保留时间轴总体结构和 2012 连接数，丢掉所问事件/年份。Kimi 正确承认当前摘录缺信息，复核却将“摘录缺失”当成“原图没有”而判冲突，无法补回事实。主因视觉信息投影，次要核验作用域错误。"
+    },
+    {
+      "candidate_id": "HIST-04",
+      "paper_id": "HIST",
+      "task_kind": "absence",
+      "execution": "no_generation_early_refusal",
+      "reviewed": true,
+      "status_match": true,
+      "matched_required_claim_ids": [],
+      "missed_required_claim_ids": [],
+      "retrieved_evidence_ids": [],
+      "correct_claims": 0,
+      "output_claims": 0,
+      "citation_correct": 0,
+      "citation_evaluated": 0,
+      "panel_aligned": 0,
+      "panel_evaluated": 0,
+      "complete": true,
+      "primary_error": null,
+      "secondary_errors": [],
+      "rationale": "本 PDF 全文没有 Figure 99a；最终明确拒答、没有其他图替代或虚构主张，说明解析范围限制。"
+    },
+    {
+      "candidate_id": "HMM-01",
+      "paper_id": "HMM",
+      "task_kind": "text",
+      "execution": "real_runtime_executed",
+      "reviewed": true,
+      "status_match": false,
+      "matched_required_claim_ids": [],
+      "missed_required_claim_ids": [
+        "G1",
+        "G2",
+        "G3"
+      ],
+      "retrieved_evidence_ids": [
+        "E2",
+        "E3"
+      ],
+      "correct_claims": 0,
+      "output_claims": 0,
+      "citation_correct": 0,
+      "citation_evaluated": 0,
+      "panel_aligned": 0,
+      "panel_evaluated": 0,
+      "complete": false,
+      "primary_error": "execution",
+      "secondary_errors": [],
+      "rationale": "所选第 1 页 p1_b3/p1_b5/p1_b6 已有不需 chemical treatment、Gaussian 6-mer emission 与 HMM 模型，必要答案可获得；Kimi HTTP 成功结算 4,772 tokens 后 draft=null、model_error。主因生成/输出契约执行阶段，现有日志不足以定位更细的结构异常。"
+    },
+    {
+      "candidate_id": "HMM-02",
+      "paper_id": "HMM",
+      "task_kind": "numeric",
+      "execution": "real_runtime_executed",
+      "reviewed": true,
+      "status_match": true,
+      "matched_required_claim_ids": [
+        "G1",
+        "G2",
+        "G3"
+      ],
+      "missed_required_claim_ids": [],
+      "retrieved_evidence_ids": [
+        "E1",
+        "E2",
+        "E3"
+      ],
+      "correct_claims": 3,
+      "output_claims": 3,
+      "citation_correct": 3,
+      "citation_evaluated": 3,
+      "panel_aligned": 0,
+      "panel_evaluated": 0,
+      "complete": false,
+      "primary_error": "status",
+      "secondary_errors": [],
+      "rationale": "三条必需结果全部正确且引文定位正确，无 accuracy/覆盖率混淆；最终 answered/QC passed 仍附“相关草稿尚未核实”，与 draft.sufficient=true、无证据缺口的审计不一致，主因通用不确定性表达。"
+    },
+    {
+      "candidate_id": "HMM-03",
+      "paper_id": "HMM",
+      "task_kind": "visual",
+      "execution": "real_runtime_executed",
+      "reviewed": true,
+      "status_match": false,
+      "matched_required_claim_ids": [
+        "G1",
+        "G2"
+      ],
+      "missed_required_claim_ids": [],
+      "retrieved_evidence_ids": [
+        "E1"
+      ],
+      "correct_claims": 2,
+      "output_claims": 2,
+      "citation_correct": 2,
+      "citation_evaluated": 2,
+      "panel_aligned": 2,
+      "panel_evaluated": 2,
+      "complete": false,
+      "primary_error": "status",
+      "secondary_errors": [],
+      "rationale": "原图、最终两条视觉主张、引文及子图对齐均正确，所有必需内容已覆盖，直接看图复核也支持。却因观察存在非关键近似不确定性降为 partial，stop_reason 同时 completed，并提示未核实/不足以完整回答；主因状态与限制表达不一致。"
+    },
+    {
+      "candidate_id": "HMM-04",
+      "paper_id": "HMM",
+      "task_kind": "absence",
+      "execution": "no_generation_early_refusal",
+      "reviewed": true,
+      "status_match": true,
+      "matched_required_claim_ids": [],
+      "missed_required_claim_ids": [],
+      "retrieved_evidence_ids": [],
+      "correct_claims": 0,
+      "output_claims": 0,
+      "citation_correct": 0,
+      "citation_evaluated": 0,
+      "panel_aligned": 0,
+      "panel_evaluated": 0,
+      "complete": true,
+      "primary_error": null,
+      "secondary_errors": [],
+      "rationale": "本 PDF 全文无 Figure 99a；最终明确拒答，无替代图或虚构主张，并说明解析范围限制。"
+    },
+    {
+      "candidate_id": "CHN-01",
+      "paper_id": "CHN",
+      "task_kind": "numeric",
+      "execution": "real_runtime_executed",
+      "reviewed": true,
+      "status_match": true,
+      "matched_required_claim_ids": [
+        "G1",
+        "G2"
+      ],
+      "missed_required_claim_ids": [],
+      "retrieved_evidence_ids": [
+        "E1",
+        "E2"
+      ],
+      "correct_claims": 2,
+      "output_claims": 2,
+      "citation_correct": 2,
+      "citation_evaluated": 2,
+      "panel_aligned": 0,
+      "panel_evaluated": 0,
+      "complete": false,
+      "primary_error": "status",
+      "secondary_errors": [],
+      "rationale": "两条必需摘要结果正确、引文正确且未混用模拟中的其他数字；最终 answered/QC passed 仍附“相关草稿尚未核实”，draft.sufficient=true、evidence_gaps=[]。主错误是通用不确定性表达，不是数字读取。"
+    },
+    {
+      "candidate_id": "CHN-02",
+      "paper_id": "CHN",
+      "task_kind": "numeric",
+      "execution": "real_runtime_executed",
+      "reviewed": true,
+      "status_match": true,
+      "matched_required_claim_ids": [
+        "G1",
+        "G2"
+      ],
+      "missed_required_claim_ids": [],
+      "retrieved_evidence_ids": [
+        "E1",
+        "E2"
+      ],
+      "correct_claims": 3,
+      "output_claims": 3,
+      "citation_correct": 3,
+      "citation_evaluated": 3,
+      "panel_aligned": 0,
+      "panel_evaluated": 0,
+      "complete": false,
+      "primary_error": "status",
+      "secondary_errors": [],
+      "rationale": "所有必需内容、引文和范围均正确，核验为 supported、QC passed、草稿 sufficient=true/evidence_gaps=[]，最终仍声称“相关草稿尚未核实”。通用不确定性与已完成核验不一致，严格交付失败归状态。"
+    },
+    {
+      "candidate_id": "CHN-03",
+      "paper_id": "CHN",
+      "task_kind": "visual",
+      "execution": "real_runtime_executed",
+      "reviewed": true,
+      "status_match": false,
+      "matched_required_claim_ids": [],
+      "missed_required_claim_ids": [
+        "G1",
+        "G2"
+      ],
+      "retrieved_evidence_ids": [
+        "E1"
+      ],
+      "correct_claims": 0,
+      "output_claims": 0,
+      "citation_correct": 0,
+      "citation_evaluated": 0,
+      "panel_aligned": 0,
+      "panel_evaluated": 0,
+      "complete": false,
+      "primary_error": "vision",
+      "secondary_errors": [
+        "answer",
+        "verification",
+        "status"
+      ],
+      "rationale": "最终因核验/闸门拒答，没有发布主张。原始 Qwen 缓存 direct_evidence 已正确绑定 sub 的 raw/filtered=4.91±0.47%/4.73±0.46%，indel=16.67±0.47%/2.66±0.19%，并解释浅色/深色类别；向问答投影时只保留 panel summary 和 visible_text 列表，丢失正确关系。Kimi 草稿随后误将 filtered indel=4.73%、filtered sub=2.66%。加和不能消除这两个值互换的歧义。checker 又放行错误配对的算术比较，确定性主张文本差异挡住该条；主因是视觉证据投影，回答和核验为次因。账本 33,012 tokens/7 次调用，budget_exhausted 也不是真实额度耗尽。"
+    },
+    {
+      "candidate_id": "CHN-04",
+      "paper_id": "CHN",
+      "task_kind": "absence",
+      "execution": "no_generation_early_refusal",
+      "reviewed": true,
+      "status_match": true,
+      "matched_required_claim_ids": [],
+      "missed_required_claim_ids": [],
+      "retrieved_evidence_ids": [],
+      "correct_claims": 0,
+      "output_claims": 0,
+      "citation_correct": 0,
+      "citation_evaluated": 0,
+      "panel_aligned": 0,
+      "panel_evaluated": 0,
+      "complete": true,
+      "primary_error": null,
+      "secondary_errors": [],
+      "rationale": "原 PDF 未含 Figure 99a；目标图不存在时在 LLM 生成之前明确拒答，没有引用其他图替代。"
+    },
+    {
+      "candidate_id": "SUS-01",
+      "paper_id": "SUS",
+      "task_kind": "text",
+      "execution": "real_runtime_executed",
+      "reviewed": true,
+      "status_match": false,
+      "matched_required_claim_ids": [
+        "G2"
+      ],
+      "missed_required_claim_ids": [
+        "G1"
+      ],
+      "retrieved_evidence_ids": [
+        "E2"
+      ],
+      "correct_claims": 6,
+      "output_claims": 7,
+      "citation_correct": 6,
+      "citation_evaluated": 7,
+      "panel_aligned": 0,
+      "panel_evaluated": 0,
+      "complete": false,
+      "primary_error": "verification",
+      "secondary_errors": [
+        "answer",
+        "citation",
+        "retrieval",
+        "status"
+      ],
+      "rationale": "最终漏掉 G1 的 Bhattacharyya distance，草稿 c1 正确且 checker supported，实际摘要 min- imize 等断词导致引文闸门剔除该关键主张。已检索到摘要的必需信息，主因是核验定位误杀。额外 c2 将输入片段未解释的 BD-DTW 推成论文内部可能未解释，原文第 2 页明确已定义，属于回答/引用错误；不确定性又把局部摘录限制扩大为论文术语问题。"
+    },
+    {
+      "candidate_id": "SUS-02",
+      "paper_id": "SUS",
+      "task_kind": "numeric",
+      "execution": "real_runtime_executed",
+      "reviewed": true,
+      "status_match": true,
+      "matched_required_claim_ids": [
+        "G1",
+        "G2"
+      ],
+      "missed_required_claim_ids": [],
+      "retrieved_evidence_ids": [
+        "E1",
+        "E2"
+      ],
+      "correct_claims": 2,
+      "output_claims": 2,
+      "citation_correct": 2,
+      "citation_evaluated": 2,
+      "panel_aligned": 0,
+      "panel_evaluated": 0,
+      "complete": false,
+      "primary_error": "status",
+      "secondary_errors": [],
+      "rationale": "必需主张和引文全部正确，核验/QC 均通过、草稿无必要证据缺口，但最终使用“草稿尚未核实”的通用不确定性，严格交付失败归状态。"
+    },
+    {
+      "candidate_id": "SUS-03",
+      "paper_id": "SUS",
+      "task_kind": "visual",
+      "execution": "real_runtime_executed",
+      "reviewed": true,
+      "status_match": false,
+      "matched_required_claim_ids": [
+        "G1",
+        "G2",
+        "G3"
+      ],
+      "missed_required_claim_ids": [],
+      "retrieved_evidence_ids": [
+        "E1"
+      ],
+      "correct_claims": 4,
+      "output_claims": 4,
+      "citation_correct": 4,
+      "citation_evaluated": 4,
+      "panel_aligned": 4,
+      "panel_evaluated": 4,
+      "complete": false,
+      "primary_error": "status",
+      "secondary_errors": [],
+      "rationale": "目标子图与所有必需科学内容、引文、直接复核均正确，草稿 sufficient=true/无必要缺口、QC passed、stop_reason completed；最终仍 status=partial，声称当前证据不足以完整回答以及草稿尚未核实。无关图像不确定性与已通过逐条复核不应自动否定完整回答，主错误归状态。"
+    },
+    {
+      "candidate_id": "SUS-04",
+      "paper_id": "SUS",
+      "task_kind": "absence",
+      "execution": "no_generation_early_refusal",
+      "reviewed": true,
+      "status_match": true,
+      "matched_required_claim_ids": [],
+      "missed_required_claim_ids": [],
+      "retrieved_evidence_ids": [],
+      "correct_claims": 0,
+      "output_claims": 0,
+      "citation_correct": 0,
+      "citation_evaluated": 0,
+      "panel_aligned": 0,
+      "panel_evaluated": 0,
+      "complete": true,
+      "primary_error": null,
+      "secondary_errors": [],
+      "rationale": "完整 PDF 无 Figure 99a；生产解析未定位该图并在生成前明确拒答，未替用其他图。"
+    },
+    {
+      "candidate_id": "RARE-01",
+      "paper_id": "RARE",
+      "task_kind": "numeric",
+      "execution": "real_runtime_executed",
+      "reviewed": true,
+      "status_match": true,
+      "matched_required_claim_ids": [
+        "G1",
+        "G2"
+      ],
+      "missed_required_claim_ids": [],
+      "retrieved_evidence_ids": [
+        "E1"
+      ],
+      "correct_claims": 2,
+      "output_claims": 3,
+      "citation_correct": 2,
+      "citation_evaluated": 3,
+      "panel_aligned": 0,
+      "panel_evaluated": 0,
+      "complete": false,
+      "primary_error": "parser",
+      "secondary_errors": [
+        "citation",
+        "status"
+      ],
+      "rationale": "两个 Recall 数值与百分点解释正确；额外自述“Figure 1c 图注”实际引用了第 4 页分析正文。parsed ordered_blocks 为 text，但 figures 又将该块定义为 Figure 1C，运行证据把它标作 caption，引发错误出处自述。主因 parser 图注识别，引用与通用未核实提示为次因。"
+    },
+    {
+      "candidate_id": "RARE-02",
+      "paper_id": "RARE",
+      "task_kind": "numeric",
+      "execution": "real_runtime_executed",
+      "reviewed": true,
+      "status_match": false,
+      "matched_required_claim_ids": [
+        "G1"
+      ],
+      "missed_required_claim_ids": [
+        "G2"
+      ],
+      "retrieved_evidence_ids": [],
+      "correct_claims": 3,
+      "output_claims": 3,
+      "citation_correct": 3,
+      "citation_evaluated": 3,
+      "panel_aligned": 0,
+      "panel_evaluated": 0,
+      "complete": false,
+      "primary_error": "retrieval",
+      "secondary_errors": [
+        "status"
+      ],
+      "rationale": "原 PDF 第 7 页 Traceable reasoning chain validation 明确包含 180 病例、八个数据集、总专家池 10 位、每例 3 位独立评审并取平均。生产 parsed p7_b3 保留这些文字，但送入本题的 4 个片段只含截断图注/摘要等，没有这段关键正文，漏掉 G2。当前输出对摘要与有限图注的范围限定基本恰当，主因检索漏取完整验证段落；停止原因 budget_exhausted 仍与仅 19,509 tokens/4 次调用不符。"
+    },
+    {
+      "candidate_id": "RARE-03",
+      "paper_id": "RARE",
+      "task_kind": "visual",
+      "execution": "real_runtime_executed",
+      "reviewed": true,
+      "status_match": true,
+      "matched_required_claim_ids": [],
+      "missed_required_claim_ids": [
+        "G1",
+        "G2"
+      ],
+      "retrieved_evidence_ids": [
+        "E1"
+      ],
+      "correct_claims": 2,
+      "output_claims": 2,
+      "citation_correct": 2,
+      "citation_evaluated": 2,
+      "panel_aligned": 1,
+      "panel_evaluated": 1,
+      "complete": false,
+      "primary_error": "vision",
+      "secondary_errors": [
+        "status"
+      ],
+      "rationale": "最终数值/名称正确，但最大类名称和 n=82 来源标为正文，未完成两条 gold 的直接视觉要求。Qwen 原始缓存的 panel.legend_items 和顶层 visible_text 已包含 Reasoning weighing error (n=82)，投影成问答证据时只保留 panel summary+visible_text，丢掉 legend_items；Kimi 因此正确说明名称/计数依赖正文。独立看图复核事实上读到了所有图例，但结果未补回回答证据，主因视觉证据投影。最终还使用尚未核实的通用提示。"
+    },
+    {
+      "candidate_id": "RARE-04",
+      "paper_id": "RARE",
+      "task_kind": "absence",
+      "execution": "no_generation_early_refusal",
+      "reviewed": true,
+      "status_match": true,
+      "matched_required_claim_ids": [],
+      "missed_required_claim_ids": [],
+      "retrieved_evidence_ids": [],
+      "correct_claims": 0,
+      "output_claims": 0,
+      "citation_correct": 0,
+      "citation_evaluated": 0,
+      "panel_aligned": 0,
+      "panel_evaluated": 0,
+      "complete": true,
+      "primary_error": null,
+      "secondary_errors": [],
+      "rationale": "原 PDF 全文与图号清单均无 Figure 99a；生成前拒答且没有采用其他图替代。"
+    },
+    {
+      "candidate_id": "ADDUCT-01",
+      "paper_id": "ADDUCT",
+      "task_kind": "text",
+      "execution": "real_runtime_executed",
+      "reviewed": true,
+      "status_match": false,
+      "matched_required_claim_ids": [
+        "G2"
+      ],
+      "missed_required_claim_ids": [
+        "G1"
+      ],
+      "retrieved_evidence_ids": [],
+      "correct_claims": 5,
+      "output_claims": 5,
+      "citation_correct": 5,
+      "citation_evaluated": 5,
+      "panel_aligned": 0,
+      "panel_evaluated": 0,
+      "complete": false,
+      "primary_error": "retrieval",
+      "secondary_errors": [
+        "status"
+      ],
+      "rationale": "漏掉 G1 的 DNA 分离→化学/酶水解释放→LC-MS 定量流程。原 PDF 第 2 页及 parsed p2_b4 都清楚保留该流程，但本题只选入 p1_b30/p1_b33/p3_b3/p7_b4，未取到 LC-MS 段。科学内容和有限证据范围限定基本正确，主要为检索漏取必需方法。仅 12,282 tokens/2 次调用，budget_exhausted 为次要状态错误。"
+    },
+    {
+      "candidate_id": "ADDUCT-02",
+      "paper_id": "ADDUCT",
+      "task_kind": "text",
+      "execution": "real_runtime_executed",
+      "reviewed": true,
+      "status_match": true,
+      "matched_required_claim_ids": [
+        "G1",
+        "G2"
+      ],
+      "missed_required_claim_ids": [],
+      "retrieved_evidence_ids": [
+        "E1",
+        "E2"
+      ],
+      "correct_claims": 4,
+      "output_claims": 4,
+      "citation_correct": 4,
+      "citation_evaluated": 4,
+      "panel_aligned": 0,
+      "panel_evaluated": 0,
+      "complete": false,
+      "primary_error": "status",
+      "secondary_errors": [],
+      "rationale": "两条必需主张和全部补充/引文正确，核验/QC 均通过、草稿无必需证据缺口，但最终仍声称“相关草稿尚未核实”。严格交付失败归状态，不能据此认定化学解释错误。"
+    },
+    {
+      "candidate_id": "ADDUCT-03",
+      "paper_id": "ADDUCT",
+      "task_kind": "visual",
+      "execution": "real_runtime_executed",
+      "reviewed": true,
+      "status_match": false,
+      "matched_required_claim_ids": [],
+      "missed_required_claim_ids": [
+        "G1",
+        "G2"
+      ],
+      "retrieved_evidence_ids": [
+        "E1"
+      ],
+      "correct_claims": 1,
+      "output_claims": 1,
+      "citation_correct": 1,
+      "citation_evaluated": 1,
+      "panel_aligned": 1,
+      "panel_evaluated": 1,
+      "complete": false,
+      "primary_error": "vision",
+      "secondary_errors": [
+        "status"
+      ],
+      "rationale": "原始 Qwen visible_text 保留横轴有序刻度 4000/3000/2000/1000/0，但整图投影只使用 direct_evidence，不包含这些刻度和 axes；Kimi 因此正确指出当前摘录无法判断左右/方向，没有完成 G1/G2。直接看图复核又明确观察到横轴递减、最高点在 1000 右侧，但这些附带观察未反馈到回答证据。主因视觉证据转换。账本 39,503 tokens/8 次调用，budget_exhausted 也不是真实预算耗尽。"
+    },
+    {
+      "candidate_id": "ADDUCT-04",
+      "paper_id": "ADDUCT",
+      "task_kind": "absence",
+      "execution": "no_generation_early_refusal",
+      "reviewed": true,
+      "status_match": true,
+      "matched_required_claim_ids": [],
+      "missed_required_claim_ids": [],
+      "retrieved_evidence_ids": [],
+      "correct_claims": 0,
+      "output_claims": 0,
+      "citation_correct": 0,
+      "citation_evaluated": 0,
+      "panel_aligned": 0,
+      "panel_evaluated": 0,
+      "complete": true,
+      "primary_error": null,
+      "secondary_errors": [],
+      "rationale": "该 PDF 无 Figure 99a；运行在目标图不存在时明确拒答且没有其他图替代。"
+    }
+  ]
+}

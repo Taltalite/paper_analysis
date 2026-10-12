@@ -44,8 +44,12 @@ class OpenAICompatibleLLM(LLMClient):
         vision_api_key: str | None = None,
         vision_base_url: str | None = None,
         vision_temperature: float | None = None,
+        vision_max_output_tokens: int = 16_384,
+        reasoning_effort: str | None = None,
         max_retries: int = 0,
     ) -> None:
+        if not 64 <= vision_max_output_tokens <= 100_000:
+            raise ValueError("vision_max_output_tokens 必须在 64–100,000 之间。")
         self._api_key = api_key
         self._base_url = base_url
         self._model = model
@@ -56,6 +60,8 @@ class OpenAICompatibleLLM(LLMClient):
         self._vision_api_key = api_key if vision_api_key is None else vision_api_key
         self._vision_base_url = base_url if vision_base_url is None else vision_base_url
         self._vision_temperature = temperature if vision_temperature is None else vision_temperature
+        self._vision_max_output_tokens = vision_max_output_tokens
+        self._reasoning_effort = reasoning_effort
         self._max_retries = max(0, min(max_retries, 3))
 
     @property
@@ -64,6 +70,7 @@ class OpenAICompatibleLLM(LLMClient):
 
     def audit_metadata(self) -> dict[str, str | None]:
         return {"model": self._model, "vision_model": self._vision_model,
+                "reasoning_effort": self._reasoning_effort,
                 "vision_configuration_fingerprint": self.vision_cache_identity() if self._vision_model else None}
 
     def capabilities(self) -> ModelCapabilities:
@@ -75,7 +82,8 @@ class OpenAICompatibleLLM(LLMClient):
             image=CapabilityStatus.UNVERIFIED if self._vision_model else CapabilityStatus.UNSUPPORTED,
             structured_output=CapabilityStatus.UNVERIFIED,
             usage=CapabilityStatus.UNVERIFIED,
-            native_reasoning_effort=CapabilityStatus.UNSUPPORTED,
+            native_reasoning_effort=CapabilityStatus.UNVERIFIED,
+            native_parameters=["reasoning_effort"] if self._reasoning_effort is not None else [],
             output_token_limits=CapabilityStatus.UNVERIFIED,
             timeout=CapabilityStatus.VERIFIED,
             notes=["能力状态来自配置与适配器协议，未替代具体模型端点冒烟。"],
@@ -84,7 +92,7 @@ class OpenAICompatibleLLM(LLMClient):
     def vision_cache_identity(self) -> str:
         """区分端点、模型与采样配置；不把密钥纳入缓存或审计。"""
         config = (self._vision_base_url or "").rstrip('/') + "\n" + (self._vision_model or "")
-        return hashlib.sha256(f"{config}\n{self._vision_temperature}".encode()).hexdigest()
+        return hashlib.sha256(f"{config}\n{self._vision_temperature}\n{self._vision_max_output_tokens}".encode()).hexdigest()
 
     def for_role(self, role: str) -> LLM:
         return self.to_crewai_llm(role=role)
@@ -103,6 +111,10 @@ class OpenAICompatibleLLM(LLMClient):
             max_tokens=ledger.policy.max_output_tokens,
             timeout=min(self._request_timeout, ledger.remaining_seconds()),
             max_retries=0,
+            # CrewAI 的原生 reasoning_effort 仅为识别的 o1 型号发送；
+            # 通过 SDK extra_body 确保兼容端点的别名也收到顶层参数。
+            **({"extra_body": {"reasoning_effort": self._reasoning_effort}}
+               if self._reasoning_effort is not None else {}),
         )
         meter = RequestMeter(ledger, self._model, self._endpoint_id(self._base_url), role=role)
         # 使用 SDK 的 client 配置保留 CrewAI 的原生工具与结构化输出能力。
@@ -130,7 +142,11 @@ class OpenAICompatibleLLM(LLMClient):
             raise VisionNotConfiguredError("视觉调用需要 base_url。")
 
         execution_context = execution_context or current_execution()
-        max_output_tokens = min(max_output_tokens or 4096, execution_context.policy.max_output_tokens) if execution_context else (max_output_tokens or 4096)
+        max_output_tokens = self._vision_max_output_tokens if max_output_tokens is None else max_output_tokens
+        if max_output_tokens <= 0:
+            raise ValueError("视觉单次输出上限必须大于零。")
+        if execution_context is not None:
+            max_output_tokens = min(max_output_tokens, execution_context.policy.max_output_tokens)
         content: list[dict] = [{"type": "text", "text": prompt}]
         for image_path in image_paths:
             content.append(

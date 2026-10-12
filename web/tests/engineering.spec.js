@@ -15,12 +15,17 @@ test('报告上传策略、取消、重试及刷新恢复来自后端', async ({
   });
   await page.goto('/');
   const form = page.locator('form').filter({ has: page.getByRole('button', { name: '上传并分析' }) });
+  await expect(form.getByLabel('累计 token 预算')).toHaveValue('300000');
+  await expect(form.getByLabel('累计 token 预算')).toHaveAttribute('max', '600000');
+  await expect(form.getByLabel('单次输出上限')).toHaveValue('65536');
+  await expect(form.getByLabel('单次输出上限')).toHaveAttribute('max', '98304');
   await form.getByLabel('源文档').setInputFiles({ name: 'synthetic.txt', mimeType: 'text/plain', buffer: Buffer.from('synthetic') });
   await form.getByLabel('累计 token 预算').fill('6000');
   await form.getByLabel('分析强度').selectOption('deep');
   await form.getByRole('button', { name: '上传并分析' }).click();
   await expect(page.getByRole('button', { name: '取消报告' })).toBeVisible();
   expect(submitted).toContain('6000'); expect(submitted).toContain('deep');
+  expect(submitted).toContain('65536');
   await page.getByRole('button', { name: '取消报告' }).click();
   await expect(page.getByRole('button', { name: '重试报告' })).toBeVisible();
   await page.getByRole('button', { name: '重试报告' }).click();

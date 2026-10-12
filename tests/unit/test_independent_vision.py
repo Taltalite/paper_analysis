@@ -33,7 +33,7 @@ class IndependentVisionTests(unittest.TestCase):
         self.assertEqual(post.call_args.args[0], "https://vision.example/v1/chat/completions")
         self.assertEqual(post.call_args.kwargs["headers"]["Authorization"], "Bearer vision-secret")
         self.assertEqual(post.call_args.kwargs["json"]["model"], "qwen3-vl-plus")
-        self.assertEqual(post.call_args.kwargs["json"]["temperature"], 0.2)
+        self.assertEqual(post.call_args.kwargs["json"]["temperature"], 0.9)
         self.assertNotIn("secret", str(client.audit_metadata()))
 
     def test_partial_route_never_reuses_text_credentials(self) -> None:

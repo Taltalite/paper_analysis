@@ -7,12 +7,15 @@ from uuid import UUID, uuid4
 from pathlib import Path
 
 from pydantic import BaseModel, Field
-from paper_analysis.domain.execution import ExecutionPolicyRequest
+from paper_analysis.domain.execution import ExecutionPolicyRequest, ResolvedPolicy
 
 from paper_analysis.adapters.storage.qa_store import atomic_json
 from paper_analysis.domain.qa import QuestionRequest
 from paper_analysis.services.question_answer_service import build_question_answer_service
 from paper_analysis.services.question_jobs import QuestionJobs
+
+
+DEFAULT_BATCH_TOKEN_BUDGET = ResolvedPolicy.resolve().effective.token_budget
 
 
 class CandidatePaper(BaseModel):
@@ -47,6 +50,8 @@ class EvaluationManifest(BaseModel):
     results: list[CandidateRun] = Field(default_factory=list)
     scope: str = "工程运行记录；不包含人工正确性评分。"
     engineering_summary: dict[str, dict[str, int | float | None]] = Field(default_factory=dict)
+    candidate_manifest_sha256: str | None = None
+    run_settings: dict[str, int | float] = Field(default_factory=dict)
 
 
 def summarize_checks(results: list[CandidateRun]) -> dict[str, dict[str, int | float | None]]:
@@ -65,12 +70,22 @@ def summarize_checks(results: list[CandidateRun]) -> dict[str, dict[str, int | f
 
 
 async def run_candidates(manifest: Path, root: Path, *, ids: set[str] | None = None,
-                         max_followups: int = 0, real: bool = False, token_budget: int = 60000, max_calls: int = 32) -> list[CandidateRun]:
+                         max_followups: int = 0, real: bool = False, token_budget: int = DEFAULT_BATCH_TOKEN_BUDGET,
+                         max_calls: int = 32, max_output_tokens: int | None = None,
+                         timeout_seconds: float | None = None) -> list[CandidateRun]:
     candidates = [QuestionCandidate.model_validate_json(line) for line in manifest.read_text().splitlines() if line.strip()]
     known_ids = {case.id for case in candidates}
     if len(known_ids) != len(candidates) or (ids and not ids <= known_ids):
         raise ValueError("候选 ID 重复或筛选包含未知 ID。")
-    report = EvaluationManifest()
+    # 在任何调用前验证共同策略；保存输入指纹及批次条件，便于独立评分。
+    policy_values = {"token_budget": token_budget, "max_calls": max_calls, "max_followups": max_followups}
+    if max_output_tokens is not None:
+        policy_values["max_output_tokens"] = max_output_tokens
+    if timeout_seconds is not None:
+        policy_values["timeout_seconds"] = timeout_seconds
+    ExecutionPolicyRequest(**policy_values)
+    report = EvaluationManifest(candidate_manifest_sha256=hashlib.sha256(manifest.read_bytes()).hexdigest(),
+                                run_settings=policy_values)
     results = report.results
     for case in candidates:
         if ids and case.id not in ids:
@@ -89,7 +104,8 @@ async def run_candidates(manifest: Path, root: Path, *, ids: set[str] | None = N
             elif not real:
                 record.reason = "准备检查通过；未指定 --real，不调用模型。"
             else:
-                await _execute_candidate(case, root, content, max_followups, record, report.run_id, token_budget, max_calls)
+                await _execute_candidate(case, root, content, max_followups, record, report.run_id,
+                                         token_budget, max_calls, max_output_tokens, timeout_seconds)
         report.engineering_summary = summarize_checks(results)
         atomic_json(root / f"manifest-{report.run_id}.json", report)
         atomic_json(root / "manifest.json", report)
@@ -100,10 +116,16 @@ async def run_candidates(manifest: Path, root: Path, *, ids: set[str] | None = N
 
 
 async def _execute_candidate(case: QuestionCandidate, root: Path, content: bytes,
-                             max_followups: int, record: CandidateRun, batch_id: UUID, token_budget: int, max_calls: int) -> None:
+                             max_followups: int, record: CandidateRun, batch_id: UUID, token_budget: int, max_calls: int,
+                             max_output_tokens: int | None = None, timeout_seconds: float | None = None) -> None:
     try:
+        policy_values = {"token_budget": token_budget, "max_calls": max_calls, "max_followups": max_followups}
+        if max_output_tokens is not None:
+            policy_values["max_output_tokens"] = max_output_tokens
+        if timeout_seconds is not None:
+            policy_values["timeout_seconds"] = timeout_seconds
         request = QuestionRequest(question=case.question, figure=case.figure, panel=case.panel,
-                                  max_followups=max_followups, policy=ExecutionPolicyRequest(token_budget=token_budget, max_calls=max_calls, max_followups=max_followups))
+                                  max_followups=max_followups, policy=ExecutionPolicyRequest(**policy_values))
         service = build_question_answer_service(root / "questions", disable_vision=case.disable_vision)
     except Exception as exc:
         record.execution, record.reason = "configuration_failed", type(exc).__name__

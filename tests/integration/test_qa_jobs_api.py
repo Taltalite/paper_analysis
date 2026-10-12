@@ -6,6 +6,8 @@ from pathlib import Path
 
 from fastapi.testclient import TestClient
 
+from api_fixtures import isolate_report_jobs
+
 from paper_analysis.api.app import create_app
 from paper_analysis.api.routes.questions import get_question_service
 from paper_analysis.adapters.parser.pdf import PdfParser
@@ -38,6 +40,7 @@ class BackgroundQuestionApiTests(unittest.TestCase):
                 return await asyncio.to_thread(service.execute, job.id, job.attempt)
             manager = QuestionJobs(service, worker=worker)
             app = create_app(qa_jobs=manager)
+            isolate_report_jobs(app, Path(root) / "reports")
             app.dependency_overrides[get_question_service] = lambda: service
             with TestClient(app) as client:
                 response = client.post("/api/qa/jobs", files={"file": ("p.pdf", content)}, data={"question": "重复数？"})
@@ -72,6 +75,7 @@ class BackgroundQuestionApiTests(unittest.TestCase):
             async def sleeper(job):
                 await asyncio.sleep(30)
             app = create_app(qa_jobs=QuestionJobs(service, timeout=0.02, worker=sleeper))
+            isolate_report_jobs(app, Path(root) / "reports")
             app.dependency_overrides[get_question_service] = lambda: service
             with TestClient(app) as client:
                 response = client.post("/api/qa/questions", files={"file": ("p.pdf", b"%PDF-")}, data={"question": "问题"})

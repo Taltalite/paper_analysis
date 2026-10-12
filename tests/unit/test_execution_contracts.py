@@ -4,6 +4,7 @@ from pydantic import ValidationError
 
 from paper_analysis.domain.execution import (
     AnalysisIntensity,
+    DEFAULT_SERVER_LIMITS,
     ExecutionPolicyRequest,
     ResolvedPolicy,
     TokenUsage,
@@ -27,7 +28,7 @@ from paper_analysis.domain.research import (
 class ExecutionContractTests(unittest.TestCase):
     def test_intensity_defaults_are_explicit_and_server_limits_are_strict(self) -> None:
         light = ResolvedPolicy.resolve(ExecutionPolicyRequest(intensity=AnalysisIntensity.LIGHT))
-        self.assertEqual(light.effective.token_budget, 12_000)
+        self.assertEqual(light.effective.token_budget, 100_000)
         self.assertEqual(light.effective.max_followups, 0)
 
         requested = ExecutionPolicyRequest(
@@ -49,6 +50,29 @@ class ExecutionContractTests(unittest.TestCase):
             resolved.model_copy(update={"configuration_fingerprint": "other"}).configuration_fingerprint,
             "other",
         )
+
+    def test_standard_budget_is_not_clipped_and_other_tiers_are_ordered(self) -> None:
+        light, standard, deep = (
+            ResolvedPolicy.resolve(ExecutionPolicyRequest(intensity=intensity))
+            for intensity in AnalysisIntensity
+        )
+        self.assertEqual(standard.effective.token_budget, 300_000)
+        self.assertEqual(standard.effective.max_output_tokens, 65_536)
+        self.assertEqual(standard.policy_version, "policy-v2")
+        for name in ("token_budget", "max_output_tokens"):
+            self.assertLess(getattr(light.effective, name), getattr(standard.effective, name))
+            self.assertLess(getattr(standard.effective, name), getattr(deep.effective, name))
+            self.assertLessEqual(getattr(deep.effective, name), getattr(DEFAULT_SERVER_LIMITS, name))
+        explicit = ResolvedPolicy.resolve(ExecutionPolicyRequest(
+            token_budget=6_000, max_output_tokens=256,
+        ))
+        self.assertEqual(explicit.effective.token_budget, 6_000)
+        self.assertEqual(explicit.effective.max_output_tokens, 256)
+        oversized = ResolvedPolicy.resolve(ExecutionPolicyRequest(
+            token_budget=1_000_000, max_output_tokens=100_000,
+        ))
+        self.assertEqual(oversized.effective.token_budget, 600_000)
+        self.assertEqual(oversized.effective.max_output_tokens, 98_304)
 
     def test_request_and_usage_validation_distinguish_missing_values(self) -> None:
         with self.assertRaises(ValidationError):

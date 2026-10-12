@@ -14,6 +14,31 @@ from paper_analysis.runtime.budget import BudgetLedger
 
 
 class PlanBudgetTests(unittest.TestCase):
+    def test_standard_large_request_reserves_verification_and_sends_full_output_limit(self) -> None:
+        policy = ResolvedPolicy.resolve().effective
+        ledger = BudgetLedger(job_id="j", attempt=1, policy=policy)
+        ledger.verification_reserve = min(policy.max_output_tokens * 2, policy.token_budget // 4)
+        self.assertEqual(ledger.verification_reserve, 75_000)
+        calls: list[dict[str, object]] = []
+        with execution_scope(ledger):
+            llm = OpenAICompatibleLLM(model="fake", api_key="fake", base_url="https://fake.invalid/v1").to_crewai_llm()
+
+        def send(request: httpx.Request) -> httpx.Response:
+            calls.append(json.loads(request.content))
+            return httpx.Response(200, request=request, json={"id": "test", "object": "chat.completion",
+                "created": 0, "model": "fake", "choices": [{"index": 0,
+                "message": {"role": "assistant", "content": "ok"}, "finish_reason": "stop"}],
+                "usage": {"prompt_tokens": 10, "completion_tokens": 2, "total_tokens": 12}})
+
+        # 约 24k 输入：旧 standard 连同输出预留超过 22,500 的生成可用额度。
+        with patch("httpx.HTTPTransport.handle_request", side_effect=send):
+            self.assertEqual(llm.call("a" * 96_000), "ok")
+        self.assertEqual(len(calls), 1)
+        self.assertEqual(calls[0]["max_tokens"], 65_536)
+        self.assertGreater(ledger.summary().calls[0].reservation, 65_536 + 24_000)
+        self.assertEqual(ledger.settled_charge, 12)
+        self.assertEqual(ledger.available_tokens, 300_000 - 12)
+
     def test_actual_http_tool_rounds_cannot_exceed_budget(self):
         calls = []
         policy = ResolvedPolicy.resolve(ExecutionPolicyRequest(max_calls=1, max_output_tokens=64)).effective

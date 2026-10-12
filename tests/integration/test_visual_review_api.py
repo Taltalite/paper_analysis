@@ -6,6 +6,8 @@ from pathlib import Path
 import fitz
 from fastapi.testclient import TestClient
 
+from api_fixtures import isolate_report_jobs
+
 from paper_analysis.adapters.parser.pdf import PdfParser
 from paper_analysis.adapters.parser.qa_cache import OnDemandFigureExtractor
 from paper_analysis.api.app import create_app
@@ -54,6 +56,7 @@ class VisualReviewApiTests(unittest.TestCase):
             async def worker(job):
                 return await asyncio.to_thread(service.execute, job.id, job.attempt)
             app = create_app(qa_jobs=QuestionJobs(service, worker=worker))
+            isolate_report_jobs(app, Path(root) / "reports")
             app.dependency_overrides[get_question_service] = lambda: service
             with TestClient(app) as client:
                 response = client.post('/api/qa/questions', files={'file': ('synthetic.pdf', content)},

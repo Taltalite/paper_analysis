@@ -1,0 +1,1152 @@
+{
+  "schema_version": "qa-review-v1",
+  "dataset_sha256": "39f4fc6e2466660d2e884781e551d46e11882613f8ec4419324badc2b31eafaa",
+  "run_id": "87a0d445-1223-4a67-bc09-dd3581b34a45",
+  "reviewer": "本次 Codex 会话助手：独立阅读 PDF 原文、实际图像、最终主张与审计；未使用 Kimi/Qwen 生成参考或评价",
+  "review_kind": "ai_assisted",
+  "cases": [
+    {
+      "candidate_id": "DS-01",
+      "answer_id": "e0d336c3-a7a2-4c8e-a990-2fe75903238d",
+      "answer_sha256": "d325013b8a07cbfdb4c3bde948ead6e86772e8373b296444fea62472008e2ac9",
+      "claim_reviews": [
+        {
+          "answer_claim_id": "c1",
+          "matched_gold_claim_ids": [
+            "G1"
+          ],
+          "correctness": "correct",
+          "citation_correct": true,
+          "panel_aligned": null,
+          "reason": "正文第 2、3 页明确 signal feature module 使用 CNN，从原始电信号构建特征。"
+        },
+        {
+          "answer_claim_id": "c3",
+          "matched_gold_claim_ids": [
+            "G3"
+          ],
+          "correctness": "correct",
+          "citation_correct": true,
+          "panel_aligned": null,
+          "reason": "第 2 页明确两个模块特征 concatenate 后送入 fully connected neural network。"
+        },
+        {
+          "answer_claim_id": "c4",
+          "matched_gold_claim_ids": [],
+          "correctness": "correct",
+          "citation_correct": true,
+          "panel_aligned": null,
+          "reason": "额外主张与第 3 页 Figure 1 图注列出的 convolution、maxpool、inception、avgpool 一致，并正确声明图注来源。"
+        }
+      ],
+      "uncertainty_correct": true,
+      "forbidden_inference_present": false,
+      "primary_error": "verification",
+      "secondary_errors": [
+        "status"
+      ],
+      "rationale": "最终漏掉 BRNN 必需主张。草稿 c2 的 BRNN 与四个 17 长度输入向量均有当前输入支持，核验为 supported；确定性闸门因草稿引文写成 nucleo- tides、摘录为 nucleotides 而剔除整条。是断词差异触发的核验误杀，不是必要证据未检索到。仅使用 9,491 tokens、2 次调用，却返回 budget_exhausted，停止原因也需修正。"
+    },
+    {
+      "candidate_id": "DS-02",
+      "answer_id": "2d769122-f285-4138-8cb8-621fc4cacf38",
+      "answer_sha256": "325d560ea1d239f1b71c2babdd8b77a06897317208b8a3b84a7e4c84fe66007c",
+      "claim_reviews": [
+        {
+          "answer_claim_id": "c1",
+          "matched_gold_claim_ids": [
+            "G1"
+          ],
+          "correctness": "correct",
+          "citation_correct": true,
+          "panel_aligned": null,
+          "reason": "第 1 页摘要明确 only 2 coverage 与超过 90% accuracy 对应，未混用 correlation。"
+        },
+        {
+          "answer_claim_id": "c2",
+          "matched_gold_claim_ids": [
+            "G2"
+          ],
+          "correctness": "correct",
+          "citation_correct": true,
+          "panel_aligned": null,
+          "reason": "摘要明确 20 coverage 的 CpG prediction 与 bisulfite sequencing correlation 90%。"
+        },
+        {
+          "answer_claim_id": "c3",
+          "matched_gold_claim_ids": [],
+          "correctness": "correct",
+          "citation_correct": true,
+          "panel_aligned": null,
+          "reason": "第 2 页引言和第 9 页 Results 确为 HX1、NA12878 的 Pearson correlation 高于 0.9。"
+        },
+        {
+          "answer_claim_id": "c4",
+          "matched_gold_claim_ids": [],
+          "correctness": "incorrect",
+          "citation_correct": false,
+          "panel_aligned": null,
+          "reason": "额外限定将 2× accuracy 定性为 read-level；摘要未支持该限定，第 8 页 section 3.5 明确 genome level，第 9 页说明 sampled reads 聚合测试。整条复合主张含错误。"
+        }
+      ],
+      "uncertainty_correct": false,
+      "forbidden_inference_present": false,
+      "primary_error": "answer",
+      "secondary_errors": [
+        "verification",
+        "status"
+      ],
+      "rationale": "两条必需摘要指标回答正确，但增加了错误的 read-level 限定；内部 checker 仍判 supported、QC passed，不能替代独立正确性评价。输入已含正确摘要，问题要求未要求推断评价粒度，主因是回答扩展越界。"
+    },
+    {
+      "candidate_id": "DS-03",
+      "answer_id": "a9dce75b-a7c8-4e24-b7bc-55ca101091df",
+      "answer_sha256": "de480cf7a355f499e2bd63b4803910b97203e13f0a80bb7b3ae96128a4ca0044",
+      "claim_reviews": [],
+      "uncertainty_correct": true,
+      "forbidden_inference_present": false,
+      "primary_error": "execution",
+      "secondary_errors": [
+        "vision"
+      ],
+      "rationale": "目标 PDF 第 7 页实际输入 Qwen 成功；其输出投影只保留 general direct_evidence，没有把 cor 标签送入回答证据。之后 Kimi HTTP 成功但草稿未形成，audit.draft=null、model_error；无完整类型诊断，不能断言具体 JSON 错因。主要失败为生成/结构化阶段，视觉证据投影遗漏记次要问题。"
+    },
+    {
+      "candidate_id": "DS-04",
+      "answer_id": "51b6409a-782e-444d-b8cd-343bcdeba722",
+      "answer_sha256": "975d5efc017189be2239993820e371dee6008b2446fee71b135441be940bfdca",
+      "claim_reviews": [],
+      "uncertainty_correct": true,
+      "forbidden_inference_present": false,
+      "primary_error": null,
+      "secondary_errors": [],
+      "rationale": "独立检查本 PDF 全文没有 Figure 99a，系统明确拒答、无其他图替代、无虚构主张，说明解析范围限制。"
+    },
+    {
+      "candidate_id": "APN-01",
+      "answer_id": "45bf72e9-6166-4c6d-9295-ceeff7213a7d",
+      "answer_sha256": "242d8dbd2e4ea9b327c6d0a4f91c88f58f62c60fe9615af6ef697cf7079ee7ee",
+      "claim_reviews": [],
+      "uncertainty_correct": true,
+      "forbidden_inference_present": false,
+      "primary_error": "execution",
+      "secondary_errors": [],
+      "rationale": "所选第 2 页 Figure 1 图注及第 5 页正文已包含 TdT/FdUTP 聚合与 3′端 Atto 疏水嵌段自组装的完整机制。Kimi HTTP 成功（6,126 tokens）后未形成可用草稿，audit.draft=null、model_error；现有脱敏审计未保存具体结构化异常类型。主因是生成/输出契约阶段失败，不能因参考第 1 页锚点未命中就归为检索缺失。"
+    },
+    {
+      "candidate_id": "APN-02",
+      "answer_id": "6f40d46b-bc73-4344-ad47-4e7f39f724e7",
+      "answer_sha256": "bb34c4dbf26196a43451ad1fab4857664dcc8ecd148fcb36e6e90528e90f4f35",
+      "claim_reviews": [
+        {
+          "answer_claim_id": "claim_1",
+          "matched_gold_claim_ids": [
+            "G2"
+          ],
+          "correctness": "correct",
+          "citation_correct": true,
+          "panel_aligned": null,
+          "reason": "第 7 页明确 floxuridine 89.9±1.7%、micelles 60±8.6%，且方向为胶束毒性更高。"
+        },
+        {
+          "answer_claim_id": "claim_2",
+          "matched_gold_claim_ids": [
+            "G1"
+          ],
+          "correctness": "correct",
+          "citation_correct": true,
+          "panel_aligned": null,
+          "reason": "第 5 页 Cytotoxicity Assay 是同一实验：4 h、37°C、约 0.4 μM polynucleotide（原文明确高于 CMC）、离心并以含 FBS 的新鲜培养基更换，继续 48 h。给出实际剂量与操作细节是等价且更具体的处理条件，不要求逐字复述参考。"
+        },
+        {
+          "answer_claim_id": "claim_3",
+          "matched_gold_claim_ids": [
+            "G3"
+          ],
+          "correctness": "correct",
+          "citation_correct": true,
+          "panel_aligned": null,
+          "reason": "第 5、7 页明确 ≥3 repeats、Tukey 检验、p<0.005；与 claim_1 的低活力方向共同满足 G3 的“胶束更高毒性+检验+P值”。"
+        }
+      ],
+      "uncertainty_correct": false,
+      "forbidden_inference_present": false,
+      "primary_error": "status",
+      "secondary_errors": [],
+      "rationale": "三条实验结果及条件有原文支持、必需内容已覆盖，无患者疗效外推；但最终在 answered、QC passed 时仍声称“相关草稿尚未核实”，draft.sufficient=true、evidence_gaps=[]，该限制表达与实际交付矛盾。主错误记为状态/不确定性表达，不记为科学数值错误。"
+    },
+    {
+      "candidate_id": "APN-03",
+      "answer_id": "c7ef8213-3fe7-436b-a3fd-01ffc9572694",
+      "answer_sha256": "195a3bc9fecabecc9a9ee4b006d66dcc1c3953d272c53989b6718127f0d769ff",
+      "claim_reviews": [],
+      "uncertainty_correct": true,
+      "forbidden_inference_present": false,
+      "primary_error": "verification",
+      "secondary_errors": [
+        "status"
+      ],
+      "rationale": "原图、Qwen 的子图 b OCR/summary、回答草稿都正确给出 Kd*:53.8 nM，并区分未归一化 323 nM。由于规范化后标签仅 10 字符，quality_control 和 qa_quality 的 ≥12 字符定位阈值丢弃唯一引文，整条视觉主张被剔除；直接看图复核甚至没有启动。低用量返回 budget_exhausted 是附带停止原因错误，主因核验误杀。"
+    },
+    {
+      "candidate_id": "APN-04",
+      "answer_id": "0aa0ec4c-673d-4fbf-8713-127bff2eb4b6",
+      "answer_sha256": "53aadd45642d48c101917bc1ff903876277457bc131d487be8288d409e6b8dfb",
+      "claim_reviews": [],
+      "uncertainty_correct": true,
+      "forbidden_inference_present": false,
+      "primary_error": null,
+      "secondary_errors": [],
+      "rationale": "完整检查该 PDF 不存在 Figure 99a；最终明确拒答，没有其他图替代或虚构主张，并声明解析范围限制。"
+    },
+    {
+      "candidate_id": "ENDO-01",
+      "answer_id": "9dd36eb9-e6fe-472f-a50a-da1143fc37e8",
+      "answer_sha256": "20da2f387eb49d41552e9fe892800989521be8d72e911e9342d2d832dd7ad47c",
+      "claim_reviews": [
+        {
+          "answer_claim_id": "claim_1",
+          "matched_gold_claim_ids": [
+            "G1"
+          ],
+          "correctness": "correct",
+          "citation_correct": true,
+          "panel_aligned": null,
+          "reason": "第 3 页流程与第 4 页 Figure 1 图注支持 end repair 填 5′、去 3′、保留 blunt ends；连接 cassette 也有正文支持。"
+        },
+        {
+          "answer_claim_id": "claim_2",
+          "matched_gold_claim_ids": [],
+          "correctness": "correct",
+          "citation_correct": true,
+          "panel_aligned": null,
+          "reason": "额外 CSI 定位细节在第 3 页完整原文段落中，与 5′/3′、opposite/same strand 和 mid-flag 的顺序一致。"
+        },
+        {
+          "answer_claim_id": "claim_3",
+          "matched_gold_claim_ids": [
+            "G2"
+          ],
+          "correctness": "correct",
+          "citation_correct": true,
+          "panel_aligned": null,
+          "reason": "第 10 页 Discussion 是另一处等价证据，明确 closest to 3′ end 与初次切割信息丢失；不要求机械地只用参考第 3 页锚点。"
+        }
+      ],
+      "uncertainty_correct": false,
+      "forbidden_inference_present": false,
+      "primary_error": "status",
+      "secondary_errors": [
+        "retrieval"
+      ],
+      "rationale": "最终已正确覆盖 end repair 与重复/末端加工定位限制，额外 CSI 主张也正确。未发布的可选 claim_4 被部分支持判定剔除后，系统仍把已满足核心问题的交付标为 partial，并笼统声称不足以完整回答；主因状态/限制与问题需求不对齐。"
+    },
+    {
+      "candidate_id": "ENDO-02",
+      "answer_id": "eb7a543d-3815-44a4-bd25-ea4b36024ca4",
+      "answer_sha256": "ba770c5f107a8d85289d4896ae77047a34ea8ba899aa42bd362e9755402f8211",
+      "claim_reviews": [
+        {
+          "answer_claim_id": "c1",
+          "matched_gold_claim_ids": [
+            "G1"
+          ],
+          "correctness": "correct",
+          "citation_correct": true,
+          "panel_aligned": null,
+          "reason": "第 4 页结果原文明确 ≥5、median∼99.6%、first quartile∼99.4%；虽被 parser 误标为 caption，实际内容和物理页码支持数值。"
+        }
+      ],
+      "uncertainty_correct": true,
+      "forbidden_inference_present": false,
+      "primary_error": "verification",
+      "secondary_errors": [
+        "retrieval",
+        "parser",
+        "status"
+      ],
+      "rationale": "提高 cut-off 导致数据减少的草稿 c2 原文机制/图注可支持，checker 判 supported，仅将中文内引号“it also”改成 ASCII 双引号；确定性 claim_mismatch 因这种文字差异剔除整条。主因核验误杀。输入对跨页句子截断、正文误归图注是次要 parser/retrieval 问题。"
+    },
+    {
+      "candidate_id": "ENDO-03",
+      "answer_id": "5e87a7bf-bd77-4d48-8565-0667c19cced5",
+      "answer_sha256": "13a33ea02954c8f3590b62a4d78070ddc1c8969e1101b08a775946000b729840",
+      "claim_reviews": [],
+      "uncertainty_correct": true,
+      "forbidden_inference_present": false,
+      "primary_error": "execution",
+      "secondary_errors": [
+        "vision"
+      ],
+      "rationale": "PDF 第 6 页目标子图进入 Qwen，视觉观察有单调下降趋势，但送入回答模型的 summary/OCR 未保留端点近似值，不能独立确认最高 cut-off 的比例。随后生成阶段 HTTP 已结算却无可用 draft，model_error；主因执行/输出契约失败，视觉证据投影的缺失另记。"
+    },
+    {
+      "candidate_id": "ENDO-04",
+      "answer_id": "3c204c13-3abd-4a32-9338-3c4376e8981e",
+      "answer_sha256": "8b61dba1e5aba49ed824993adafa9cd2d8135307ad1fab372e00cf086343dc92",
+      "claim_reviews": [],
+      "uncertainty_correct": true,
+      "forbidden_inference_present": false,
+      "primary_error": null,
+      "secondary_errors": [],
+      "rationale": "独立全文检查没有 Figure 99a；最终明确拒答、无虚构或其他图替代，说明解析范围限制。"
+    },
+    {
+      "candidate_id": "MOD-01",
+      "answer_id": "fbc9f6b2-d7e7-47f2-a063-ce00c5810b2e",
+      "answer_sha256": "45f380784883c1c98d6b73bca325730a9f86d3a0234c7531c1e7751563ca0ceb",
+      "claim_reviews": [
+        {
+          "answer_claim_id": "c1",
+          "matched_gold_claim_ids": [
+            "G1",
+            "G2"
+          ],
+          "correctness": "correct",
+          "citation_correct": true,
+          "panel_aligned": null,
+          "reason": "第 7 页直接定义同一位点 modified WT 与 unmodified control 的 prediction-score 分布，列出 gene deletion 或 IVT。"
+        },
+        {
+          "answer_claim_id": "c2",
+          "matched_gold_claim_ids": [],
+          "correctness": "correct",
+          "citation_correct": true,
+          "panel_aligned": null,
+          "reason": "第 7 页明确 symmetric KL divergence 的 sample comparison 用途与高值提示修饰；未断言化学修饰种类。"
+        },
+        {
+          "answer_claim_id": "c4",
+          "matched_gold_claim_ids": [],
+          "correctness": "correct",
+          "citation_correct": true,
+          "panel_aligned": null,
+          "reason": "第 7 页列出的四个缺乏特定修饰的敲除株 elp6Δ、tit1Δ、trm8Δ、trm6Δ 及 dRNA-Seq 与原文一致。"
+        },
+        {
+          "answer_claim_id": "c5",
+          "matched_gold_claim_ids": [],
+          "correctness": "correct",
+          "citation_correct": true,
+          "panel_aligned": null,
+          "reason": "核对 PDF 第 6 页，原文确为 n_bins=10、11–256；所选 excerpt 是跨页残句且未含 equation 2，限制针对当前材料而非论文没有公式。"
+        }
+      ],
+      "uncertainty_correct": true,
+      "forbidden_inference_present": false,
+      "primary_error": "citation",
+      "secondary_errors": [
+        "status"
+      ],
+      "rationale": "最终未明确 prediction score 是 Dorado 的修饰概率。正确草稿 c3 的两条引文都位于 p3_b54，却同时引用 p7_b3，后者没有对应引文，确定性闸门因此正确拒绝这组引文绑定。主因草稿过度引用导致必需定义被撤回，记 citation；不把每一次剔除都算作核验误杀。"
+    },
+    {
+      "candidate_id": "MOD-02",
+      "answer_id": "16ac05d9-48b7-401a-9d5c-21ad64ab1493",
+      "answer_sha256": "f1c98a23ae21fc2a396816ce6787d3f1699826732d614f3d917287a36681a907",
+      "claim_reviews": [
+        {
+          "answer_claim_id": "c1",
+          "matched_gold_claim_ids": [],
+          "correctness": "correct",
+          "citation_correct": true,
+          "panel_aligned": null,
+          "reason": "第 9 页图注明确 neighbouring U47，支持不是在 G46 直接调用的核心位置关系；尚未完整表达 G1 要求的 KL 分布比较。"
+        },
+        {
+          "answer_claim_id": "c2",
+          "matched_gold_claim_ids": [],
+          "correctness": "correct",
+          "citation_correct": true,
+          "panel_aligned": null,
+          "reason": "第 1 页说明通过复用预训练 Ψ/m6A/inosine/m5C 模型获得包含 m7G 的 off-label 检测；没有声称原生 G 修饰概率。"
+        },
+        {
+          "answer_claim_id": "c3",
+          "matched_gold_claim_ids": [],
+          "correctness": "correct",
+          "citation_correct": true,
+          "panel_aligned": null,
+          "reason": "第 9 页 Figure 4G 图注给出 tRNA-Asn-GTT U42–G52、WT/trm8Δ 与 m7G46 异常分布；所选 1,500 字符 excerpt 确实截在 pre。"
+        },
+        {
+          "answer_claim_id": "c4",
+          "matched_gold_claim_ids": [
+            "G2"
+          ],
+          "correctness": "correct",
+          "citation_correct": true,
+          "panel_aligned": null,
+          "reason": "结合 c3 的 m7G46 异常分布与 c4 的邻位信号干扰解释，等价说明 m7G46 对 U47 的间接影响；明确这是当前邻位片段的一般性支持，没有虚构专属机制实验。"
+        }
+      ],
+      "uncertainty_correct": false,
+      "forbidden_inference_present": false,
+      "primary_error": "retrieval",
+      "secondary_errors": [
+        "status"
+      ],
+      "rationale": "位置、对照和邻位效应基本正确，但未明确 U47 的 Ψ 概率分布/KL divergence 比较这一必需参考要求。PDF 第 10 页独立段落完整说明该机制和 elevated KL at U47，parsed 有该段，当前选取只到 p10_b1 的其他修饰邻位效应，未取到目标段落；主因检索漏段。仍标 answered 且通用未核实提示是附带状态问题。"
+    },
+    {
+      "candidate_id": "MOD-03",
+      "answer_id": "5393e597-44ba-4e92-9e01-39e82948e29e",
+      "answer_sha256": "30fd9f31eff4b73994040716fc93bd6e9a1d887d08ac70c723c527c5957664d9",
+      "claim_reviews": [],
+      "uncertainty_correct": true,
+      "forbidden_inference_present": false,
+      "primary_error": "vision",
+      "secondary_errors": [
+        "verification",
+        "status"
+      ],
+      "rationale": "Qwen 初次观察识别 ncm5U34/m1G37，但送入 Kimi 的目标 panel summary/OCR 未表达标签颜色及上标排版，无法覆盖 4 条视觉要求。Kimi 对摘录的上标缺失作出保守限定；直接图像复核却把“摘录无法确认”当作“原图无法辨认”判冲突，进一步撤回已知标签。主因视觉属性提取/投影不完整；核验对证据层级的混淆是次要问题。"
+    },
+    {
+      "candidate_id": "MOD-04",
+      "answer_id": "ba4e7738-a1af-4716-ae60-6d0eb9223de0",
+      "answer_sha256": "250afcdbf464ce931e81d96cd2ecc1ca052bc6da9faaf0136009ef10d93d9134",
+      "claim_reviews": [],
+      "uncertainty_correct": true,
+      "forbidden_inference_present": false,
+      "primary_error": null,
+      "secondary_errors": [],
+      "rationale": "本 PDF 全文没有 Figure 99a；最终明确拒答、无替代图或虚构主张，声明解析范围限制。"
+    },
+    {
+      "candidate_id": "HIST-01",
+      "answer_id": "300061ca-d92b-4b9f-9ffe-f8dc17d4f186",
+      "answer_sha256": "580a0ebe3f01897f323e5ca6f0d1452703b9ce5d8912c17872970b76b42940d0",
+      "claim_reviews": [],
+      "uncertainty_correct": true,
+      "forbidden_inference_present": false,
+      "primary_error": "retrieval",
+      "secondary_errors": [
+        "status"
+      ],
+      "rationale": "Box 1 的第 2 页正文 p2_b6 在 parsed.json 完整存在，明确 constant voltage、enzyme ratchet 和 ionic current；当前只检索到 Box 1 标题、文章标题和引言背景，未把框内正文送入回答模型。模型因此合理拒答；主因检索漏掉标题邻接正文，非 parser 无法提取。"
+    },
+    {
+      "candidate_id": "HIST-02",
+      "answer_id": "d8ac94c2-91d7-41e6-91e5-8bf0488481ac",
+      "answer_sha256": "09cb70b594d92a6d2be639df744123ef1d0d5083308fd5d729de6e98a0d82a58",
+      "claim_reviews": [
+        {
+          "answer_claim_id": "c1",
+          "matched_gold_claim_ids": [],
+          "correctness": "correct",
+          "citation_correct": true,
+          "panel_aligned": null,
+          "reason": "核对第 2 页右栏原文，100mer 由 70 C 后接 30 A、加到 α-hemolysin cis 侧，额外实验细节正确。"
+        },
+        {
+          "answer_claim_id": "c2",
+          "matched_gold_claim_ids": [],
+          "correctness": "correct",
+          "citation_correct": true,
+          "panel_aligned": null,
+          "reason": "同段明确每个 blockade 可见两个 distinct current levels。"
+        },
+        {
+          "answer_claim_id": "c3",
+          "matched_gold_claim_ids": [],
+          "correctness": "correct",
+          "citation_correct": true,
+          "panel_aligned": null,
+          "reason": "原文明确不是 individual nucleobases 的不同 current-blocking 特性；与 c4 的区段构象说明一致。"
+        },
+        {
+          "answer_claim_id": "c4",
+          "matched_gold_claim_ids": [
+            "G1"
+          ],
+          "correctness": "correct",
+          "citation_correct": true,
+          "panel_aligned": null,
+          "reason": "第 2 页原文明确胞嘧啶窄螺旋可整体通过，腺嘌呤大螺旋需 unwinding。"
+        },
+        {
+          "answer_claim_id": "c5",
+          "matched_gold_claim_ids": [
+            "G2"
+          ],
+          "correctness": "correct",
+          "citation_correct": true,
+          "panel_aligned": null,
+          "reason": "原文明确 individual nucleobases were not resolved，只提供 oligomeric structure/composition 信息。"
+        },
+        {
+          "answer_claim_id": "c6",
+          "matched_gold_claim_ids": [],
+          "correctness": "incorrect",
+          "citation_correct": false,
+          "panel_aligned": null,
+          "reason": "该短语实际位于 Figure 2 时间线的 1999 年事件框；正式图注为 Milestones in nanopore DNA sequencing。parser 将 p2_b240 误归 caption，最终“图注仅为”这一来源断言不准确。"
+        }
+      ],
+      "uncertainty_correct": false,
+      "forbidden_inference_present": false,
+      "primary_error": "parser",
+      "secondary_errors": [
+        "citation",
+        "status"
+      ],
+      "rationale": "机制与不能证明单碱基分辨率的两条核心要求正确，额外实验细节也正确；但把时间线框内文字当作正式图注，源自 parser 的 caption 边界过度吸纳。主错误为 parser 导致的来源误标；另有核心已覆盖却 partial 的状态问题。"
+    },
+    {
+      "candidate_id": "HIST-03",
+      "answer_id": "1a0c5ab4-cc00-4628-bc94-ba3242ab8cba",
+      "answer_sha256": "295c9712dee88bc85462d71e6ea6334b01bdf9702277a07112dfd1fc7647c9a0",
+      "claim_reviews": [],
+      "uncertainty_correct": true,
+      "forbidden_inference_present": false,
+      "primary_error": "vision",
+      "secondary_errors": [
+        "verification",
+        "status"
+      ],
+      "rationale": "实际原图中 2014 MAP、2015 E.coli 组装 99.4% 清晰；初次 Qwen 的全图 evidence 投影仅保留时间轴总体结构和 2012 连接数，丢掉所问事件/年份。Kimi 正确承认当前摘录缺信息，复核却将“摘录缺失”当成“原图没有”而判冲突，无法补回事实。主因视觉信息投影，次要核验作用域错误。"
+    },
+    {
+      "candidate_id": "HIST-04",
+      "answer_id": "3a88c0e7-f5ab-4a48-8f47-11d134c617c9",
+      "answer_sha256": "347ef533b0871c9f9ab88099ae959737172f426a7866f968f5d3375a0ae3c750",
+      "claim_reviews": [],
+      "uncertainty_correct": true,
+      "forbidden_inference_present": false,
+      "primary_error": null,
+      "secondary_errors": [],
+      "rationale": "本 PDF 全文没有 Figure 99a；最终明确拒答、没有其他图替代或虚构主张，说明解析范围限制。"
+    },
+    {
+      "candidate_id": "HMM-01",
+      "answer_id": "5c5f37fd-5b03-4f09-bf8e-7873819601ee",
+      "answer_sha256": "6a08fa18090e57d6643bf2b2acb53f35e3215d4a99f3120c3bdcd809a32f90b5",
+      "claim_reviews": [],
+      "uncertainty_correct": true,
+      "forbidden_inference_present": false,
+      "primary_error": "execution",
+      "secondary_errors": [],
+      "rationale": "所选第 1 页 p1_b3/p1_b5/p1_b6 已有不需 chemical treatment、Gaussian 6-mer emission 与 HMM 模型，必要答案可获得；Kimi HTTP 成功结算 4,772 tokens 后 draft=null、model_error。主因生成/输出契约执行阶段，现有日志不足以定位更细的结构异常。"
+    },
+    {
+      "candidate_id": "HMM-02",
+      "answer_id": "bf81cf26-f85f-4083-9cf4-e276a89d4dd3",
+      "answer_sha256": "01cbfa0d9aa00f7baf5586d18b9869720440625f3ab8b11fb8b6b19b805e6b9d",
+      "claim_reviews": [
+        {
+          "answer_claim_id": "c1",
+          "matched_gold_claim_ids": [
+            "G1"
+          ],
+          "correctness": "correct",
+          "citation_correct": true,
+          "panel_aligned": null,
+          "reason": "第 2 页同一阈值 2.5 下 R7.3 的 accuracy=91%、calls=68%，两个指标未交换。"
+        },
+        {
+          "answer_claim_id": "c2",
+          "matched_gold_claim_ids": [
+            "G2"
+          ],
+          "correctness": "correct",
+          "citation_correct": true,
+          "panel_aligned": null,
+          "reason": "第 2 页明确 R9 accuracy=94%、calls=77%，same threshold 对应 2.5。"
+        },
+        {
+          "answer_claim_id": "c3",
+          "matched_gold_claim_ids": [
+            "G3"
+          ],
+          "correctness": "correct",
+          "citation_correct": true,
+          "panel_aligned": null,
+          "reason": "同段明确提高 stringency 的准确率>95%与 fewer sites 权衡；额外 >95% 也有原文支持。"
+        }
+      ],
+      "uncertainty_correct": false,
+      "forbidden_inference_present": false,
+      "primary_error": "status",
+      "secondary_errors": [],
+      "rationale": "三条必需结果全部正确且引文定位正确，无 accuracy/覆盖率混淆；最终 answered/QC passed 仍附“相关草稿尚未核实”，与 draft.sufficient=true、无证据缺口的审计不一致，主因通用不确定性表达。"
+    },
+    {
+      "candidate_id": "HMM-03",
+      "answer_id": "6842de3d-e0c4-43f4-9738-3eb5cb3cbb82",
+      "answer_sha256": "5301f616979a54b9fdd57132d9d920766e14924b32274ef10f19335130f5e8fd",
+      "claim_reviews": [
+        {
+          "answer_claim_id": "F1b_green_right_of_blue",
+          "matched_gold_claim_ids": [
+            "G1"
+          ],
+          "correctness": "correct",
+          "citation_correct": true,
+          "panel_aligned": true,
+          "reason": "独立原图可见蓝色主峰约 50–51、绿色约 53–54 pA，绿色在右；近似峰值未假装精确数据，图注颜色/PCR 条件对应正确。"
+        },
+        {
+          "answer_claim_id": "F1b_xaxis_quantity_unit",
+          "matched_gold_claim_ids": [
+            "G2"
+          ],
+          "correctness": "correct",
+          "citation_correct": true,
+          "panel_aligned": true,
+          "reason": "Figure 1b 原图横轴直接标注 Transformed event level (pA)，没有误读为频率或原始电流。"
+        }
+      ],
+      "uncertainty_correct": false,
+      "forbidden_inference_present": false,
+      "primary_error": "status",
+      "secondary_errors": [],
+      "rationale": "原图、最终两条视觉主张、引文及子图对齐均正确，所有必需内容已覆盖，直接看图复核也支持。却因观察存在非关键近似不确定性降为 partial，stop_reason 同时 completed，并提示未核实/不足以完整回答；主因状态与限制表达不一致。"
+    },
+    {
+      "candidate_id": "HMM-04",
+      "answer_id": "4d5985fa-01db-4435-930d-724b93c77133",
+      "answer_sha256": "5596ac29f795097613f5610b6ff9777f7bbb3f0e3bf09e09670c7fdc8e743ea6",
+      "claim_reviews": [],
+      "uncertainty_correct": true,
+      "forbidden_inference_present": false,
+      "primary_error": null,
+      "secondary_errors": [],
+      "rationale": "本 PDF 全文无 Figure 99a；最终明确拒答，无替代图或虚构主张，并说明解析范围限制。"
+    },
+    {
+      "candidate_id": "CHN-01",
+      "answer_id": "059c04ff-51a5-4332-a8ca-d3e7d5ee7493",
+      "answer_sha256": "d2a40083a8254c236dec36c69eb3711671a38306f17ae76ff9140f46c60302eb",
+      "claim_reviews": [
+        {
+          "answer_claim_id": "c1",
+          "matched_gold_claim_ids": [
+            "G1"
+          ],
+          "correctness": "correct",
+          "citation_correct": true,
+          "panel_aligned": null,
+          "reason": "第 1 页摘要明确 15.9% indel、7.8% substitution，声明按摘要口径，无任意误差分布保证。"
+        },
+        {
+          "answer_claim_id": "c2",
+          "matched_gold_claim_ids": [
+            "G2"
+          ],
+          "correctness": "correct",
+          "citation_correct": true,
+          "panel_aligned": null,
+          "reason": "第 1 页摘要明确 eight-letter alphabet 使 overall density 从 0.59 到 1.17，约翻倍。"
+        }
+      ],
+      "uncertainty_correct": false,
+      "forbidden_inference_present": false,
+      "primary_error": "status",
+      "secondary_errors": [],
+      "rationale": "两条必需摘要结果正确、引文正确且未混用模拟中的其他数字；最终 answered/QC passed 仍附“相关草稿尚未核实”，draft.sufficient=true、evidence_gaps=[]。主错误是通用不确定性表达，不是数字读取。"
+    },
+    {
+      "candidate_id": "CHN-02",
+      "answer_id": "2f90b4a9-dd73-4a5b-95c3-095c123a1eb1",
+      "answer_sha256": "1f2191325c7c343ef61cdb8391e7770155a20405e46e7316fbc1833ef768ade1",
+      "claim_reviews": [
+        {
+          "answer_claim_id": "c1",
+          "matched_gold_claim_ids": [
+            "G1"
+          ],
+          "correctness": "correct",
+          "citation_correct": true,
+          "panel_aligned": null,
+          "reason": "PDF 第 1 页摘要按 text/image 顺序报告 sequencing times of 20 and 120 minutes；未扩大为端到端流程。"
+        },
+        {
+          "answer_claim_id": "c2",
+          "matched_gold_claim_ids": [
+            "G2"
+          ],
+          "correctness": "correct",
+          "citation_correct": true,
+          "panel_aligned": null,
+          "reason": "摘要明确估计 text/image 分别需要 4×/8× physical redundancy，回答保留 estimated 的语气。"
+        },
+        {
+          "answer_claim_id": "c3",
+          "matched_gold_claim_ids": [],
+          "correctness": "correct",
+          "citation_correct": true,
+          "panel_aligned": null,
+          "reason": "第 7 页正文确实报告 complete correct image within 120 min，以及约为文本的六倍；属于有原文支持的额外说明。"
+        }
+      ],
+      "uncertainty_correct": false,
+      "forbidden_inference_present": false,
+      "primary_error": "status",
+      "secondary_errors": [],
+      "rationale": "所有必需内容、引文和范围均正确，核验为 supported、QC passed、草稿 sufficient=true/evidence_gaps=[]，最终仍声称“相关草稿尚未核实”。通用不确定性与已完成核验不一致，严格交付失败归状态。"
+    },
+    {
+      "candidate_id": "CHN-03",
+      "answer_id": "443d7cd9-163b-4a86-b4ad-20d32b3dadb0",
+      "answer_sha256": "99a0158f1ae354b2f3c4d5134f04ed1a5bc939aad40449c66ad5c14750d2b5e8",
+      "claim_reviews": [],
+      "uncertainty_correct": true,
+      "forbidden_inference_present": false,
+      "primary_error": "vision",
+      "secondary_errors": [
+        "answer",
+        "verification",
+        "status"
+      ],
+      "rationale": "最终因核验/闸门拒答，没有发布主张。原始 Qwen 缓存 direct_evidence 已正确绑定 sub 的 raw/filtered=4.91±0.47%/4.73±0.46%，indel=16.67±0.47%/2.66±0.19%，并解释浅色/深色类别；向问答投影时只保留 panel summary 和 visible_text 列表，丢失正确关系。Kimi 草稿随后误将 filtered indel=4.73%、filtered sub=2.66%。加和不能消除这两个值互换的歧义。checker 又放行错误配对的算术比较，确定性主张文本差异挡住该条；主因是视觉证据投影，回答和核验为次因。账本 33,012 tokens/7 次调用，budget_exhausted 也不是真实额度耗尽。"
+    },
+    {
+      "candidate_id": "CHN-04",
+      "answer_id": "5f3de6cc-cfe2-47f8-8e4c-f26732a928e3",
+      "answer_sha256": "2db82a264aad632d2955c1b486b60feef3d5873d20d0a7f76c287d4eb552b929",
+      "claim_reviews": [],
+      "uncertainty_correct": true,
+      "forbidden_inference_present": false,
+      "primary_error": null,
+      "secondary_errors": [],
+      "rationale": "原 PDF 未含 Figure 99a；目标图不存在时在 LLM 生成之前明确拒答，没有引用其他图替代。"
+    },
+    {
+      "candidate_id": "SUS-01",
+      "answer_id": "e6169fb3-8145-49cb-aad3-8fb22a78384c",
+      "answer_sha256": "e4eec66c692e38845506889b9a253f3e598579c4c8f66caa8c0e3ae64ce905ed",
+      "claim_reviews": [
+        {
+          "answer_claim_id": "c2",
+          "matched_gold_claim_ids": [],
+          "correctness": "incorrect",
+          "citation_correct": false,
+          "panel_aligned": null,
+          "reason": "PDF 第 2 页 Results 明确定义 framework integrates DTW with Bhattacharyya distance (BD)；BD-DTW 是已解释的组合方法。引用第 4 页的命名出现本身不能支持论文内部缩写说明可能不完整。"
+        },
+        {
+          "answer_claim_id": "c3",
+          "matched_gold_claim_ids": [],
+          "correctness": "correct",
+          "citation_correct": true,
+          "panel_aligned": null,
+          "reason": "第 4 页确实使用 eight poly(thymine) bases 分隔各设计 barcode 以避免 current signatures 重叠。"
+        },
+        {
+          "answer_claim_id": "c4",
+          "matched_gold_claim_ids": [],
+          "correctness": "correct",
+          "citation_correct": true,
+          "panel_aligned": null,
+          "reason": "第 8 页 Discussion 同时说明 dynamic incremental clustering 支持 scalability 与个体定制、不限定 arbitrary tag number/pore model；这里只覆盖 G1 中的策略，没有回答所用 distance。"
+        },
+        {
+          "answer_claim_id": "c5",
+          "matched_gold_claim_ids": [
+            "G2"
+          ],
+          "correctness": "correct",
+          "citation_correct": true,
+          "panel_aligned": null,
+          "reason": "四层 CNN 与 LSTM 的作用在第 4 页直接说明；与 c6 的 selection module 合并满足 G2。"
+        },
+        {
+          "answer_claim_id": "c6",
+          "matched_gold_claim_ids": [
+            "G2"
+          ],
+          "correctness": "correct",
+          "citation_correct": true,
+          "panel_aligned": null,
+          "reason": "第 4 页直接支持 selection module 输出 binary yes/no mask prediction unit；与 c5 合并满足 G2。"
+        },
+        {
+          "answer_claim_id": "c7",
+          "matched_gold_claim_ids": [],
+          "correctness": "correct",
+          "citation_correct": true,
+          "panel_aligned": null,
+          "reason": "第 4 页直接支持 unwanted barcodes/no barcodes 一并归为 #0 class。"
+        },
+        {
+          "answer_claim_id": "c8",
+          "matched_gold_claim_ids": [],
+          "correctness": "correct",
+          "citation_correct": true,
+          "panel_aligned": null,
+          "reason": "第 8 页 Discussion 直接支持训练 coverage 降低通常提高 precision、减少 crosstalk。"
+        }
+      ],
+      "uncertainty_correct": false,
+      "forbidden_inference_present": false,
+      "primary_error": "verification",
+      "secondary_errors": [
+        "answer",
+        "citation",
+        "retrieval",
+        "status"
+      ],
+      "rationale": "最终漏掉 G1 的 Bhattacharyya distance，草稿 c1 正确且 checker supported，实际摘要 min- imize 等断词导致引文闸门剔除该关键主张。已检索到摘要的必需信息，主因是核验定位误杀。额外 c2 将输入片段未解释的 BD-DTW 推成论文内部可能未解释，原文第 2 页明确已定义，属于回答/引用错误；不确定性又把局部摘录限制扩大为论文术语问题。"
+    },
+    {
+      "candidate_id": "SUS-02",
+      "answer_id": "8e925550-f1db-478e-9e27-d31daf717229",
+      "answer_sha256": "4691471a1935aad9b1efc360821ccf0978a454332822f388432e4b8fefe2a495",
+      "claim_reviews": [
+        {
+          "answer_claim_id": "claim_1",
+          "matched_gold_claim_ids": [
+            "G1"
+          ],
+          "correctness": "correct",
+          "citation_correct": true,
+          "panel_aligned": null,
+          "reason": "PDF 第 1 页摘要与第 2 页正文同时支持 96-plex/384-plex weighted F1 分别为 99.69%/99.05%，未误称文件恢复率。"
+        },
+        {
+          "answer_claim_id": "claim_2",
+          "matched_gold_claim_ids": [
+            "G2"
+          ],
+          "correctness": "correct",
+          "citation_correct": true,
+          "panel_aligned": null,
+          "reason": "按问题限定摘要表述，120 min/~200k reads、87%→over 94% 全部一致，保留“摘要称”及超过的非精确界限。"
+        }
+      ],
+      "uncertainty_correct": false,
+      "forbidden_inference_present": false,
+      "primary_error": "status",
+      "secondary_errors": [],
+      "rationale": "必需主张和引文全部正确，核验/QC 均通过、草稿无必要证据缺口，但最终使用“草稿尚未核实”的通用不确定性，严格交付失败归状态。"
+    },
+    {
+      "candidate_id": "SUS-03",
+      "answer_id": "37cd272d-aaca-4967-bdb0-7d2822deb303",
+      "answer_sha256": "4d3678d2adef119caa0c991e2b59b3d868686e2d5b86ef71f82e09ee2c66964f",
+      "claim_reviews": [
+        {
+          "answer_claim_id": "fig2c_ont_f1",
+          "matched_gold_claim_ids": [
+            "G1"
+          ],
+          "correctness": "correct",
+          "citation_correct": true,
+          "panel_aligned": true,
+          "reason": "原图 Figure 2c 左侧蓝色 ONT 96 矩阵确实标注 F1-score:0.9925；当前视觉证据与正文交叉确认，页码和子图正确。"
+        },
+        {
+          "answer_claim_id": "fig2c_porcupine_f1",
+          "matched_gold_claim_ids": [
+            "G2"
+          ],
+          "correctness": "correct",
+          "citation_correct": true,
+          "panel_aligned": true,
+          "reason": "原图 Figure 2c 中部紫色 Porcupine 96 标注 F1-score:0.9891，未混用下方 Figure 2d。"
+        },
+        {
+          "answer_claim_id": "fig2c_sustag_f1",
+          "matched_gold_claim_ids": [
+            "G3"
+          ],
+          "correctness": "correct",
+          "citation_correct": true,
+          "panel_aligned": true,
+          "reason": "原图 Figure 2c 右侧橙色 SUSTag 96 标注 0.9969，与最高比较条共同覆盖 G3。"
+        },
+        {
+          "answer_claim_id": "fig2c_highest_f1",
+          "matched_gold_claim_ids": [
+            "G3"
+          ],
+          "correctness": "correct",
+          "citation_correct": true,
+          "panel_aligned": true,
+          "reason": "0.9969>0.9925>0.9891 的图上标注比较正确；与 fig2c_sustag_f1 共同满足数值和最高的 G3 要求，不外推显著性。"
+        }
+      ],
+      "uncertainty_correct": false,
+      "forbidden_inference_present": false,
+      "primary_error": "status",
+      "secondary_errors": [],
+      "rationale": "目标子图与所有必需科学内容、引文、直接复核均正确，草稿 sufficient=true/无必要缺口、QC passed、stop_reason completed；最终仍 status=partial，声称当前证据不足以完整回答以及草稿尚未核实。无关图像不确定性与已通过逐条复核不应自动否定完整回答，主错误归状态。"
+    },
+    {
+      "candidate_id": "SUS-04",
+      "answer_id": "76f120a3-daae-4ca4-9bb1-f79b22b25de3",
+      "answer_sha256": "3766bb6a80943957d615f70beb1571be4f31e5467dd29790910301ad132af048",
+      "claim_reviews": [],
+      "uncertainty_correct": true,
+      "forbidden_inference_present": false,
+      "primary_error": null,
+      "secondary_errors": [],
+      "rationale": "完整 PDF 无 Figure 99a；生产解析未定位该图并在生成前明确拒答，未替用其他图。"
+    },
+    {
+      "candidate_id": "RARE-01",
+      "answer_id": "52c1e165-b96d-4b63-800d-f8190d2c8838",
+      "answer_sha256": "14fb2c4ae28836df8878f1bc91fdfcb0ca27d318fa3e4a1ffb2d4aef8ac8763c",
+      "claim_reviews": [
+        {
+          "answer_claim_id": "c1",
+          "matched_gold_claim_ids": [],
+          "correctness": "incorrect",
+          "citation_correct": false,
+          "panel_aligned": null,
+          "reason": "57.18% 的科学数值正确，但同一句将 p4_b5 称为 Figure 1c 图注不实：原 PDF 第 4 页这是 HPO-wise analysis 正文，第 3 页实际 Figure 1 图注没有该数值。当前 parser/runtimer将正文误识别为 Figure 1C caption，故复合主张的额外出处陈述错误。"
+        },
+        {
+          "answer_claim_id": "c2",
+          "matched_gold_claim_ids": [
+            "G1"
+          ],
+          "correctness": "correct",
+          "citation_correct": true,
+          "panel_aligned": null,
+          "reason": "正文 p4_b5 明确第二名 Claude-3.7-Sonnet-thinking 为 33.39%；与 c3 中 57.18% 和 33.39% 的同指标计算共同覆盖 G1 的两个数值。"
+        },
+        {
+          "answer_claim_id": "c3",
+          "matched_gold_claim_ids": [
+            "G1",
+            "G2"
+          ],
+          "correctness": "correct",
+          "citation_correct": true,
+          "panel_aligned": null,
+          "reason": "同一 Recall@1 两个水平 57.18% 和 33.39% 之差为 23.79 个百分点，非相对提高 23.79%；本文两处引文足以支撑该解释。与 c2 联合覆盖 G1 的数值，独立满足 G2；没有扩展显著性结论。"
+        }
+      ],
+      "uncertainty_correct": false,
+      "forbidden_inference_present": false,
+      "primary_error": "parser",
+      "secondary_errors": [
+        "citation",
+        "status"
+      ],
+      "rationale": "两个 Recall 数值与百分点解释正确；额外自述“Figure 1c 图注”实际引用了第 4 页分析正文。parsed ordered_blocks 为 text，但 figures 又将该块定义为 Figure 1C，运行证据把它标作 caption，引发错误出处自述。主因 parser 图注识别，引用与通用未核实提示为次因。"
+    },
+    {
+      "candidate_id": "RARE-02",
+      "answer_id": "232e81a4-05d5-4456-bbc1-649a9c0c4aa1",
+      "answer_sha256": "f69402b56d4d71c41e8d7db7c8a9cb3651e067172ca639e203ccf255f8493c53",
+      "claim_reviews": [
+        {
+          "answer_claim_id": "claim_1",
+          "matched_gold_claim_ids": [],
+          "correctness": "correct",
+          "citation_correct": true,
+          "panel_aligned": null,
+          "reason": "严格限定“论文摘要中的”表述，摘要确实写 95.4% agreement 并说 validity/traceability；没有声称全文定义如此，因此作为摘要摘录正确，但不能覆盖病例级 reference accuracy 的 G1。"
+        },
+        {
+          "answer_claim_id": "claim_2",
+          "matched_gold_claim_ids": [
+            "G1"
+          ],
+          "correctness": "correct",
+          "citation_correct": true,
+          "panel_aligned": null,
+          "reason": "Figure 4b 实际图注是 reference accuracy scores、mean=0.954，换算为 95.4%；这条回答说明的指标属于参考准确性，未把它称为诊断 Recall@1，覆盖 G1 的核心指标定义。当前片段确实在逗号处截断。"
+        },
+        {
+          "answer_claim_id": "claim_3",
+          "matched_gold_claim_ids": [],
+          "correctness": "correct",
+          "citation_correct": true,
+          "panel_aligned": null,
+          "reason": "总体 6,401 病例、7 公共+2 自建数据集有第 2 页支持；正确提醒它不是推理链验证的子样本人数，不覆盖 G2。"
+        }
+      ],
+      "uncertainty_correct": true,
+      "forbidden_inference_present": false,
+      "primary_error": "retrieval",
+      "secondary_errors": [
+        "status"
+      ],
+      "rationale": "原 PDF 第 7 页 Traceable reasoning chain validation 明确包含 180 病例、八个数据集、总专家池 10 位、每例 3 位独立评审并取平均。生产 parsed p7_b3 保留这些文字，但送入本题的 4 个片段只含截断图注/摘要等，没有这段关键正文，漏掉 G2。当前输出对摘要与有限图注的范围限定基本恰当，主因检索漏取完整验证段落；停止原因 budget_exhausted 仍与仅 19,509 tokens/4 次调用不符。"
+    },
+    {
+      "candidate_id": "RARE-03",
+      "answer_id": "e8dd9301-1dce-4386-a1c2-e37a33b56890",
+      "answer_sha256": "f2ade0cf5a7e582b3eff919c2617d11b81de2603a9bc60f1f91761e6b6b400dd",
+      "claim_reviews": [
+        {
+          "answer_claim_id": "fig4d_visual_largest_slice",
+          "matched_gold_claim_ids": [],
+          "correctness": "correct",
+          "citation_correct": true,
+          "panel_aligned": true,
+          "reason": "原图可见百分比集合 2.5%、38.5%、41.0%、15.5% 和总 n=200，41.0% 最大；2.5% 在图中出现两次，未声称只有四类。该主张没有给出最大类名称和 n=82，不能单独覆盖 G1/G2。"
+        },
+        {
+          "answer_claim_id": "fig4d_mode_name_count_text",
+          "matched_gold_claim_ids": [],
+          "correctness": "correct",
+          "citation_correct": true,
+          "panel_aligned": null,
+          "reason": "正文 p7_b6 直接支持最高类 Reasoning Weighing Error、41.0%、82 of 200，科学内容和引文正确，但明确 basis=text，不能代替本题要求的图例直接视觉读取。"
+        }
+      ],
+      "uncertainty_correct": false,
+      "forbidden_inference_present": false,
+      "primary_error": "vision",
+      "secondary_errors": [
+        "status"
+      ],
+      "rationale": "最终数值/名称正确，但最大类名称和 n=82 来源标为正文，未完成两条 gold 的直接视觉要求。Qwen 原始缓存的 panel.legend_items 和顶层 visible_text 已包含 Reasoning weighing error (n=82)，投影成问答证据时只保留 panel summary+visible_text，丢掉 legend_items；Kimi 因此正确说明名称/计数依赖正文。独立看图复核事实上读到了所有图例，但结果未补回回答证据，主因视觉证据投影。最终还使用尚未核实的通用提示。"
+    },
+    {
+      "candidate_id": "RARE-04",
+      "answer_id": "0df69a28-7efa-4b69-be5d-ea3106712172",
+      "answer_sha256": "5b06e20c43938877d48a190091b33f67236dd7a382efbbcfec15dd84dd31cca2",
+      "claim_reviews": [],
+      "uncertainty_correct": true,
+      "forbidden_inference_present": false,
+      "primary_error": null,
+      "secondary_errors": [],
+      "rationale": "原 PDF 全文与图号清单均无 Figure 99a；生成前拒答且没有采用其他图替代。"
+    },
+    {
+      "candidate_id": "ADDUCT-01",
+      "answer_id": "f3649960-d69d-4a8c-b344-968257ffc159",
+      "answer_sha256": "c249c710a993c75fbec5f5ec94e8772e6cc077301496fc889f1e17d3bdb61e11",
+      "claim_reviews": [
+        {
+          "answer_claim_id": "c1",
+          "matched_gold_claim_ids": [
+            "G2"
+          ],
+          "correctness": "correct",
+          "citation_correct": true,
+          "panel_aligned": null,
+          "reason": "摘要关于传统定量/定位不能合并及第 7 页质谱高化学特异性说明，支持不将传统 LC-MS 定量等同为保留位置；与 c2 的高特异性补充共同覆盖 G2。"
+        },
+        {
+          "answer_claim_id": "c2",
+          "matched_gold_claim_ids": [
+            "G2"
+          ],
+          "correctness": "correct",
+          "citation_correct": true,
+          "panel_aligned": null,
+          "reason": "结论确实定位 mass spectrometry-based adductomics 为 exposome 定量首选、高化学特异性；与 c1 合并支持 G2 的化学特异性及不能直接得到位置的界限。"
+        },
+        {
+          "answer_claim_id": "c3",
+          "matched_gold_claim_ids": [],
+          "correctness": "correct",
+          "citation_correct": true,
+          "panel_aligned": null,
+          "reason": "第 3 页 mapping 方法、标记/切除/扩增测序、stop sites/strand ends/mismatched base pairs 和列举方法都有原文支持；是位点定位路线的正确额外说明，未充当 LC-MS 定量流程。"
+        },
+        {
+          "answer_claim_id": "c4",
+          "matched_gold_claim_ids": [],
+          "correctness": "correct",
+          "citation_correct": true,
+          "panel_aligned": null,
+          "reason": "第 1 页及第 7 页均以 expected 说明单分子测序未来有望兼顾加合物类型、水平和位置，正确保留潜力范围。"
+        },
+        {
+          "answer_claim_id": "c5",
+          "matched_gold_claim_ids": [],
+          "correctness": "correct",
+          "citation_correct": true,
+          "panel_aligned": null,
+          "reason": "当前实际输入只含摘要、mapping 段与结论，没有第 2 页 LC-MS 操作段；明确限定“所给证据”而非论文全文不存在，缺口说明正确。"
+        }
+      ],
+      "uncertainty_correct": true,
+      "forbidden_inference_present": false,
+      "primary_error": "retrieval",
+      "secondary_errors": [
+        "status"
+      ],
+      "rationale": "漏掉 G1 的 DNA 分离→化学/酶水解释放→LC-MS 定量流程。原 PDF 第 2 页及 parsed p2_b4 都清楚保留该流程，但本题只选入 p1_b30/p1_b33/p3_b3/p7_b4，未取到 LC-MS 段。科学内容和有限证据范围限定基本正确，主要为检索漏取必需方法。仅 12,282 tokens/2 次调用，budget_exhausted 为次要状态错误。"
+    },
+    {
+      "candidate_id": "ADDUCT-02",
+      "answer_id": "39b6fcc2-9bba-44ec-b205-a84b7e0dff2f",
+      "answer_sha256": "111617de6421cfe7e5d8c5d302c0f5a97623539f4bb053291855e741f2fbab42",
+      "claim_reviews": [
+        {
+          "answer_claim_id": "C1",
+          "matched_gold_claim_ids": [
+            "G1"
+          ],
+          "correctness": "correct",
+          "citation_correct": true,
+          "panel_aligned": null,
+          "reason": "第 7 页直接说 current nanopore-type 单分子技术 do not reach chemical specificity of mass spectrometry，并在尝试组合两者；回答以“综述明确指出”约束于论文当时。"
+        },
+        {
+          "answer_claim_id": "C2",
+          "matched_gold_claim_ids": [
+            "G2"
+          ],
+          "correctness": "correct",
+          "citation_correct": true,
+          "panel_aligned": null,
+          "reason": "同段直接列出 implementation phase 和 future studies 建立 chemical specificity/sensitivity/accuracy，没有编造具体性能值。"
+        },
+        {
+          "answer_claim_id": "C3",
+          "matched_gold_claim_ids": [],
+          "correctness": "correct",
+          "citation_correct": true,
+          "panel_aligned": null,
+          "reason": "第 7 页结论用 expected 表述单分子测序未来同时说明类型/水平/核与线粒体基因组位置；未断言已实现。"
+        },
+        {
+          "answer_claim_id": "C4",
+          "matched_gold_claim_ids": [],
+          "correctness": "correct",
+          "citation_correct": true,
+          "panel_aligned": null,
+          "reason": "第 7 页 mass spectrometry-based adductomics 为 exposome method of choice 及理由均与引用一致；不是面向 2026 年实践的新增推荐。"
+        }
+      ],
+      "uncertainty_correct": false,
+      "forbidden_inference_present": false,
+      "primary_error": "status",
+      "secondary_errors": [],
+      "rationale": "两条必需主张和全部补充/引文正确，核验/QC 均通过、草稿无必需证据缺口，但最终仍声称“相关草稿尚未核实”。严格交付失败归状态，不能据此认定化学解释错误。"
+    },
+    {
+      "candidate_id": "ADDUCT-03",
+      "answer_id": "d3e6ab56-1e90-4f67-b378-60f725738379",
+      "answer_sha256": "313aff750d68bab8c07c38c9bdb4165cb24311021ea0e6502c9a7768c294263c",
+      "claim_reviews": [
+        {
+          "answer_claim_id": "c2",
+          "matched_gold_claim_ids": [],
+          "correctness": "correct",
+          "citation_correct": true,
+          "panel_aligned": true,
+          "reason": "原图最高红点位于反向 Position 轴的 1000–0 区间，估约 600–700、Y>15 有实际图像及直接复核支持；“显著高于”在此是图上高度描述，不是统计显著性宣称。该主张没有回答横轴递减或相对 1000 的右侧，不能覆盖 G1/G2。"
+        }
+      ],
+      "uncertainty_correct": true,
+      "forbidden_inference_present": false,
+      "primary_error": "vision",
+      "secondary_errors": [
+        "status"
+      ],
+      "rationale": "原始 Qwen visible_text 保留横轴有序刻度 4000/3000/2000/1000/0，但整图投影只使用 direct_evidence，不包含这些刻度和 axes；Kimi 因此正确指出当前摘录无法判断左右/方向，没有完成 G1/G2。直接看图复核又明确观察到横轴递减、最高点在 1000 右侧，但这些附带观察未反馈到回答证据。主因视觉证据转换。账本 39,503 tokens/8 次调用，budget_exhausted 也不是真实预算耗尽。"
+    },
+    {
+      "candidate_id": "ADDUCT-04",
+      "answer_id": "336a42fc-4f32-433a-a620-9fd7b15dfff8",
+      "answer_sha256": "8241092eb324fff26c2ff28e3bc063fa28ec904378c1c68fec842c2457d1c323",
+      "claim_reviews": [],
+      "uncertainty_correct": true,
+      "forbidden_inference_present": false,
+      "primary_error": null,
+      "secondary_errors": [],
+      "rationale": "该 PDF 无 Figure 99a；运行在目标图不存在时明确拒答且没有其他图替代。"
+    }
+  ]
+}

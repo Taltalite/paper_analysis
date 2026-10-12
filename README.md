@@ -1,443 +1,160 @@
 # Paper Analysis
 
-面向分子生物学、生物信息学与表观遗传学的 CrewAI 文献分析平台：Kimi 处理论文文字和综合分析，Qwen `qwen3.8-flash` 处理图像输入。重点分析论文故事架构、图组论证流程、结果证据支持，以及多方法比较论文的 benchmark。支持本地文件、FastAPI 后端和轻量 Web 前端。
+基于 CrewAI 的研究论文分析应用，支持 PDF 上传、证据问答、结构化报告、任务管理和 Markdown 下载。面向分子生物学、生物信息学与表观遗传学场景，以简体中文输出说明，保留论文原文、专业术语和可追溯引用。
 
-当前工程目标是在不依赖人工标注的情况下打通 agent loop、证据问答、token 预算和分析强度控制。实施工作包、依赖和测试要求见 [项目改进计划](docs/PROJECT_IMPROVEMENT_PLAN_2026-10-04.md)，进度与验收边界见 [工程目标](docs/ENGINEERING_TARGET_2026-10-04.md)；工程测试通过不等于专家效果评估通过。
+当前版本提供可运行的 Linux 本地单主管服务。模块按领域、适配器、运行时和应用服务分层，后端负责全部任务状态与产物。共享部署前仍需完成任务访问隔离、容量与恢复验收。
 
-2026-10-05 已补入请求级计量与持久化累计预算、报告补取及直接图像复核、后端连续问答、可终止的报告子进程、Web 策略控制和离线 CI。修复映射、复现命令与尚未验收的范围见 [本轮修复验收](docs/PLAN_FIXES_2026-10-05.md)，该记录更新下文历史里程碑的能力边界。
+## 功能
 
-报告创建接口支持 `intensity`、`token_budget`、`max_calls`、`max_output_tokens`、`timeout_seconds`、`report_followups`。报告补取默认 0，Web 默认 1，最多 2；每次新增候选须重新核验。`light/standard/deep` 控制系统迭代与证据范围，不代表供应商原生 reasoning 参数已启用。显式填写的预算不会随强度提高。
+- 读取 `.txt`、`.md`、`.pdf`，解析正文、章节、图注及 PDF 源位置。
+- 对单篇论文进行正文、数值和图表问答，返回主张、证据、物理页码与子图定位；支持最多两轮补取和同文档连续追问。
+- 生成 Markdown / JSON 研究报告，包含故事架构、图组论证、证据矩阵和 Benchmark；无法支持的内容保留待核验标记。
+- 后台报告与问答任务支持查询、取消、超时、重试和重启恢复；任务状态及产物由后端保存。
+- 分别配置文本和视觉模型，记录每次请求及累计用量；视觉主张需要直接原图复核。
+- 提供固定论文参考集、独立评分及检索、视觉、回答等错误分类。
 
-`POST /api/qa/questions/{id}/conversation` 从已完成问答创建会话，`GET /api/qa/conversations/{id}` 恢复会话，`POST /api/qa/conversations/{id}/turns` 接收 `QuestionRequest` JSON，无需再上传 PDF。会话按顺序追问并累计用量；重试不清零账本。报告可通过 `/api/analysis/jobs/{id}/cancel` 和 `/retry` 取消、重试。当前本地队列只支持一个 API 主管进程。
+## 快速开始
 
-真实接口 smoke 使用合成材料，运行命令为 `bash scripts/run.sh python -m scripts.smoke_models --output output/new-smoke-directory`，最多 2 次请求，共享 8,000 token 预算；默认 CI 不执行该命令。未知供应商用量按预留保守记账，估算与实际用量分别显示，不能把预算估算当成精确费用上限。
+### 环境与依赖
 
-系统面向的核心场景是：
-- 读取 `txt` / `md` / `pdf`
-- 解析论文结构与图表信息
-- 生成简体中文为主的 Markdown / JSON 分析结果
-- 通过后端 job 接口统一管理任务状态与产物
+使用 Linux、Python 3.12 或 3.13、Node.js 20 及 npm，并安装 `uv`。Python 与前端依赖分别由 `uv.lock` 和 `web/package-lock.json` 固定。
 
-## 架构概览
-
-### 单篇文献图表问答
-
-Web 页面顶部提供生物信息与表观遗传学问答：上传单篇 PDF、输入问题，可指定图号（如 `2`）和子图（如 `a`）。无需创建全文报告任务，原有报告与 `/api/analysis` 接口保留。
-
-新增 `POST /api/qa/questions`（multipart）：`file`、`question`、可选 `figure` / `panel`、`max_followups`（0–2，默认 2）。设为 0 即单轮问答；2 表示初次回答后最多两轮文内补取与纠错。同步返回类型化答案，`GET /api/qa/questions/{id}` 读取后端保存结果。
-
-分析和问答请求还可提交 `intensity`（`light` / `standard` / `deep`）、`token_budget`、`max_calls`、`max_output_tokens`、`timeout_seconds`、`max_figures` 和 `max_visual_reviews`。后端会保存 requested/effective policy、调用数量、provider/estimated/unknown 用量、缓存命中和 stop reason；强度档位不会绕过服务端上限。
-
-返回 `status`（`answered` / `partial` / `refused`）、中文 `answer`、逐条 `claims` 与 `evidence_ids`、`evidence` 的 PDF 物理页码/正文块/图号/子图/原文摘录、`uncertainties`、`visual_status` 和 `quality`。审计中的 `visual_review.failure_reason` 会区分缺图、预算耗尽、截止时间、HTTP、解析和供应商错误。页面视觉证据为模型观察，记录实际输入页码集合，不等同于专家金标准。未成功读取目标图/子图时不得交付视觉主张；正文/图注可支持部分回答。
-
-独立链路为 PDF parser → 文内块检索 → 按需视觉 adapter → CrewAI 问答 → 既有事实核验和 QC → 有界纠错。每轮新增最多四个正文块，每块最多 1500 字符；视觉仅针对一个目标图。显式图号优先，也支持从问题提取 `图2a` / `Figure 2a`。未指定图号时按图注关键词选择候选图；复杂定位或扫描图注可能失败，应指定图号或核对原文。问答解析阶段只建结构索引，目标页首次读图或查看证据时才渲染；全文报告的默认解析行为不变。
-
-后端在 `.data/questions/{id}/` 保存 PDF、请求、任务状态、解析视图、逐尝试审计与最终答案。最大 PDF 为 30 MB。Web 默认使用后台问答队列，可取消、重试，在刷新后从后端任务列表恢复；URL 中只保存任务 ID，不在浏览器保存业务结果。LLM / 视觉配置沿用统一适配器，不加入外部检索、多论文综述或训练。
-
-- `POST /api/qa/jobs`：同样的 multipart 字段，返回 202 和任务 ID。
-- `GET /api/qa/jobs`、`GET /api/qa/jobs/{id}`：最近任务及执行阶段。
-- `POST /api/qa/jobs/{id}/cancel`、`POST /api/qa/jobs/{id}/retry`：取消和失败恢复。
-- `GET /api/qa/questions/{id}`：正式答案，任务完成前不发布。
-- `GET /api/qa/questions/{id}/audit`：当前尝试的逐轮证据、草稿、核验和 QC。
-- `GET /api/qa/questions/{id}/pages/{page}?evidence_id=...`：PDF 物理页 PNG，正文证据可高亮原始 bbox；视觉证据可查看实际输入页。
-
-原同步 `POST /api/qa/questions` 保留，通过同一个队列等待结果，超时返回 504。当前是 Linux 单 API 主管进程的本地版本（勿使用多个 Uvicorn workers），默认同时运行 2 个问答子进程，单任务执行上限 600 秒。超时/取消终止子进程；异常重启后运行中的任务标为失败，排队任务恢复，用户可显式重试。重试递增 attempt 并保留旧审计；迟到或旧轮次产物不能覆盖最终状态。具体工程验收见 [docs/qa-engineering.md](docs/qa-engineering.md)。
-
-离线验证：
+从仓库根目录执行：
 
 ```bash
-bash scripts/run.sh python -m unittest discover -s tests/unit -v
-bash scripts/run.sh python -m unittest discover -s tests/integration -v
+UV_FROZEN=1 bash scripts/run.sh uv sync --frozen
+bash scripts/run.sh npm --prefix web ci
+
+# 首次配置；-n 保留已经存在的本地配置
+bash scripts/run.sh cp -n .env.example .env
+bash scripts/run.sh cp -n config/app.example.json config/app.json
+```
+
+编辑本地 `.env`，填写 `KIMI_API_KEY` 与 `VISION_API_KEY`。这两项密钥分别属于文本和视觉服务；模板不含密钥。模板采用已通过合成 smoke 的配置：
+
+| 用途 | 型号与参数 | 环境变量 |
+|---|---|---|
+| 文字理解、问答与事实核验 | `k3-256k`，`reasoning_effort=high`，温度 1 | `KIMI_*` |
+| 图像提取与原图复核 | `qwen3.8-flash`，温度 0.9，单次输出上限 16,384 | `VISION_*` |
+
+型号、端点和密钥须与账号对应。模板使用 Kimi Code 与千问 Token Plan 端点；也可成组替换为其他受支持的 OpenAI 兼容配置，变量见 [.env.example](.env.example)。接口连通和合成 smoke 通过不代表论文回答准确率已提升。
+
+应用自动加载根目录 `.env`，已导出的 shell 环境变量优先。修改模型配置后重启后端；旧任务的策略和账本继续保留。
+
+### 启动服务
+
+在两个终端分别运行：
+
+```bash
+# 后端
+bash scripts/run_api.sh
+
+# 前端
+bash scripts/run.sh bash scripts/run_web.sh
+```
+
+示例配置只绑定回环地址：前端 `http://127.0.0.1:11451`，后端 `http://127.0.0.1:19198`，健康检查 `/health`，交互 API 文档 `/docs`。
+
+主机、端口和 CORS 来源由本地 `config/app.json` 决定；可通过 `PAPER_ANALYSIS_CONFIG_PATH` 指定另一份配置，前后端须使用同一文件。实际地址以该配置为准，端口占用时前端不会自动换端口。
+
+启动脚本统一配置 uv 缓存、遥测和代理。若本机没有 `127.0.0.1:7890` 代理，在上述运行命令前加 `PAPER_ANALYSIS_DISABLE_PROXY=1`；有代理时按实际环境配置。
+
+### 命令行分析
+
+```bash
+# 内置文本示例，结果保存在 output/report.md 与 output/report.json
+bash scripts/run.sh
+
+# 将源 PDF 放在本地 input/，不随 Git 同步
+INPUT_PATH=input/paper.pdf \
+OUTPUT_MARKDOWN_PATH=output/paper-report.md \
+OUTPUT_JSON_PATH=output/paper-report.json \
+bash scripts/run.sh
+```
+
+PDF 模式还会输出结构化 Markdown 解析产物。真实分析会把所选正文及图像发送至已配置的模型端点。
+
+## 执行额度与质量
+
+新执行采用 `execution-v1` / `policy-v2`：
+
+| 档位 | 累计 token 预算 | 单次输出上限 | 请求数上限 | 执行时限 |
+|---|---:|---:|---:|---:|
+| light | 100,000 | 16,384 | 8 | 180 秒 |
+| standard | 300,000 | 65,536 | 16 | 420 秒 |
+| deep | 600,000 | 98,304 | 32 | 720 秒 |
+
+额度按单次单篇执行；固定论文批测中，每篇四题共享一份账本，下一篇重新建立账本。会话各轮共享累计用量，任务重试不清零。显式额度受服务端上限约束，原生推理强度与执行档位分别控制。视觉请求默认最多 16,384，且受任务输出上限裁剪。
+
+请求发送前预留额度，完整供应商 usage 按实际消费结算，未知消费保守记账；额度不是精确货币费用。HTTP/SDK 自动重试为 0，工具交互和格式修复仍逐请求计量。任务时限与 `TEXT_REQUEST_TIMEOUT` / `VISION_REQUEST_TIMEOUT` 分别生效。
+
+`completed` 表示执行与保存完成，`quality.status` 表示交付规则检查结果。正文、图注和直接视觉证据分别记录；未成功读取或复核目标图时不发布相应视觉主张。模型核验与 QC 不能替代独立正确性评价。报告与问答分别使用 `analysis-v2`、`qa-v2`，输入输出类型和验证规则由后端 Pydantic schema 定义。
+
+## API
+
+| 能力 | 接口 |
+|---|---|
+| 健康 | `GET /health` |
+| 报告创建 | `POST /api/analysis/jobs` |
+| 报告详情、进度及产物 | `GET /api/analysis/jobs/{id}` 及 `/progress`、`/report`、`/artifact` |
+| 报告取消与重试 | `POST /api/analysis/jobs/{id}/cancel`、`/retry` |
+| 问答创建与列表 | `POST /api/qa/jobs`、`GET /api/qa/jobs` |
+| 问答状态、取消及重试 | `/api/qa/jobs/{id}` 及 `/cancel`、`/retry` |
+| 最终回答、审计与证据页 | `GET /api/qa/questions/{id}` 及 `/audit`、`/pages/{page}` |
+| 连续问答 | `POST /api/qa/questions/{id}/conversation`、`GET /api/qa/conversations/{id}`、`POST /api/qa/conversations/{id}/turns` |
+
+上传使用 multipart，PDF 上限 30 MB。问题可指定 `figure`、`panel` 和 `max_followups`。异步创建返回 202；兼容同步接口 `POST /api/qa/questions` 经同一队列等待结果。具体输入、输出和状态以运行中的 OpenAPI 为准。
+
+## 代码与数据布局
+
+```text
+src/paper_analysis/
+  domain/       类型、schema 与执行策略
+  adapters/     LLM、解析、检索和存储接口
+  runtime/      CrewAI 流程、证据与交付闸门
+  services/     应用编排、任务主管、会话和评价
+  api/          FastAPI 薄路由
+web/            React/Vite 界面
+scripts/        统一启动、模型验证和评分入口
+tests/          离线单元与 API 集成
+config/         公开示例与本地配置
+evals/          固定参考、评分摘要和评价说明
+```
+
+后端是任务和产物的唯一状态来源；前端只保存当前 UI 状态。业务任务保存在本地 `.data/`，输出保存在 `output/`，源论文保存在 `input/` 或 `ref_baseline/`。这些目录的私有材料不随仓库同步，部署迁移时需单独备份任务和文件。
+
+## 验证与评测
+
+默认测试使用 mock/fake 和合成 PDF，不需要真实 API Key，不调用外部模型：
+
+```bash
+bash scripts/run.sh python -m unittest discover -s tests/unit -q
+bash scripts/run.sh python -m unittest discover -s tests/integration -q
 bash scripts/run.sh npm --prefix web run build
 ```
 
-领域候选集及人工标注规则见 [evals/qa_README.md](evals/qa_README.md)。本轮未进行真实问答模型调用或专家效果评估；测试通过仅说明实现和失败处理符合离线验收，不代表领域答案已被验证正确。
-
-### 目录结构
-
-- `src/paper_analysis/domain/`
-  领域模型、枚举、输入输出 schema
-- `src/paper_analysis/adapters/`
-  LLM、parser、storage 适配层
-- `src/paper_analysis/runtime/`
-  CrewAI runtime、analysis pipeline、research agents
-- `src/paper_analysis/services/`
-  分析编排、artifact 持久化、job 生命周期管理
-- `src/paper_analysis/api/`
-  FastAPI 应用、依赖注入与路由
-- `web/`
-  React/Vite 前端
-- `input/`
-  示例输入文件
-- `output/`
-  本地运行输出
-
-### 分析链路
-
-
-默认分析链路收敛为 3 个核心 agent / role：
-
-- `text_understanding`
-  一次完成重点章节理解、事实性要点提取、论文综合分析，并输出可追溯的 `claims`
-- `figure_understanding`
-  基于 parser / 视觉语义 adapter 与确定性证据合并结果，输出图表观察、作者结论和图文一致性分析
-- `fact_checker`
-  独立核验正文与图表分析产生的主张，输出证据引用、判定、理由和置信度
-
-`document_structuring` 不再作为常驻核心 agent。它是条件式结构修复任务，仅在标题、摘要、核心章节或 figure caption 缺失，或 parser 明确标记低置信度时触发。
-
-原 `reader + analyst` 已合并为 `text_understanding`；原 `figure_grounding` 的低层抽取改由 adapter 负责，`figure_evidence_curator` 改为确定性合并逻辑，不再分别消耗 LLM 调用。旧 runner 与 `ContentCrew` 等兼容实现已完成迁移并删除。
-
-PDF 文献分析的当前执行顺序为：
-
-1. 通过 parser 读取源文件。
-2. 对 PDF 按阅读顺序提取 text/image blocks。
-3. 使用规则生成粗结构草稿：
-   标题、作者、摘要、章节、figure caption、正文引用关系。
-4. 仅在粗结构不完整时调用 `document_structuring` 修复任务。
-5. 使用 `text_understanding` 生成正文分析和可追溯主张。
-6. 通过 figure semantic adapter 和确定性 assembler 生成统一图表证据，再由 `figure_understanding` 分析图表。
-7. 使用 `fact_checker` 对正文与图表主张做统一内部证据核验。
-8. 输出最终 Markdown、JSON，以及 PDF 的结构化 Markdown 中间产物。
-
-未配置视觉模型时，figure semantic adapter 是 `NoopFigureSemanticExtractor`，只使用图注和正文线索，不产生 OCR 结果。配置 `KIMI_VISION_MODEL`（或 `OPENAI_VISION_MODEL`）后启用 `MultimodalFigureSemanticExtractor`，真实发送 base64 图片并提取 OCR、坐标轴、图例与子图信息。PDF 优先发送 2 倍分辨率的完整页面渲染并指定目标图号，避免只读嵌入位图时丢失矢量坐标轴或部分子图；没有页面截图时才使用可读的嵌入图片（最多 4 张）。当前不是精确的逐图区域裁剪。
-
-视觉字段会传入图表分析、内部事实核验和最终 Markdown / JSON。报告明确显示是否完成视觉识别及失败原因；HTTP / 输出格式失败时保守回退，不能把报告生成成功等同于图片解析成功。图表语义缓存包含图片内容、模型、图号、图注和实际提示词（含正文引用）；更换同路径 PDF 时会重新生成页面截图。
-
-针对“前页整页图、后页顶部图注”的排版，parser 会在图注页缺少图形、前页存在明显图形且无其他图注时，补充前页截图。`FigureMetadata.page_number` 仍表示图注页，新增 `context_page_snapshot_paths` 保存相邻图形页。该关联是保守布局启发式，尚不能覆盖所有跨页或扫描版论文。
-
-
-### 后端与前端职责
-
-- 后端是唯一真相源，负责：
-  - 文件上传
-  - job 状态
-  - 分析执行
-  - 产物持久化
-  - 日志记录
-  - 进程内异步任务调度
-- 前端只负责：
-  - 上传文件
-  - 展示任务状态、阶段进度与实时日志
-  - 渲染 Markdown
-  - 下载 Markdown / JSON / parsed markdown
-
-## 支持的输入与输出
-
-### 输入
-
-- `.txt`
-- `.md`
-- `.pdf`
-
-### 输出
-
-- Markdown 分析报告
-- JSON 结构化结果
-- PDF 结构化 Markdown 中间产物
-- 按 job 存储的日志文件
-
-研究型文献模式下，最终 Markdown 报告由后端统一渲染为固定目录结构，默认包含：
-
-- `1. 基本信息`
-- `2. 摘要式总结`
-- `3. 研究问题`
-- `4. 方法`
-- `5. 实验与结果`
-- `6. 图表分析`
-- `7. 事实检查`
-- `8. 评价`
-- `9. 启发与参考价值`
-- `10. 总结`
-- `11. 领域结构化产物`：覆盖状态、故事架构、图组 Flow、细节证据矩阵和 Benchmark（无适用内容时明确标记）
-
-最终 Markdown 仅保留报告正文，不输出 agent 中间协商、工具调用过程、链式推理文本或结构化解析预览。
-
-`AnalysisResult.research_products` 与报告第 11 节使用同一份确定性组装结果。`verified` 只表示通过本项目的证据定位/QC 闸门，不代表专家正确性认证；缺失数据使用 `not_reported`，机制论文没有适用比较时使用 `not_applicable` 并说明原因。
-
-## 环境配置
-
-### 基础要求
-
-- Python `3.12+`
-- Node.js `18+`
-- `uv`
-- `npm`
-
-### Python 依赖
-
-安装后端依赖：
+API 测试隔离报告和问答的仓库、主管及锁，可与本地服务同时运行。已通过 163 项单元、6 项 API 集成和前端生产构建；浏览器交互未计入本轮验收。CI 配置了这些离线检查与 Playwright 浏览器测试，本地浏览器测试可执行：
 
 ```bash
-uv sync
+bash scripts/run.sh web/node_modules/.bin/playwright install chromium
+bash scripts/run.sh web/node_modules/.bin/playwright test --config web/playwright.config.js
 ```
 
-### 前端依赖
-
-首次安装前端依赖：
+需要确认模型配置时，显式运行最多两次合成请求：
 
 ```bash
-cd web
-npm install
-cd ..
+bash scripts/run.sh python -m scripts.smoke_models \
+  --configured-limits --output output/model-smoke-new
 ```
 
-### LLM 环境变量
+每次使用新目录。此命令会产生真实模型用量，默认测试与 CI 不执行。
 
-系统以 Kimi API 为主要 LLM 提供方，走 OpenAI 兼容协议；同时保留任意 OpenAI 兼容端点的回退配置。应用启动时会自动加载项目根目录下的 `.env`，也兼容当前 shell 已导出的环境变量；如果两边同时存在，优先使用当前 shell 环境变量。
+固定 10 篇 / 40 题的参考状态为 `ai_provisional`，由独立阅读标注建立，Kimi/Qwen 只作为被测模型，不接收参考答案。数据身份、每项指标分母和评分命令见 [评价入口](evals/README.md)、[参考集](evals/datasets/paper_qa_v1/README.md) 与 [基线结果](evals/baselines/paper_qa_v1_2026-10-12/README.md)。源 PDF、原始模型回答和本机运行清单需在本地保留，仓库只提供参考定义与评分摘要。旧配置基线不能代替当前模型配置的新评测。
 
-Kimi 配置（推荐，任一 `KIMI_*` 变量存在即生效）：
+## 部署与数据管理
 
-```bash
-KIMI_API_KEY="your-kimi-api-key"          # 必填
-KIMI_MODEL="kimi-k3"                       # 可选，默认 kimi-k3
-KIMI_BASE_URL="https://api.moonshot.cn/v1" # 可选，默认 api.moonshot.cn
-KIMI_TEMPERATURE="0.2"                     # 可选
-KIMI_VISION_MODEL="moonshot-v1-32k-vision-preview" # 可选，启用真实图表视觉理解
-```
+报告和问答使用 Linux 工作子进程，当前仅支持一个 API 主管进程，勿设置多个 Uvicorn workers。示例配置适合本机使用。前端本地入口是 Vite 开发服务；静态发布需要托管构建产物并配置 API 访问地址，地址改变后须重新构建。
 
-两套 Kimi 账号体系的 endpoint 不同，按 key 来源选择：
+共享部署前需完成身份与任务归属校验、队列和存储配额、诊断脱敏、保留期、备份恢复及真实容量验收。固定旧配置基线已发现状态、执行诊断、核验误杀和视觉证据传递缺口，当前适合本地质量内测；应先修正这些问题，再比较新模型并验证新的论文留出集。
 
-- **开放平台按量 key**（platform.moonshot.cn / platform.moonshot.ai）：`KIMI_BASE_URL` 用 `https://api.moonshot.cn/v1` 或 `https://api.moonshot.ai/v1`，模型如 `kimi-k3`；视觉模型也可用。
-- **Kimi Code 订阅 key**（kimi.com/code 控制台创建）：`KIMI_BASE_URL` 使用 `https://api.kimi.com/coding/v1`，模型按账号权限选择。当前项目已实测 `KIMI_MODEL=kimi-for-coding` 配合 `KIMI_VISION_MODEL=kimi-for-coding` 可通过 OpenAI 兼容接口读取图片。该端点未显式设置温度时自动使用 `temperature=1`。不同账号可用性应通过下方视觉自检确认，不需要伪装客户端身份。[官方图像输入配置说明](https://www.kimi.com/code/docs/en/third-party-tools/hermes.html)
-
-- 不设置 `KIMI_VISION_MODEL` 时，图表语义回退为基于 caption 的保守模式。
-- 视觉模型需选用当前端点和账号实际支持图像输入的型号；不要把开放平台模型名直接用于订阅端点。
-
-OpenAI 兼容回退（未设置任何 `KIMI_*` 时生效，行为与之前版本一致）：
-
-```bash
-OPENAI_API_KEY="your-api-key"
-OPENAI_BASE_URL="https://your-compatible-endpoint"
-OPENAI_MODEL="your-model-name"
-OPENAI_VISION_MODEL="your-vision-model"    # 可选
-```
-
-如果检测到已配置模型但缺少对应 API Key（`KIMI_API_KEY` 或 `OPENAI_API_KEY`），后端会在启动阶段直接报中文错误，而不是等到任务执行时才失败。
-
-其他可选开关：
-
-```bash
-PAPER_ANALYSIS_PARALLEL_STAGES=1  # 正文理解与图表分析两个 LLM 阶段并行（默认串行）
-VISION_REQUEST_TIMEOUT=240       # 可选；视觉 HTTP 请求超时秒数，默认 120；复杂多面板图可增加
-TEXT_REQUEST_TIMEOUT=300         # 可选；文本 HTTP 请求单次超时秒数，默认 120；大输出限额或慢端点可增加
-```
-
-如果你的运行环境需要代理，也请在当前 shell 中提前设置代理变量；`scripts/run.sh` 默认已把 `api.moonshot.cn` / `api.moonshot.ai` 加入 `NO_PROXY`。
-
-### 应用配置文件
-
-前后端主机和端口统一由：
-
-- `config/app.json`
-
-控制，默认示例：
-
-```json
-{
-  "backend": {
-    "host": "127.0.0.1",
-    "port": 19198
-  },
-  "frontend": {
-    "host": "127.0.0.1",
-    "port": 11451
-  }
-}
-```
-
-修改端口时只需要调整这一个文件，并重启对应服务。
-
-## 运行方式
-
-### 1. 本地文件分析
-
-运行本地分析主链路：
-
-```bash
-bash scripts/run.sh
-```
-
-默认输入输出：
-
-- 输入：`input/sample_paper.txt`
-- Markdown：`output/report.md`
-- JSON：`output/report.json`
-
-如果要分析 PDF：
-
-```bash
-INPUT_PATH=input/template.pdf \
-OUTPUT_MARKDOWN_PATH=output/template_report.md \
-OUTPUT_JSON_PATH=output/template_report.json \
-bash scripts/run.sh
-```
-
-生成结果：
-
-- `output/template_report.md`
-- `output/template_report.json`
-- `output/template_report.parsed.md`
-
-### 2. 启动后端
-
-```bash
-bash scripts/run_api.sh
-```
-
-默认地址：
-
-- `http://127.0.0.1:19198`
-
-健康检查：
-
-```bash
-curl http://127.0.0.1:19198/health
-```
-
-### 3. 启动前端
-
-```bash
-bash scripts/run_web.sh
-```
-
-默认地址：
-
-- `http://127.0.0.1:11451`
-
-前端 dev server 使用固定端口策略；如果端口被占用，会直接报错，而不是自动切换端口。
-
-## API 概览
-
-前端当前只依赖以下接口：
-
-- `POST /api/analysis/jobs`
-- `GET /api/analysis/jobs/{job_id}`
-- `GET /api/analysis/jobs/{job_id}/progress`
-- `GET /api/analysis/jobs/{job_id}/report`
-- `GET /api/analysis/jobs/{job_id}/artifact`
-
-这些接口分别用于：
-- 创建分析任务
-- 查询任务状态
-- 查询任务阶段进度和最新日志
-- 获取 Markdown 报告
-- 获取 Markdown / JSON / parsed markdown / log 等产物
-
-## 运行提示
-
-### 本地文件分析
-
-- 如果默认输入不是你想分析的文件，使用 `INPUT_PATH` 指定源文件。
-- 输出路径可通过 `OUTPUT_MARKDOWN_PATH` 和 `OUTPUT_JSON_PATH` 覆盖。
-- PDF 解析和多 agent 分析可能耗时较长，属于正常现象。
-
-### 后端与前端联调
-
-- 先启动后端，再启动前端。
-- `POST /api/analysis/jobs` 会在创建任务后立即返回；实际分析在后端进程内执行器线程中异步运行。
-- 如果前端上传后显示 `Failed to fetch`，优先检查：
-  - 后端是否已经启动
-  - `config/app.json` 中的前后端端口是否正确
-  - 当前端口是否被其他进程占用
-- 前端会轮询后端 `job progress` 接口，展示文件接收、文档解析、多 Agent 分析、结果生成等阶段，并显示最新任务日志。
-
-### 日志与问题排查
-
-- API job 会把日志按时间戳写入对应任务目录。
-- 如果一次分析失败，优先查看该 job 的日志文件。
-- 本地 CLI 运行的标准输出仍会打印在当前终端。
-
-## 输出规范
-
-系统默认以简体中文输出说明性内容，包括：
-- 章节标题
-- 摘要与结论
-- 优点、局限性、复现建议
-- 图像实验结果分析
-
-以下内容可保留原文：
-- 论文标题
-- 作者名、机构名、期刊/会议名
-- 专业术语、模型名、方法名、数据集名、指标名、API 名称
-- 直接引用原文的片段
-
-## 测试
-
-所有本地 Python 命令均通过 `bash scripts/run.sh` 执行，复用 uv 缓存、代理、遥测及工作区内的数据目录设置。不带参数仍执行原有文件分析入口。
-
-运行单元测试：
-
-```bash
-bash scripts/run.sh python -m unittest discover -s tests/unit -p 'test_*.py'
-```
-
-运行集成测试：
-
-```bash
-bash scripts/run.sh python -m unittest discover -s tests/integration -p 'test_*.py'
-```
-
-### 真实视觉自检（显式调用模型）
-
-```bash
-KIMI_VISION_MODEL=kimi-for-coding bash scripts/run.sh python scripts/verify_vision.py
-```
-
-默认仅发送自动生成的合成柱状图；柱子标签和数值不出现在图注或提示词中。必须取得 `multimodal_llm` 结果并读出图内标记才返回成功，否则退出码非零。结果保存在 `output/vision-verification/semantic.json`；默认单元 / 集成测试不会调用真实模型。
-
-核对实际论文的视觉解析（会发送选中的论文页面至所配置的模型服务）：
-
-```bash
-bash scripts/run.sh python scripts/verify_vision.py \
-  --pdf ref_baseline/s41467-025-64293-2.pdf --limit 1 \
- --output output/paper-vision-verification
-```
-
-可增加 `--figure-id 'Figure 4'` 只核对特定图表。
-
-通过该脚本只说明视觉接口返回了结构化结果，不代表论文理解准确率评测已完成。完整报告仍使用上文 `INPUT_PATH=... bash scripts/run.sh` 运行。
-
-本次真实运行结果、简历能力边界及已知限制见 [项目能力审计](docs/project-capability-audit.md)。
-
-## QC 质量控制
-
-研究论文报告在渲染入口执行零模型调用的 QC，检查主张核验漏项、重复、未知 ID、证据定位及报告字段对应。正式总结只使用满足交付规则的主张，其余生成内容保存在 `qc_draft` 并标记待复核。任务执行状态与新增的 `quality.status` 独立：`completed` 不代表质量通过；旧结果的 `quality=null` 表示尚未检查。
-
-可用 `bash scripts/run.sh python scripts/check_report_quality.py --source 原文.pdf --report 已有报告.json --output output/qc` 离线检查已有结果，不调用模型。接口变化、规则范围、原始草稿位置及已知限制见 [QC 使用说明](docs/quality-control.md)。
-
-
-## 独立视觉模型与有界问答循环（2026-10-03）
-
-配置模板见 [.env.example](.env.example)。已有 `KIMI_*` / `OPENAI_*` 行为保持兼容。
-若保留 Kimi 做文本、使用百炼等 OpenAI 兼容服务读图，在本地 `.env` 增加：
-
-```dotenv
-VISION_API_KEY=
-VISION_BASE_URL=https://YOUR_WORKSPACE_ID.cn-beijing.maas.aliyuncs.com/compatible-mode/v1
-VISION_MODEL=qwen3-vl-flash
-VISION_TEMPERATURE=0.2
-```
-
-独立视觉配置启用后，`VISION_MODEL`、`VISION_API_KEY`、`VISION_BASE_URL` 必须同时提供；缺项直接报错，不会把文本模型密钥发送到视觉端点。`VISION_TEMPERATURE` 默认 0.2；`VISION_REQUEST_TIMEOUT` 仍以秒计。问答和全文报告统一复用该配置。将 `YOUR_WORKSPACE_ID` 替换为百炼控制台的业务空间 ID，API Key 与地域必须匹配；新加坡区将 `cn-beijing` 改为 `ap-southeast-1`。URL 不添加 `/chat/completions`。保留本地 `.env` 中原有 Kimi 订阅密钥，仅合并视觉配置；不要用空密钥模板覆盖已有文件。
-
-2026-10-03 核对[官方接入文档](https://help.aliyun.com/zh/model-studio/first-api-call-to-qwen)后，模板使用业务空间专属地址。默认选择低成本视觉模型 [qwen3-vl-flash](https://help.aliyun.com/zh/model-studio/qwen3-vl-flash)，复杂论文图表可改为 `qwen3-vl-plus` 对比效果。Kimi 负责文字分析与文本核验，Qwen 负责图片语义提取及问答原图复核。API 费用独立于 Kimi 订阅，不保证免费；按控制台额度及地域价格计费。此方案尚未通过本项目的 Qwen 真实调用和领域质量评测。
-
-视觉缓存新增端点、模型及采样配置的指纹，避免同名模型跨供应商误用缓存；指纹不含密钥。问答审计记录视觉配置指纹及完整 Python 包代码指纹。旧审计可继续读取，新缓存与旧缓存分开。
-
-若注册的是**千问AI平台 Token Plan**，使用套餐专属密钥和 `https://token-plan.maas.qianwenaiapi.com/compatible-mode/v1`，视觉模型改为 `qwen3.8-flash`。[官方套餐模型列表](https://platform.qianwenai.com/docs/token-plan/overview)与百炼按量模型列表不同。本项目真实预检中，Token Plan 请求 `qwen3-vl-flash` 返回 HTTP 404 `model_not_found`，改用 `qwen3.8-flash` 后合成视觉测试通过。模型、密钥、端点必须按所购服务成组配置。
-
-Kimi + Qwen3.8-Flash 已完成五场景真实问答冒烟，接口可用，但细小标签提取和复核仍存在错误；详见 [Qwen 冒烟记录](docs/QWEN_SMOKE_2026-10-03.md)。
-
-问答最多执行初轮加两轮补取。`evidence_gaps` 新增 `vision`：当真实视觉不可用且只缺视觉证据时，一轮后停止，保留已支持的正文/图注部分或拒答；若仍缺方法、对照等正文证据，则允许有界补取。后续调用失败只能保留最近一次成功核验结果，不能恢复已被冲突撤回的旧主张。
-
-问答生产装配增加直接看图复核：文本 checker 通过的视觉主张，还需把实际页面图片交给视觉适配器再次核对。复核请求不携带先前 OCR 摘录或核验结论；只交付逐条支持且 ID、原句对应的主张。冲突反馈进入后续纠错，失败、漏项和预算耗尽时不发布对应视觉主张。每题最多两次复核调用，相同图片和主张复用题内结果；这些是逻辑调用预算，不包含供应商 SDK 的内部重试次数。
-
-目标子图单独提取并参与缓存键；审计保存每轮 `visual_review`、图片 SHA-256 与调用次数，最终答案的 `visual_checks` 对应已交付视觉主张。`visual_status=succeeded` 仅表示提取成功。全文报告保留原有图表提取与 QC 流程，本次直接看图复核闸门仅适用于问答。
-
-当前仍使用同一配置的视觉模型进行独立调用，因此不能视作独立专家或正确性保证。人工参考评估仍待完成；真实历史问题与改进后复验见 [冒烟记录](docs/QA_SMOKE_2026-10-03.md)。
-
-
-正文理解与事实核验的检索工具现在绑定后端文档，只接收关键词、章节名及有上限的窗口参数，禁止模型回传或替换 `paper_text`。问答 checker 的工具仅能检索本轮有界证据视图，单次工具输出最多 4000 字符。旧工具类保留供已有调用兼容。
-
-报告正文提示执行 12,000 字符总上限，并为方法、结果、实验设置分配较多空间；避免长摘要/引言挤掉关键章节。这是字符预算，不是精确 Token 计费。问答提示也移除了重复的完整规则文本。
+`.gitignore` 保留源码、应用 agent/prompt、测试、锁文件、CI、公开模板、README 和正式评价定义；排除 `.env`、本机配置、上传论文、运行数据、归档、`docs/` 说明与实验记录，以及 `PLAN.md` / `PLANS.md` / `AGENTS.md` 等本地 agent 工作文件。运行、构建和测试不依赖这些本地文档，交互 API 文档由 FastAPI 自动生成。

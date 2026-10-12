@@ -1,0 +1,2325 @@
+{
+  "schema_version": "reference-qa-v1",
+  "dataset_id": "paper-qa-10-v1.0",
+  "reference_status": "ai_provisional",
+  "created_at": "2026-10-12T00:00:00+08:00",
+  "provenance": "本次 Codex 会话按用户明确授权独立阅读原文与实际 PDF 页面后形成。用户指定本会话答案为暂定 ground truth；模型身份以客户端选择为准，不从项目 API 配置推断。未经第二位独立专家复核，reference_status=ai_provisional。已有 MoDorado 单人初标仅作辅助，并重新核对原图；不计为专家仲裁。",
+  "papers": {
+    "DS": {
+      "source_path": "ref_baseline/bioinformatics_35_22_4586.pdf",
+      "sha256": "61de64054fde8296a61eda15898ebcb422cd186cb5265dc9c51665008949bc5b",
+      "title": "DeepSignal: detecting DNA methylation state from Nanopore sequencing reads using deep-learning",
+      "doi": "10.1093/bioinformatics/btz276",
+      "page_count": 10
+    },
+    "APN": {
+      "source_path": "ref_baseline/deshpande-et-al-2023-enzymatic-synthesis-of-aptamer-polynucleotide-nanoparticles-with-high-anticancer-drug-loading-for.pdf",
+      "sha256": "47e3155d8a5e6f4093a08a6d04be95f660f2b3ec8d3ad78c2b1c7c329280e977",
+      "title": "Enzymatic Synthesis of Aptamer-Polynucleotide Nanoparticles with High Anticancer Drug Loading for Targeted Delivery",
+      "doi": "10.1021/acs.biomac.3c00888",
+      "page_count": 10
+    },
+    "ENDO": {
+      "source_path": "ref_baseline/gkab727.pdf",
+      "sha256": "32c61b16fced7edf35db6a5c278d70f1abf32b649b0c62385125a780046ea4ff",
+      "title": "ENDO-Pore: high-throughput linked-end mapping of single DNA cleavage events using nanopore sequencing",
+      "doi": "10.1093/nar/gkab727",
+      "page_count": 11
+    },
+    "MOD": {
+      "source_path": "ref_baseline/gkaf795.pdf",
+      "sha256": "f47a24c8b1717944ca1a7bef018778290c8a86851709e44a1ffa63db5df02e75",
+      "title": "MoDorado: enhanced detection of tRNA modifications in nanopore sequencing by off-label use of modification callers",
+      "doi": "10.1093/nar/gkaf795",
+      "page_count": 15
+    },
+    "HIST": {
+      "source_path": "ref_baseline/nbt.3423.pdf",
+      "sha256": "7fc0a82fd4c17ab23fe0dacb10dd50623d012e73e372671f43251b638ec85391",
+      "title": "Three decades of nanopore sequencing",
+      "doi": "10.1038/nbt.3423",
+      "page_count": 7
+    },
+    "HMM": {
+      "source_path": "ref_baseline/nmeth.4184.pdf",
+      "sha256": "97a2f61cf1c313c815ab7928f831baa2969870ae24e103428e2aa2182e90a642",
+      "title": "Detecting DNA cytosine methylation using nanopore sequencing",
+      "doi": "10.1038/nmeth.4184",
+      "page_count": 7
+    },
+    "CHN": {
+      "source_path": "ref_baseline/s41467-024-53455-3.pdf",
+      "sha256": "83cf840b0ad5d1c98f1d9a7912f5502cc8b798e12c43f4dc256c6e583ae38e51",
+      "title": "Composite Hedges Nanopores codec system for rapid and portable DNA data readout with high INDEL-Correction",
+      "doi": "10.1038/s41467-024-53455-3",
+      "page_count": 12
+    },
+    "SUS": {
+      "source_path": "ref_baseline/s41467-025-64293-2.pdf",
+      "sha256": "fc59cfccf861f796d41ea4329fe4ff06b149947b9b49a0c7bb826b2f96eaebb4",
+      "title": "Empowering low-crosstalk, dynamic-decision random access of DNA storage via 384-multiplexed nanopore signatures",
+      "doi": "10.1038/s41467-025-64293-2",
+      "page_count": 12
+    },
+    "RARE": {
+      "source_path": "ref_baseline/s41586-025-10097-9.pdf",
+      "sha256": "6656d8a752c1ff9833728a4e6fed3485aba74f6bfe34c0d282275e293be4702b",
+      "title": "An agentic system for rare disease diagnosis with traceable reasoning",
+      "doi": "10.1038/s41586-025-10097-9",
+      "page_count": 23
+    },
+    "ADDUCT": {
+      "source_path": "ref_baseline/toxics-10-00045.pdf",
+      "sha256": "00169779d42aef883746d1257cc779f5954c629faf86957a779c0159d42f379d",
+      "title": "Current and Future Methodology for Quantitation and Site-Specific Mapping the Location of DNA Adducts",
+      "doi": "10.3390/toxics10010045",
+      "page_count": 12
+    }
+  },
+  "cases": [
+    {
+      "candidate_id": "DS-01",
+      "paper_id": "DS",
+      "question": "DeepSignal 的 signal feature module 与 sequence feature module 分别使用什么网络，两类特征怎样用于最终预测？",
+      "task_kind": "text",
+      "figure": null,
+      "panel": null,
+      "expected_status": "answered",
+      "reference_answer": "signal feature module 用 CNN 从原始电信号提取特征。；sequence feature module 用双向循环神经网络 BRNN 从信号信息序列提取特征。；两类特征拼接后送入全连接神经网络，预测甲基化状态。",
+      "gold_claims": [
+        {
+          "claim_id": "G1",
+          "statement": "signal feature module 用 CNN 从原始电信号提取特征。",
+          "basis": "text",
+          "evidence_ids": [
+            "E1"
+          ],
+          "required": true
+        },
+        {
+          "claim_id": "G2",
+          "statement": "sequence feature module 用双向循环神经网络 BRNN 从信号信息序列提取特征。",
+          "basis": "text",
+          "evidence_ids": [
+            "E2"
+          ],
+          "required": true
+        },
+        {
+          "claim_id": "G3",
+          "statement": "两类特征拼接后送入全连接神经网络，预测甲基化状态。",
+          "basis": "text",
+          "evidence_ids": [
+            "E3"
+          ],
+          "required": true
+        }
+      ],
+      "gold_evidence": [
+        {
+          "evidence_id": "E1",
+          "source_kind": "text",
+          "pdf_page_1_based": 2,
+          "bbox": [
+            315.15594482421875,
+            313.64202880859375,
+            549.2371826171875,
+            546.48876953125
+          ],
+          "figure": null,
+          "panel": null,
+          "verbatim_quote": "uses convolutional neural network (CNN)",
+          "visual_observation": null,
+          "legibility": "clear"
+        },
+        {
+          "evidence_id": "E2",
+          "source_kind": "text",
+          "pdf_page_1_based": 2,
+          "bbox": [
+            315.15594482421875,
+            313.64202880859375,
+            549.2371826171875,
+            546.48876953125
+          ],
+          "figure": null,
+          "panel": null,
+          "verbatim_quote": "uses bidirectional recurrent neural network (BRNN)",
+          "visual_observation": null,
+          "legibility": "clear"
+        },
+        {
+          "evidence_id": "E3",
+          "source_kind": "text",
+          "pdf_page_1_based": 2,
+          "bbox": [
+            315.15594482421875,
+            313.64202880859375,
+            549.2371826171875,
+            546.48876953125
+          ],
+          "figure": null,
+          "panel": null,
+          "verbatim_quote": "features built from two modules are concatenated and fed into a fully connected neural network",
+          "visual_observation": null,
+          "legibility": "clear"
+        }
+      ],
+      "required_uncertainties": [],
+      "forbidden_inferences": [],
+      "absence_check": null
+    },
+    {
+      "candidate_id": "DS-02",
+      "paper_id": "DS",
+      "question": "DeepSignal 摘要报告的 2× 和 20× coverage 分别对应什么评价结果？请区分 accuracy 与 correlation。",
+      "task_kind": "numeric",
+      "figure": null,
+      "panel": null,
+      "expected_status": "answered",
+      "reference_answer": "2× reads coverage 下，检测 5mC 和 6mA 的 accuracy 超过 90%。；20× reads coverage 下，DNA CpG 甲基化预测与 bisulfite sequencing 的相关性约为或超过 0.90。",
+      "gold_claims": [
+        {
+          "claim_id": "G1",
+          "statement": "2× reads coverage 下，检测 5mC 和 6mA 的 accuracy 超过 90%。",
+          "basis": "text",
+          "evidence_ids": [
+            "E1"
+          ],
+          "required": true
+        },
+        {
+          "claim_id": "G2",
+          "statement": "20× reads coverage 下，DNA CpG 甲基化预测与 bisulfite sequencing 的相关性约为或超过 0.90。",
+          "basis": "text",
+          "evidence_ids": [
+            "E2"
+          ],
+          "required": true
+        }
+      ],
+      "gold_evidence": [
+        {
+          "evidence_id": "E1",
+          "source_kind": "text",
+          "pdf_page_1_based": 1,
+          "bbox": [
+            63.155845642089844,
+            398.412353515625,
+            477.16839599609375,
+            647.387451171875
+          ],
+          "figure": null,
+          "panel": null,
+          "verbatim_quote": "90% above accuracy for detecting",
+          "visual_observation": null,
+          "legibility": "clear"
+        },
+        {
+          "evidence_id": "E2",
+          "source_kind": "text",
+          "pdf_page_1_based": 1,
+          "bbox": [
+            63.155845642089844,
+            398.412353515625,
+            477.16839599609375,
+            647.387451171875
+          ],
+          "figure": null,
+          "panel": null,
+          "verbatim_quote": "achieves 90% correlation with bisulfite sequencing",
+          "visual_observation": null,
+          "legibility": "clear"
+        }
+      ],
+      "required_uncertainties": [],
+      "forbidden_inferences": [
+        "不得将 correlation 写成分类准确率；不得把 20× 的结果当作 2× 的结果。"
+      ],
+      "absence_check": null
+    },
+    {
+      "candidate_id": "DS-03",
+      "paper_id": "DS",
+      "question": "只读 Figure 2 的图中标签：HX1 的 A、B 子图各标注什么 cor 值，哪个更高？",
+      "task_kind": "visual",
+      "figure": "2",
+      "panel": null,
+      "expected_status": "answered",
+      "reference_answer": "A 子图标注 cor=0.922。；B 子图标注 cor=0.886，因此 A 的相关性更高。",
+      "gold_claims": [
+        {
+          "claim_id": "G1",
+          "statement": "A 子图标注 cor=0.922。",
+          "basis": "visual",
+          "evidence_ids": [
+            "E1"
+          ],
+          "required": true
+        },
+        {
+          "claim_id": "G2",
+          "statement": "B 子图标注 cor=0.886，因此 A 的相关性更高。",
+          "basis": "visual",
+          "evidence_ids": [
+            "E2"
+          ],
+          "required": true
+        }
+      ],
+      "gold_evidence": [
+        {
+          "evidence_id": "E1",
+          "source_kind": "vision",
+          "pdf_page_1_based": 7,
+          "bbox": [
+            312.26434020996095,
+            229.35114807128906,
+            416.3524536132813,
+            316.34641113281253
+          ],
+          "figure": "2",
+          "panel": "a",
+          "verbatim_quote": null,
+          "visual_observation": "A 图上方写着 HX1, cor=0.922；此处按照图标签读取，正文相邻段落写作 0.923，二者有末位差异。",
+          "legibility": "clear"
+        },
+        {
+          "evidence_id": "E2",
+          "source_kind": "vision",
+          "pdf_page_1_based": 7,
+          "bbox": [
+            428.5981140136719,
+            229.35114807128906,
+            544.9318878173829,
+            316.34641113281253
+          ],
+          "figure": "2",
+          "panel": "b",
+          "verbatim_quote": null,
+          "visual_observation": "B 图上方写着 HX1, cor=0.886。",
+          "legibility": "clear"
+        }
+      ],
+      "required_uncertainties": [],
+      "forbidden_inferences": [
+        "不得用正文 0.923 替代问题要求的图中标签 0.922。"
+      ],
+      "absence_check": null
+    },
+    {
+      "candidate_id": "DS-04",
+      "paper_id": "DS",
+      "question": "请根据这份 PDF 的 Figure 99a 说明实验结果；如果不存在该图，请明确拒答，不要用其他图替代。",
+      "task_kind": "absence",
+      "figure": "99",
+      "panel": "a",
+      "expected_status": "refused",
+      "reference_answer": "这份 PDF 中不存在 Figure 99a，无法按该图说明实验结果。",
+      "gold_claims": [],
+      "gold_evidence": [],
+      "required_uncertainties": [
+        "指定图不存在，不能用其他图替代。"
+      ],
+      "forbidden_inferences": [
+        "不得编造 Figure 99a 的结果、页码或证据。"
+      ],
+      "absence_check": "已核查本 PDF 第 1–10 页的正文、主图、图注及附带页；没有 Figure 99 或 99a。范围只限这一份 PDF，不推断未提供的独立补充文件。"
+    },
+    {
+      "candidate_id": "APN-01",
+      "paper_id": "APN",
+      "question": "sgc8c-poly(FdU)-Atto 胶束如何用 TdT 构建？FdUTP 和 Atto-dUTP 分别起什么作用？",
+      "task_kind": "text",
+      "figure": null,
+      "panel": null,
+      "expected_status": "answered",
+      "reference_answer": "TdT 把 5-FdUTP 聚合到适配体 3′ 端，形成承载核苷酸前药的 poly(FdU) 链。；随后在该链 3′ 端添加疏水的非天然 Atto-dUTP，形成两亲性聚合物并自组装为胶束。",
+      "gold_claims": [
+        {
+          "claim_id": "G1",
+          "statement": "TdT 把 5-FdUTP 聚合到适配体 3′ 端，形成承载核苷酸前药的 poly(FdU) 链。",
+          "basis": "text",
+          "evidence_ids": [
+            "E1"
+          ],
+          "required": true
+        },
+        {
+          "claim_id": "G2",
+          "statement": "随后在该链 3′ 端添加疏水的非天然 Atto-dUTP，形成两亲性聚合物并自组装为胶束。",
+          "basis": "text",
+          "evidence_ids": [
+            "E2"
+          ],
+          "required": true
+        }
+      ],
+      "gold_evidence": [
+        {
+          "evidence_id": "E1",
+          "source_kind": "text",
+          "pdf_page_1_based": 1,
+          "bbox": [
+            51.477081298828125,
+            239.04098510742188,
+            555.45703125,
+            529.386962890625
+          ],
+          "figure": null,
+          "panel": null,
+          "verbatim_quote": "polymerize 5-fluorodeoxyuridine triphosphate (5-FdUTP) onto the 3′-end of an aptamer",
+          "visual_observation": null,
+          "legibility": "clear"
+        },
+        {
+          "evidence_id": "E2",
+          "source_kind": "text",
+          "pdf_page_1_based": 5,
+          "bbox": [
+            51.47731399536133,
+            354.4110107421875,
+            291.4845886230469,
+            755.1939697265625
+          ],
+          "figure": null,
+          "panel": null,
+          "verbatim_quote": "hydrophobic unnatural nucleotide",
+          "visual_observation": null,
+          "legibility": "clear"
+        }
+      ],
+      "required_uncertainties": [],
+      "forbidden_inferences": [],
+      "absence_check": null
+    },
+    {
+      "candidate_id": "APN-02",
+      "paper_id": "APN",
+      "question": "CCRF-CEM 细胞毒性实验中，floxuridine 与胶束的 cell viability 分别是多少？请报告误差、处理条件和统计检验。",
+      "task_kind": "numeric",
+      "figure": null,
+      "panel": null,
+      "expected_status": "answered",
+      "reference_answer": "细胞先用高于 CMC 的制剂处理 4 h，洗去未结合多核苷酸，再在无药培养基继续培养。；floxuridine 对照的存活率为 89.9±1.7%，胶束为 60±8.6%。；胶束毒性更高；Tukey’s multiple comparison test，p<0.005。",
+      "gold_claims": [
+        {
+          "claim_id": "G1",
+          "statement": "细胞先用高于 CMC 的制剂处理 4 h，洗去未结合多核苷酸，再在无药培养基继续培养。",
+          "basis": "text",
+          "evidence_ids": [
+            "E1"
+          ],
+          "required": true
+        },
+        {
+          "claim_id": "G2",
+          "statement": "floxuridine 对照的存活率为 89.9±1.7%，胶束为 60±8.6%。",
+          "basis": "text",
+          "evidence_ids": [
+            "E2"
+          ],
+          "required": true
+        },
+        {
+          "claim_id": "G3",
+          "statement": "胶束毒性更高；Tukey’s multiple comparison test，p<0.005。",
+          "basis": "text",
+          "evidence_ids": [
+            "E3"
+          ],
+          "required": true
+        }
+      ],
+      "gold_evidence": [
+        {
+          "evidence_id": "E1",
+          "source_kind": "text",
+          "pdf_page_1_based": 7,
+          "bbox": [
+            51.4770622253418,
+            60.175018310546875,
+            291.4840087890625,
+            755.195068359375
+          ],
+          "figure": null,
+          "panel": null,
+          "verbatim_quote": "micelles for 4 h at a concentration above their CMC",
+          "visual_observation": null,
+          "legibility": "clear"
+        },
+        {
+          "evidence_id": "E2",
+          "source_kind": "text",
+          "pdf_page_1_based": 7,
+          "bbox": [
+            51.4770622253418,
+            60.175018310546875,
+            291.4840087890625,
+            755.195068359375
+          ],
+          "figure": null,
+          "panel": null,
+          "verbatim_quote": "89.9 ± 1.7% and 60 ± 8.6%",
+          "visual_observation": null,
+          "legibility": "clear"
+        },
+        {
+          "evidence_id": "E3",
+          "source_kind": "text",
+          "pdf_page_1_based": 7,
+          "bbox": [
+            51.4770622253418,
+            60.175018310546875,
+            291.4840087890625,
+            755.195068359375
+          ],
+          "figure": null,
+          "panel": null,
+          "verbatim_quote": "p < 0.005, Tukey’s multiple comparison test",
+          "visual_observation": null,
+          "legibility": "clear"
+        }
+      ],
+      "required_uncertainties": [],
+      "forbidden_inferences": [
+        "这是细胞实验，不得外推为患者疗效或体内安全性；不得把存活率当杀伤率。"
+      ],
+      "absence_check": null
+    },
+    {
+      "candidate_id": "APN-03",
+      "paper_id": "APN",
+      "question": "只看 Figure 3B 曲线旁的文字：归一化解离常数 Kd* 的数值和单位是什么？",
+      "task_kind": "visual",
+      "figure": "3",
+      "panel": "b",
+      "expected_status": "answered",
+      "reference_answer": "图中曲线旁标注 Kd*=53.8 nM。",
+      "gold_claims": [
+        {
+          "claim_id": "G1",
+          "statement": "图中曲线旁标注 Kd*=53.8 nM。",
+          "basis": "visual",
+          "evidence_ids": [
+            "E1"
+          ],
+          "required": true
+        }
+      ],
+      "gold_evidence": [
+        {
+          "evidence_id": "E1",
+          "source_kind": "vision",
+          "pdf_page_1_based": 4,
+          "bbox": [
+            297.6299298095703,
+            48.05406005859375,
+            485.926416015625,
+            216.2432702636719
+          ],
+          "figure": "3",
+          "panel": "b",
+          "verbatim_quote": null,
+          "visual_observation": "橙色曲线旁的文字为 Kd*=53.8 nM；不是图注中的未归一化 Kd=323 nM。",
+          "legibility": "clear"
+        }
+      ],
+      "required_uncertainties": [],
+      "forbidden_inferences": [
+        "不得用未归一化的 323 nM 替代图中 Kd*=53.8 nM。"
+      ],
+      "absence_check": null
+    },
+    {
+      "candidate_id": "APN-04",
+      "paper_id": "APN",
+      "question": "请根据这份 PDF 的 Figure 99a 说明实验结果；如果不存在该图，请明确拒答，不要用其他图替代。",
+      "task_kind": "absence",
+      "figure": "99",
+      "panel": "a",
+      "expected_status": "refused",
+      "reference_answer": "这份 PDF 中不存在 Figure 99a，无法按该图说明实验结果。",
+      "gold_claims": [],
+      "gold_evidence": [],
+      "required_uncertainties": [
+        "指定图不存在，不能用其他图替代。"
+      ],
+      "forbidden_inferences": [
+        "不得编造 Figure 99a 的结果、页码或证据。"
+      ],
+      "absence_check": "已核查本 PDF 第 1–10 页的正文、主图、图注及附带页；没有 Figure 99 或 99a。范围只限这一份 PDF，不推断未提供的独立补充文件。"
+    },
+    {
+      "candidate_id": "ENDO-01",
+      "paper_id": "ENDO",
+      "question": "ENDO-Pore 的 end repair 对 5′/3′ overhang 如何处理，这给重复切割事件的定位带来什么限制？",
+      "task_kind": "text",
+      "figure": null,
+      "panel": null,
+      "expected_status": "answered",
+      "reference_answer": "end repair 填平 5′ overhang、去除 3′ overhang，平端保持不变。；经该处理后，报告的是各链最靠近 3′ 端的切割位置，不能保证重建更早的所有切割事件。",
+      "gold_claims": [
+        {
+          "claim_id": "G1",
+          "statement": "end repair 填平 5′ overhang、去除 3′ overhang，平端保持不变。",
+          "basis": "text",
+          "evidence_ids": [
+            "E1"
+          ],
+          "required": true
+        },
+        {
+          "claim_id": "G2",
+          "statement": "经该处理后，报告的是各链最靠近 3′ 端的切割位置，不能保证重建更早的所有切割事件。",
+          "basis": "text",
+          "evidence_ids": [
+            "E2"
+          ],
+          "required": true
+        }
+      ],
+      "gold_evidence": [
+        {
+          "evidence_id": "E1",
+          "source_kind": "caption",
+          "pdf_page_1_based": 4,
+          "bbox": [
+            42.22491455078125,
+            516.0881958007812,
+            556.3123168945312,
+            586.8236694335938
+          ],
+          "figure": "1",
+          "panel": null,
+          "verbatim_quote": "fill-in 5′ overhangs and remove 3′ overhangs, while blunt ends remain intact",
+          "visual_observation": null,
+          "legibility": "clear"
+        },
+        {
+          "evidence_id": "E2",
+          "source_kind": "text",
+          "pdf_page_1_based": 3,
+          "bbox": [
+            322.5915222167969,
+            68.76803588867188,
+            569.68505859375,
+            736.2640991210938
+          ],
+          "figure": null,
+          "panel": null,
+          "verbatim_quote": "CSI will only report the cleavage locus that is closest to the 3′ end of each strand",
+          "visual_observation": null,
+          "legibility": "clear"
+        }
+      ],
+      "required_uncertainties": [],
+      "forbidden_inferences": [
+        "不得声称能保留所有原始断端或重建每次重切割的时间顺序。"
+      ],
+      "absence_check": null
+    },
+    {
+      "candidate_id": "ENDO-02",
+      "paper_id": "ENDO",
+      "question": "ENDO-Pore 的 pUC19 consensus benchmarking 使用 ≥5 repeats 时，median accuracy 和 first quartile 各约多少？提高 cut-off 有何代价？",
+      "task_kind": "numeric",
+      "figure": null,
+      "panel": null,
+      "expected_status": "answered",
+      "reference_answer": "≥5 repeats 时，median accuracy 约 99.6%，first quartile 约 99.4%。；提高 repeat cut-off 会减少保留的数据量。",
+      "gold_claims": [
+        {
+          "claim_id": "G1",
+          "statement": "≥5 repeats 时，median accuracy 约 99.6%，first quartile 约 99.4%。",
+          "basis": "text",
+          "evidence_ids": [
+            "E1"
+          ],
+          "required": true
+        },
+        {
+          "claim_id": "G2",
+          "statement": "提高 repeat cut-off 会减少保留的数据量。",
+          "basis": "text",
+          "evidence_ids": [
+            "E2"
+          ],
+          "required": true
+        }
+      ],
+      "gold_evidence": [
+        {
+          "evidence_id": "E1",
+          "source_kind": "text",
+          "pdf_page_1_based": 4,
+          "bbox": [
+            309.2246398925781,
+            604.0904541015625,
+            556.310302734375,
+            734.5975341796875
+          ],
+          "figure": null,
+          "panel": null,
+          "verbatim_quote": "A median accuracy of ∼99.6% with a first quartile of ∼99.4%",
+          "visual_observation": null,
+          "legibility": "clear"
+        },
+        {
+          "evidence_id": "E2",
+          "source_kind": "text",
+          "pdf_page_1_based": 5,
+          "bbox": [
+            55.5989990234375,
+            606.493408203125,
+            302.67950439453125,
+            649.3326416015625
+          ],
+          "figure": null,
+          "panel": null,
+          "verbatim_quote": "produced a reduction in the data output",
+          "visual_observation": null,
+          "legibility": "clear"
+        }
+      ],
+      "required_uncertainties": [],
+      "forbidden_inferences": [
+        "这些是 consensus sequence accuracy，不得写成全体切割位点检测召回率。"
+      ],
+      "absence_check": null
+    },
+    {
+      "candidate_id": "ENDO-03",
+      "paper_id": "ENDO",
+      "question": "只看 Figure 3B：repeat cut-off 从 1 提高到 7 时，proportion of data retained 如何变化？最高 cut-off 下是否仍保留一半以上？",
+      "task_kind": "visual",
+      "figure": "3",
+      "panel": "b",
+      "expected_status": "answered",
+      "reference_answer": "保留比例随 cut-off 增大单调下降，从约 1 降到低于 0.1。；cut-off=7 时远低于一半。",
+      "gold_claims": [
+        {
+          "claim_id": "G1",
+          "statement": "保留比例随 cut-off 增大单调下降，从约 1 降到低于 0.1。",
+          "basis": "visual",
+          "evidence_ids": [
+            "E1"
+          ],
+          "required": true
+        },
+        {
+          "claim_id": "G2",
+          "statement": "cut-off=7 时远低于一半。",
+          "basis": "visual",
+          "evidence_ids": [
+            "E1"
+          ],
+          "required": true
+        }
+      ],
+      "gold_evidence": [
+        {
+          "evidence_id": "E1",
+          "source_kind": "vision",
+          "pdf_page_1_based": 6,
+          "bbox": [
+            55.10555969238281,
+            197.7165069580078,
+            238.7907586669922,
+            316.34641113281253
+          ],
+          "figure": "3",
+          "panel": "b",
+          "verbatim_quote": null,
+          "visual_observation": "曲线在 cut-off=1 约为 1；随后逐点降低；cut-off=7 在 0 和 0.1 之间。",
+          "legibility": "clear"
+        }
+      ],
+      "required_uncertainties": [],
+      "forbidden_inferences": [
+        "只能给出图上可辨的近似范围，不编造未标注的精确原始值。"
+      ],
+      "absence_check": null
+    },
+    {
+      "candidate_id": "ENDO-04",
+      "paper_id": "ENDO",
+      "question": "请根据这份 PDF 的 Figure 99a 说明实验结果；如果不存在该图，请明确拒答，不要用其他图替代。",
+      "task_kind": "absence",
+      "figure": "99",
+      "panel": "a",
+      "expected_status": "refused",
+      "reference_answer": "这份 PDF 中不存在 Figure 99a，无法按该图说明实验结果。",
+      "gold_claims": [],
+      "gold_evidence": [],
+      "required_uncertainties": [
+        "指定图不存在，不能用其他图替代。"
+      ],
+      "forbidden_inferences": [
+        "不得编造 Figure 99a 的结果、页码或证据。"
+      ],
+      "absence_check": "已核查本 PDF 第 1–11 页的正文、主图、图注及附带页；没有 Figure 99 或 99a。范围只限这一份 PDF，不推断未提供的独立补充文件。"
+    },
+    {
+      "candidate_id": "MOD-01",
+      "paper_id": "MOD",
+      "question": "MoDorado 使用 KL divergence 比较哪些预测分布？请说明样本对照关系与 prediction score 的含义。",
+      "task_kind": "text",
+      "figure": null,
+      "panel": null,
+      "expected_status": "answered",
+      "reference_answer": "比较同一核苷酸位置的修饰 RNA 样本与未修饰对照样本的 prediction score 分布。；修饰样本可以是 WT；未修饰对照可以是相应 gene deletion strain 或 IVT RNA。；prediction score 表示 Dorado 预测的修饰概率，而不是原始电流。",
+      "gold_claims": [
+        {
+          "claim_id": "G1",
+          "statement": "比较同一核苷酸位置的修饰 RNA 样本与未修饰对照样本的 prediction score 分布。",
+          "basis": "text",
+          "evidence_ids": [
+            "E1"
+          ],
+          "required": true
+        },
+        {
+          "claim_id": "G2",
+          "statement": "修饰样本可以是 WT；未修饰对照可以是相应 gene deletion strain 或 IVT RNA。",
+          "basis": "text",
+          "evidence_ids": [
+            "E2"
+          ],
+          "required": true
+        },
+        {
+          "claim_id": "G3",
+          "statement": "prediction score 表示 Dorado 预测的修饰概率，而不是原始电流。",
+          "basis": "text",
+          "evidence_ids": [
+            "E3"
+          ],
+          "required": true
+        }
+      ],
+      "gold_evidence": [
+        {
+          "evidence_id": "E1",
+          "source_kind": "text",
+          "pdf_page_1_based": 7,
+          "bbox": [
+            309.2309875488281,
+            173.30813598632812,
+            556.5504760742188,
+            746.2177734375
+          ],
+          "figure": null,
+          "panel": null,
+          "verbatim_quote": "MoDorado compares the distribution of prediction scores at a particular position",
+          "visual_observation": null,
+          "legibility": "clear"
+        },
+        {
+          "evidence_id": "E2",
+          "source_kind": "text",
+          "pdf_page_1_based": 7,
+          "bbox": [
+            309.2309875488281,
+            173.30813598632812,
+            556.5504760742188,
+            746.2177734375
+          ],
+          "figure": null,
+          "panel": null,
+          "verbatim_quote": "between a modified RNA (i.e. wt) and an unmodified control",
+          "visual_observation": null,
+          "legibility": "clear"
+        },
+        {
+          "evidence_id": "E3",
+          "source_kind": "text",
+          "pdf_page_1_based": 4,
+          "bbox": null,
+          "figure": null,
+          "panel": null,
+          "verbatim_quote": "representing a predicted probability of modification from 0 to 1",
+          "visual_observation": null,
+          "legibility": "clear"
+        }
+      ],
+      "required_uncertainties": [],
+      "forbidden_inferences": [
+        "不得将其说成模型与模型之间或原始电流分布的 KL 比较；高 KL 不等于确定某种化学修饰。"
+      ],
+      "absence_check": null
+    },
+    {
+      "candidate_id": "MOD-02",
+      "paper_id": "MOD",
+      "question": "论文中 Ψ caller 对 Trm8-dependent m⁷G46 的 off-label 检测，是直接在 G46 输出概率吗？实际比较哪个位置，为什么？",
+      "task_kind": "text",
+      "figure": null,
+      "panel": null,
+      "expected_status": "answered",
+      "reference_answer": "通过比较 WT 与 trm8Δ 在相邻 U47 的 Ψ 概率分布及 KL divergence 来检测 m⁷G46。；m⁷G46 引起附近电流信号畸变，影响邻位 U47 的预测；这不是 G46 的直接 Ψ 调用。",
+      "gold_claims": [
+        {
+          "claim_id": "G1",
+          "statement": "通过比较 WT 与 trm8Δ 在相邻 U47 的 Ψ 概率分布及 KL divergence 来检测 m⁷G46。",
+          "basis": "text",
+          "evidence_ids": [
+            "E1"
+          ],
+          "required": true
+        },
+        {
+          "claim_id": "G2",
+          "statement": "m⁷G46 引起附近电流信号畸变，影响邻位 U47 的预测；这不是 G46 的直接 Ψ 调用。",
+          "basis": "text",
+          "evidence_ids": [
+            "E2"
+          ],
+          "required": true
+        }
+      ],
+      "gold_evidence": [
+        {
+          "evidence_id": "E1",
+          "source_kind": "text",
+          "pdf_page_1_based": 10,
+          "bbox": [
+            59.09400177001953,
+            53.90174102783203,
+            306.3236389160156,
+            525.2313842773438
+          ],
+          "figure": null,
+          "panel": null,
+          "verbatim_quote": "at the neighbouring U47",
+          "visual_observation": null,
+          "legibility": "clear"
+        },
+        {
+          "evidence_id": "E2",
+          "source_kind": "text",
+          "pdf_page_1_based": 10,
+          "bbox": [
+            59.09400177001953,
+            53.90174102783203,
+            306.3236389160156,
+            525.2313842773438
+          ],
+          "figure": null,
+          "panel": null,
+          "verbatim_quote": "m 7 G caused signal distortion at and around position 46",
+          "visual_observation": null,
+          "legibility": "clear"
+        }
+      ],
+      "required_uncertainties": [],
+      "forbidden_inferences": [
+        "不得将邻位信号称为 G46 被化学特异性直接定量。"
+      ],
+      "absence_check": null
+    },
+    {
+      "candidate_id": "MOD-03",
+      "paper_id": "MOD",
+      "question": "Figure 4a 横轴位置 34 和 37 的完整标签分别是什么，颜色分别是什么？若上标无法辨认请明确说明。",
+      "task_kind": "visual",
+      "figure": "4",
+      "panel": "a",
+      "expected_status": "answered",
+      "reference_answer": "位置 34 标签为 ncm⁵U34，5 为上标。；位置 34 标签为红色。；位置 37 标签为 m¹G37，1 为上标。；位置 37 标签为深灰黑色。",
+      "gold_claims": [
+        {
+          "claim_id": "G1",
+          "statement": "位置 34 标签为 ncm⁵U34，5 为上标。",
+          "basis": "visual",
+          "evidence_ids": [
+            "E1"
+          ],
+          "required": true
+        },
+        {
+          "claim_id": "G2",
+          "statement": "位置 34 标签为红色。",
+          "basis": "visual",
+          "evidence_ids": [
+            "E1"
+          ],
+          "required": true
+        },
+        {
+          "claim_id": "G3",
+          "statement": "位置 37 标签为 m¹G37，1 为上标。",
+          "basis": "visual",
+          "evidence_ids": [
+            "E2"
+          ],
+          "required": true
+        },
+        {
+          "claim_id": "G4",
+          "statement": "位置 37 标签为深灰黑色。",
+          "basis": "visual",
+          "evidence_ids": [
+            "E2"
+          ],
+          "required": true
+        }
+      ],
+      "gold_evidence": [
+        {
+          "evidence_id": "E1",
+          "source_kind": "vision",
+          "pdf_page_1_based": 9,
+          "bbox": [
+            128.36,
+            166.2,
+            149.8,
+            187.64
+          ],
+          "figure": "4",
+          "panel": "a",
+          "verbatim_quote": null,
+          "visual_observation": "直接放大横轴位置 34，文字是红色的 ncm⁵U34；5 是上标。",
+          "legibility": "clear"
+        },
+        {
+          "evidence_id": "E2",
+          "source_kind": "vision",
+          "pdf_page_1_based": 9,
+          "bbox": [
+            166.75,
+            166.02,
+            183.3,
+            183.19
+          ],
+          "figure": "4",
+          "panel": "a",
+          "verbatim_quote": null,
+          "visual_observation": "直接放大横轴位置 37，文字是深灰黑色的 m¹G37；1 是上标。",
+          "legibility": "clear"
+        }
+      ],
+      "required_uncertainties": [],
+      "forbidden_inferences": [
+        "不得写成 mcm⁵U34 或 m⁷G37；不得把曲线颜色当标签颜色。"
+      ],
+      "absence_check": null
+    },
+    {
+      "candidate_id": "MOD-04",
+      "paper_id": "MOD",
+      "question": "请根据这份 PDF 的 Figure 99a 说明实验结果；如果不存在该图，请明确拒答，不要用其他图替代。",
+      "task_kind": "absence",
+      "figure": "99",
+      "panel": "a",
+      "expected_status": "refused",
+      "reference_answer": "这份 PDF 中不存在 Figure 99a，无法按该图说明实验结果。",
+      "gold_claims": [],
+      "gold_evidence": [],
+      "required_uncertainties": [
+        "指定图不存在，不能用其他图替代。"
+      ],
+      "forbidden_inferences": [
+        "不得编造 Figure 99a 的结果、页码或证据。"
+      ],
+      "absence_check": "已核查本 PDF 第 1–15 页的正文、主图、图注及附带页；没有 Figure 99 或 99a。范围只限这一份 PDF，不推断未提供的独立补充文件。"
+    },
+    {
+      "candidate_id": "HIST-01",
+      "paper_id": "HIST",
+      "question": "Box 1 如何解释 nanopore sequencing 中电压、酶和离子电流各自的作用？",
+      "task_kind": "text",
+      "figure": null,
+      "panel": null,
+      "expected_status": "answered",
+      "reference_answer": "恒定电压偏置产生离子电流，并驱动 ssDNA 或 ssRNA 从 cis 向 trans 穿过孔。；聚合酶或解旋酶控制并逐步推进核苷酸，通过电流变化读取序列信息。",
+      "gold_claims": [
+        {
+          "claim_id": "G1",
+          "statement": "恒定电压偏置产生离子电流，并驱动 ssDNA 或 ssRNA 从 cis 向 trans 穿过孔。",
+          "basis": "text",
+          "evidence_ids": [
+            "E1"
+          ],
+          "required": true
+        },
+        {
+          "claim_id": "G2",
+          "statement": "聚合酶或解旋酶控制并逐步推进核苷酸，通过电流变化读取序列信息。",
+          "basis": "text",
+          "evidence_ids": [
+            "E2"
+          ],
+          "required": true
+        }
+      ],
+      "gold_evidence": [
+        {
+          "evidence_id": "E1",
+          "source_kind": "text",
+          "pdf_page_1_based": 2,
+          "bbox": [
+            48.1869010925293,
+            87.30921936035156,
+            292.2006530761719,
+            313.131103515625
+          ],
+          "figure": null,
+          "panel": null,
+          "verbatim_quote": "A constant voltage bias",
+          "visual_observation": null,
+          "legibility": "clear"
+        },
+        {
+          "evidence_id": "E2",
+          "source_kind": "text",
+          "pdf_page_1_based": 2,
+          "bbox": [
+            48.1869010925293,
+            87.30921936035156,
+            292.2006530761719,
+            313.131103515625
+          ],
+          "figure": null,
+          "panel": null,
+          "verbatim_quote": "An enzyme (e.g., a polymerase or helicase)",
+          "visual_observation": null,
+          "legibility": "clear"
+        }
+      ],
+      "required_uncertainties": [],
+      "forbidden_inferences": [],
+      "absence_check": null
+    },
+    {
+      "candidate_id": "HIST-02",
+      "paper_id": "HIST",
+      "question": "早期 purine/pyrimidine 区段区分实验为什么不能直接证明已实现 individual nucleobase resolution？",
+      "task_kind": "text",
+      "figure": null,
+      "panel": null,
+      "expected_status": "answered",
+      "reference_answer": "两类电流水平差异来源于胞嘧啶和腺嘌呤区段的螺旋结构差异及通过孔时是否需要解旋。；该实验没有分辨单个核碱基，只说明孔可提供寡聚物结构或组成信息。",
+      "gold_claims": [
+        {
+          "claim_id": "G1",
+          "statement": "两类电流水平差异来源于胞嘧啶和腺嘌呤区段的螺旋结构差异及通过孔时是否需要解旋。",
+          "basis": "text",
+          "evidence_ids": [
+            "E1"
+          ],
+          "required": true
+        },
+        {
+          "claim_id": "G2",
+          "statement": "该实验没有分辨单个核碱基，只说明孔可提供寡聚物结构或组成信息。",
+          "basis": "text",
+          "evidence_ids": [
+            "E2"
+          ],
+          "required": true
+        }
+      ],
+      "gold_evidence": [
+        {
+          "evidence_id": "E1",
+          "source_kind": "text",
+          "pdf_page_1_based": 2,
+          "bbox": [
+            302.6662902832031,
+            335.3031921386719,
+            553.6494140625,
+            523.3502197265625
+          ],
+          "figure": null,
+          "panel": null,
+          "verbatim_quote": "cytosine-containing portion of the molecule forms a narrow single-stranded helix",
+          "visual_observation": null,
+          "legibility": "clear"
+        },
+        {
+          "evidence_id": "E2",
+          "source_kind": "text",
+          "pdf_page_1_based": 2,
+          "bbox": [
+            302.6662902832031,
+            335.3031921386719,
+            553.6494140625,
+            523.3502197265625
+          ],
+          "figure": null,
+          "panel": null,
+          "verbatim_quote": "Even though individual nucleobases were not resolved",
+          "visual_observation": null,
+          "legibility": "clear"
+        }
+      ],
+      "required_uncertainties": [],
+      "forbidden_inferences": [
+        "不得把区段级结构区分等同于逐碱基测序。"
+      ],
+      "absence_check": null
+    },
+    {
+      "candidate_id": "HIST-03",
+      "paper_id": "HIST",
+      "question": "只读 Figure 2 时间线：MinION 向 MAP early users 发布在哪一年？MinION alone 完成 E. coli de novo assembly 在哪一年，标注准确率是多少？",
+      "task_kind": "visual",
+      "figure": "2",
+      "panel": null,
+      "expected_status": "answered",
+      "reference_answer": "MinION 向 MAP early users 发布标在 2014 年。；E. coli genome 用 MinION alone 完成 de novo assembly 标在 2015 年，accuracy 为 99.4%。",
+      "gold_claims": [
+        {
+          "claim_id": "G1",
+          "statement": "MinION 向 MAP early users 发布标在 2014 年。",
+          "basis": "visual",
+          "evidence_ids": [
+            "E1"
+          ],
+          "required": true
+        },
+        {
+          "claim_id": "G2",
+          "statement": "E. coli genome 用 MinION alone 完成 de novo assembly 标在 2015 年，accuracy 为 99.4%。",
+          "basis": "visual",
+          "evidence_ids": [
+            "E1"
+          ],
+          "required": true
+        }
+      ],
+      "gold_evidence": [
+        {
+          "evidence_id": "E1",
+          "source_kind": "vision",
+          "pdf_page_1_based": 2,
+          "bbox": [
+            326.70000000000005,
+            524.61,
+            540.54,
+            712.53
+          ],
+          "figure": "2",
+          "panel": null,
+          "verbatim_quote": null,
+          "visual_observation": "时间线 2014 下方标 ONT releases MinION to early users in the MAP program；2015 上方标 E. coli genome assembled de novo with 99.4% accuracy using MinION alone。",
+          "legibility": "clear"
+        }
+      ],
+      "required_uncertainties": [],
+      "forbidden_inferences": [
+        "不得把 99.4% 解释成未经组装的每条原始 read 准确率。"
+      ],
+      "absence_check": null
+    },
+    {
+      "candidate_id": "HIST-04",
+      "paper_id": "HIST",
+      "question": "请根据这份 PDF 的 Figure 99a 说明实验结果；如果不存在该图，请明确拒答，不要用其他图替代。",
+      "task_kind": "absence",
+      "figure": "99",
+      "panel": "a",
+      "expected_status": "refused",
+      "reference_answer": "这份 PDF 中不存在 Figure 99a，无法按该图说明实验结果。",
+      "gold_claims": [],
+      "gold_evidence": [],
+      "required_uncertainties": [
+        "指定图不存在，不能用其他图替代。"
+      ],
+      "forbidden_inferences": [
+        "不得编造 Figure 99a 的结果、页码或证据。"
+      ],
+      "absence_check": "已核查本 PDF 第 1–7 页的正文、主图、图注及附带页；没有 Figure 99 或 99a。范围只限这一份 PDF，不推断未提供的独立补充文件。"
+    },
+    {
+      "candidate_id": "HMM-01",
+      "paper_id": "HMM",
+      "question": "该研究用什么模型直接识别 5-mC，信号 emission distribution 依赖多长的 k-mer？是否需要先做 chemical treatment？",
+      "task_kind": "text",
+      "figure": null,
+      "panel": null,
+      "expected_status": "answered",
+      "reference_answer": "使用 hidden Markov model（HMM）从 MinION 电流读出识别 5-mC。；emission distribution 以 Gaussian 分布建模，其均值与标准差依赖 6-mer。；该方法不需要 chemical treatment。",
+      "gold_claims": [
+        {
+          "claim_id": "G1",
+          "statement": "使用 hidden Markov model（HMM）从 MinION 电流读出识别 5-mC。",
+          "basis": "text",
+          "evidence_ids": [
+            "E1"
+          ],
+          "required": true
+        },
+        {
+          "claim_id": "G2",
+          "statement": "emission distribution 以 Gaussian 分布建模，其均值与标准差依赖 6-mer。",
+          "basis": "text",
+          "evidence_ids": [
+            "E2"
+          ],
+          "required": true
+        },
+        {
+          "claim_id": "G3",
+          "statement": "该方法不需要 chemical treatment。",
+          "basis": "text",
+          "evidence_ids": [
+            "E3"
+          ],
+          "required": true
+        }
+      ],
+      "gold_evidence": [
+        {
+          "evidence_id": "E1",
+          "source_kind": "text",
+          "pdf_page_1_based": 1,
+          "bbox": [
+            42.51969909667969,
+            252.82388305664062,
+            290.2088317871094,
+            344.3489990234375
+          ],
+          "figure": null,
+          "panel": null,
+          "verbatim_quote": "train a hidden Markov model to distinguish 5-mC",
+          "visual_observation": null,
+          "legibility": "clear"
+        },
+        {
+          "evidence_id": "E2",
+          "source_kind": "text",
+          "pdf_page_1_based": 1,
+          "bbox": [
+            304.08660888671875,
+            378.6044921875,
+            553.7562255859375,
+            483.4200134277344
+          ],
+          "figure": null,
+          "panel": null,
+          "verbatim_quote": "which in this case is a 6-mer",
+          "visual_observation": null,
+          "legibility": "clear"
+        },
+        {
+          "evidence_id": "E3",
+          "source_kind": "text",
+          "pdf_page_1_based": 1,
+          "bbox": [
+            304.08660888671875,
+            183.1043701171875,
+            553.766845703125,
+            310.919921875
+          ],
+          "figure": null,
+          "panel": null,
+          "verbatim_quote": "without any chemical treatment",
+          "visual_observation": null,
+          "legibility": "clear"
+        }
+      ],
+      "required_uncertainties": [],
+      "forbidden_inferences": [],
+      "absence_check": null
+    },
+    {
+      "candidate_id": "HMM-02",
+      "paper_id": "HMM",
+      "question": "log-likelihood ratio threshold=2.5 时，R7.3 与 R9 的 accuracy 和可调用位点比例各是多少？提高 stringency 的代价是什么？",
+      "task_kind": "numeric",
+      "figure": null,
+      "panel": null,
+      "expected_status": "answered",
+      "reference_answer": "R7.3：accuracy 91%，在 68% 位点作出调用。；R9：accuracy 94%，在 77% 位点作出调用。；提高调用严格程度会提高准确率，但可调用位点减少。",
+      "gold_claims": [
+        {
+          "claim_id": "G1",
+          "statement": "R7.3：accuracy 91%，在 68% 位点作出调用。",
+          "basis": "text",
+          "evidence_ids": [
+            "E1"
+          ],
+          "required": true
+        },
+        {
+          "claim_id": "G2",
+          "statement": "R9：accuracy 94%，在 77% 位点作出调用。",
+          "basis": "text",
+          "evidence_ids": [
+            "E2"
+          ],
+          "required": true
+        },
+        {
+          "claim_id": "G3",
+          "statement": "提高调用严格程度会提高准确率，但可调用位点减少。",
+          "basis": "text",
+          "evidence_ids": [
+            "E3"
+          ],
+          "required": true
+        }
+      ],
+      "gold_evidence": [
+        {
+          "evidence_id": "E1",
+          "source_kind": "text",
+          "pdf_page_1_based": 2,
+          "bbox": [
+            304.08660888671875,
+            587.7974853515625,
+            553.7750854492188,
+            738.6129760742188
+          ],
+          "figure": null,
+          "panel": null,
+          "verbatim_quote": "accuracy of 91% and made calls at 68% of sites",
+          "visual_observation": null,
+          "legibility": "clear"
+        },
+        {
+          "evidence_id": "E2",
+          "source_kind": "text",
+          "pdf_page_1_based": 2,
+          "bbox": [
+            304.08660888671875,
+            587.7974853515625,
+            553.7750854492188,
+            738.6129760742188
+          ],
+          "figure": null,
+          "panel": null,
+          "verbatim_quote": "accuracy of 94% and made calls at 77% of sites",
+          "visual_observation": null,
+          "legibility": "clear"
+        },
+        {
+          "evidence_id": "E3",
+          "source_kind": "text",
+          "pdf_page_1_based": 2,
+          "bbox": [
+            304.08660888671875,
+            587.7974853515625,
+            553.7750854492188,
+            738.6129760742188
+          ],
+          "figure": null,
+          "panel": null,
+          "verbatim_quote": "cost of making calls at fewer sites",
+          "visual_observation": null,
+          "legibility": "clear"
+        }
+      ],
+      "required_uncertainties": [],
+      "forbidden_inferences": [
+        "不得混淆 accuracy 与调用覆盖率，或把不同 pore 的数值交换。"
+      ],
+      "absence_check": null
+    },
+    {
+      "candidate_id": "HMM-03",
+      "paper_id": "HMM",
+      "question": "只看 Figure 1b：绿色 PCR+MSssI 分布的主峰相对蓝色 PCR 分布在左还是右？横轴是什么量、单位是什么？",
+      "task_kind": "visual",
+      "figure": "1",
+      "panel": "b",
+      "expected_status": "answered",
+      "reference_answer": "绿色分布的主峰在蓝色分布主峰右侧。；横轴是 Transformed event level，单位 pA。",
+      "gold_claims": [
+        {
+          "claim_id": "G1",
+          "statement": "绿色分布的主峰在蓝色分布主峰右侧。",
+          "basis": "visual",
+          "evidence_ids": [
+            "E1"
+          ],
+          "required": true
+        },
+        {
+          "claim_id": "G2",
+          "statement": "横轴是 Transformed event level，单位 pA。",
+          "basis": "visual",
+          "evidence_ids": [
+            "E1"
+          ],
+          "required": true
+        }
+      ],
+      "gold_evidence": [
+        {
+          "evidence_id": "E1",
+          "source_kind": "vision",
+          "pdf_page_1_based": 2,
+          "bbox": [
+            219.78,
+            54.81,
+            397.98,
+            203.58
+          ],
+          "figure": "1",
+          "panel": "b",
+          "verbatim_quote": null,
+          "visual_observation": "R7.3 AGGTMG 子图中蓝色主峰约在 51，绿色约在 53.5；横轴写 Transformed event level (pA)。",
+          "legibility": "clear"
+        }
+      ],
+      "required_uncertainties": [],
+      "forbidden_inferences": [
+        "不得从单个例子推断所有 6-mer 的甲基化均使电流增加。"
+      ],
+      "absence_check": null
+    },
+    {
+      "candidate_id": "HMM-04",
+      "paper_id": "HMM",
+      "question": "请根据这份 PDF 的 Figure 99a 说明实验结果；如果不存在该图，请明确拒答，不要用其他图替代。",
+      "task_kind": "absence",
+      "figure": "99",
+      "panel": "a",
+      "expected_status": "refused",
+      "reference_answer": "这份 PDF 中不存在 Figure 99a，无法按该图说明实验结果。",
+      "gold_claims": [],
+      "gold_evidence": [],
+      "required_uncertainties": [
+        "指定图不存在，不能用其他图替代。"
+      ],
+      "forbidden_inferences": [
+        "不得编造 Figure 99a 的结果、页码或证据。"
+      ],
+      "absence_check": "已核查本 PDF 第 1–7 页的正文、主图、图注及附带页；没有 Figure 99 或 99a。范围只限这一份 PDF，不推断未提供的独立补充文件。"
+    },
+    {
+      "candidate_id": "CHN-01",
+      "paper_id": "CHN",
+      "question": "CHN 摘要报告可处理多高的 indel 和 substitution rate？采用 degenerated eight-letter alphabet 后 information density 从多少变成多少？",
+      "task_kind": "numeric",
+      "figure": null,
+      "panel": null,
+      "expected_status": "answered",
+      "reference_answer": "报告可处理 indel rate 达 15.9%，substitution rate 达 7.8%。；使用退化八字母表后 overall information density 从 0.59 提高到 1.17。",
+      "gold_claims": [
+        {
+          "claim_id": "G1",
+          "statement": "报告可处理 indel rate 达 15.9%，substitution rate 达 7.8%。",
+          "basis": "text",
+          "evidence_ids": [
+            "E1"
+          ],
+          "required": true
+        },
+        {
+          "claim_id": "G2",
+          "statement": "使用退化八字母表后 overall information density 从 0.59 提高到 1.17。",
+          "basis": "text",
+          "evidence_ids": [
+            "E2"
+          ],
+          "required": true
+        }
+      ],
+      "gold_evidence": [
+        {
+          "evidence_id": "E1",
+          "source_kind": "text",
+          "pdf_page_1_based": 1,
+          "bbox": [
+            217.30384826660156,
+            279.2730407714844,
+            561.3141479492188,
+            470.5421447753906
+          ],
+          "figure": null,
+          "panel": null,
+          "verbatim_quote": "indel rates up to 15.9% and substitution rates up to 7.8%",
+          "visual_observation": null,
+          "legibility": "clear"
+        },
+        {
+          "evidence_id": "E2",
+          "source_kind": "text",
+          "pdf_page_1_based": 1,
+          "bbox": [
+            217.30384826660156,
+            279.2730407714844,
+            561.3141479492188,
+            470.5421447753906
+          ],
+          "figure": null,
+          "panel": null,
+          "verbatim_quote": "from 0.59 to 1.17",
+          "visual_observation": null,
+          "legibility": "clear"
+        }
+      ],
+      "required_uncertainties": [],
+      "forbidden_inferences": [
+        "不得将特定实验/测试能力扩展为任意数据和误差分布下的绝对保证。"
+      ],
+      "absence_check": null
+    },
+    {
+      "candidate_id": "CHN-02",
+      "paper_id": "CHN",
+      "question": "CHN 的代表性 text/image 文件分别需要多久 sequencing time；完全恢复所需 composite-strand physical redundancy 各估计多少？",
+      "task_kind": "numeric",
+      "figure": null,
+      "panel": null,
+      "expected_status": "answered",
+      "reference_answer": "代表性文本与图像的测序时间分别为 20 min 和 120 min。；完全恢复所需 composite-strand physical redundancy 分别估计为文本 4×、图像 8×。",
+      "gold_claims": [
+        {
+          "claim_id": "G1",
+          "statement": "代表性文本与图像的测序时间分别为 20 min 和 120 min。",
+          "basis": "text",
+          "evidence_ids": [
+            "E1"
+          ],
+          "required": true
+        },
+        {
+          "claim_id": "G2",
+          "statement": "完全恢复所需 composite-strand physical redundancy 分别估计为文本 4×、图像 8×。",
+          "basis": "text",
+          "evidence_ids": [
+            "E2"
+          ],
+          "required": true
+        }
+      ],
+      "gold_evidence": [
+        {
+          "evidence_id": "E1",
+          "source_kind": "text",
+          "pdf_page_1_based": 1,
+          "bbox": [
+            217.30384826660156,
+            279.2730407714844,
+            561.3141479492188,
+            470.5421447753906
+          ],
+          "figure": null,
+          "panel": null,
+          "verbatim_quote": "sequencing times of 20 and 120 minutes",
+          "visual_observation": null,
+          "legibility": "clear"
+        },
+        {
+          "evidence_id": "E2",
+          "source_kind": "text",
+          "pdf_page_1_based": 1,
+          "bbox": [
+            217.30384826660156,
+            279.2730407714844,
+            561.3141479492188,
+            470.5421447753906
+          ],
+          "figure": null,
+          "panel": null,
+          "verbatim_quote": "text and image data require 4× and 8× physical redundancy",
+          "visual_observation": null,
+          "legibility": "clear"
+        }
+      ],
+      "required_uncertainties": [],
+      "forbidden_inferences": [
+        "不得把测序时间当作包含文库制备、basecalling、解码的完整端到端时间；冗余是估计。"
+      ],
+      "absence_check": null
+    },
+    {
+      "candidate_id": "CHN-03",
+      "paper_id": "CHN",
+      "question": "只看 Figure 4b 下半部：raw 与 filtered strands 的 indel error rate 标注各是多少？substitution rate 的降幅是否比 indel 小？",
+      "task_kind": "visual",
+      "figure": "4",
+      "panel": "b",
+      "expected_status": "answered",
+      "reference_answer": "raw strands 的 indel rate 标为 16.67±0.47%，filtered 标为 2.66±0.19%。；substitution rate 从 4.91±0.47% 变为 4.73±0.46%，降幅比 indel 小。",
+      "gold_claims": [
+        {
+          "claim_id": "G1",
+          "statement": "raw strands 的 indel rate 标为 16.67±0.47%，filtered 标为 2.66±0.19%。",
+          "basis": "visual",
+          "evidence_ids": [
+            "E1"
+          ],
+          "required": true
+        },
+        {
+          "claim_id": "G2",
+          "statement": "substitution rate 从 4.91±0.47% 变为 4.73±0.46%，降幅比 indel 小。",
+          "basis": "visual",
+          "evidence_ids": [
+            "E1"
+          ],
+          "required": true
+        }
+      ],
+      "gold_evidence": [
+        {
+          "evidence_id": "E1",
+          "source_kind": "vision",
+          "pdf_page_1_based": 8,
+          "bbox": [
+            83.33864013671875,
+            197.7165069580078,
+            309.5435205078125,
+            292.62043029785156
+          ],
+          "figure": "4",
+          "panel": "b",
+          "verbatim_quote": null,
+          "visual_observation": "Figure 4b 下方 sub 组标 4.91±0.47%、4.73±0.46%；indel 组标 16.67±0.47%、2.66±0.19%。",
+          "legibility": "clear"
+        }
+      ],
+      "required_uncertainties": [],
+      "forbidden_inferences": [
+        "不得将图中 error rate 当作完全恢复的失败概率；不从误差棒外观推断未报告的显著性。"
+      ],
+      "absence_check": null
+    },
+    {
+      "candidate_id": "CHN-04",
+      "paper_id": "CHN",
+      "question": "请根据这份 PDF 的 Figure 99a 说明实验结果；如果不存在该图，请明确拒答，不要用其他图替代。",
+      "task_kind": "absence",
+      "figure": "99",
+      "panel": "a",
+      "expected_status": "refused",
+      "reference_answer": "这份 PDF 中不存在 Figure 99a，无法按该图说明实验结果。",
+      "gold_claims": [],
+      "gold_evidence": [],
+      "required_uncertainties": [
+        "指定图不存在，不能用其他图替代。"
+      ],
+      "forbidden_inferences": [
+        "不得编造 Figure 99a 的结果、页码或证据。"
+      ],
+      "absence_check": "已核查本 PDF 第 1–12 页的正文、主图、图注及附带页；没有 Figure 99 或 99a。范围只限这一份 PDF，不推断未提供的独立补充文件。"
+    },
+    {
+      "candidate_id": "SUS-01",
+      "paper_id": "SUS",
+      "question": "SUSTag 用什么 distance 和设计策略降低 crosstalk？ORCtrL 用什么网络与 optional rejection 机制？",
+      "task_kind": "text",
+      "figure": null,
+      "panel": null,
+      "expected_status": "answered",
+      "reference_answer": "SUSTag 设计利用 Bhattacharyya distance 和 incremental clustering 以降低标签串扰。；ORCtrL 采用 CNN-LSTM；selection module 输出 yes/no，控制是否接受 prediction。",
+      "gold_claims": [
+        {
+          "claim_id": "G1",
+          "statement": "SUSTag 设计利用 Bhattacharyya distance 和 incremental clustering 以降低标签串扰。",
+          "basis": "text",
+          "evidence_ids": [
+            "E1"
+          ],
+          "required": true
+        },
+        {
+          "claim_id": "G2",
+          "statement": "ORCtrL 采用 CNN-LSTM；selection module 输出 yes/no，控制是否接受 prediction。",
+          "basis": "text",
+          "evidence_ids": [
+            "E2"
+          ],
+          "required": true
+        }
+      ],
+      "gold_evidence": [
+        {
+          "evidence_id": "E1",
+          "source_kind": "text",
+          "pdf_page_1_based": 2,
+          "bbox": [
+            306.1397705078125,
+            306.0966491699219,
+            561.364990234375,
+            549.936767578125
+          ],
+          "figure": null,
+          "panel": null,
+          "verbatim_quote": "leverages Bhattacharyya distance",
+          "visual_observation": null,
+          "legibility": "clear"
+        },
+        {
+          "evidence_id": "E2",
+          "source_kind": "text",
+          "pdf_page_1_based": 4,
+          "bbox": [
+            39.68330383300781,
+            444.8728332519531,
+            294.9126892089844,
+            742.6943359375
+          ],
+          "figure": null,
+          "panel": null,
+          "verbatim_quote": "selection module, which returns binary (yes or no) results",
+          "visual_observation": null,
+          "legibility": "clear"
+        }
+      ],
+      "required_uncertainties": [],
+      "forbidden_inferences": [],
+      "absence_check": null
+    },
+    {
+      "candidate_id": "SUS-02",
+      "paper_id": "SUS",
+      "question": "SUSTag-ORCtrL 摘要中的 96-plex 与 384-plex weighted F1-score 各是多少？120 min 新域数据的 domain adaptation 把性能从什么水平提高到什么水平？",
+      "task_kind": "numeric",
+      "figure": null,
+      "panel": null,
+      "expected_status": "answered",
+      "reference_answer": "96-plex 的 intra-class weighted F1-score 为 99.69%，384-plex 为 99.05%。；摘要称 120 min 新测序数据（约 200k reads）用于适应新域，把性能从约 87% 提高到超过 94%。",
+      "gold_claims": [
+        {
+          "claim_id": "G1",
+          "statement": "96-plex 的 intra-class weighted F1-score 为 99.69%，384-plex 为 99.05%。",
+          "basis": "text",
+          "evidence_ids": [
+            "E1"
+          ],
+          "required": true
+        },
+        {
+          "claim_id": "G2",
+          "statement": "摘要称 120 min 新测序数据（约 200k reads）用于适应新域，把性能从约 87% 提高到超过 94%。",
+          "basis": "text",
+          "evidence_ids": [
+            "E2"
+          ],
+          "required": true
+        }
+      ],
+      "gold_evidence": [
+        {
+          "evidence_id": "E1",
+          "source_kind": "text",
+          "pdf_page_1_based": 1,
+          "bbox": [
+            217.3038787841797,
+            279.2730407714844,
+            561.2805786132812,
+            540.275390625
+          ],
+          "figure": null,
+          "panel": null,
+          "verbatim_quote": "F1-score of 99.69% for 96-plex",
+          "visual_observation": null,
+          "legibility": "clear"
+        },
+        {
+          "evidence_id": "E2",
+          "source_kind": "text",
+          "pdf_page_1_based": 1,
+          "bbox": [
+            217.3038787841797,
+            279.2730407714844,
+            561.2805786132812,
+            540.275390625
+          ],
+          "figure": null,
+          "panel": null,
+          "verbatim_quote": "boosts the model performance from 87% to over 94%",
+          "visual_observation": null,
+          "legibility": "clear"
+        }
+      ],
+      "required_uncertainties": [],
+      "forbidden_inferences": [
+        "不得称无需新域数据；不得把 F1-score 当作目标文件完全恢复率。"
+      ],
+      "absence_check": null
+    },
+    {
+      "candidate_id": "SUS-03",
+      "paper_id": "SUS",
+      "question": "只看 Figure 2c 的三张 confusion matrix：ONT 96、Porcupine 96、SUSTag 96 各标注什么 F1-score，哪个最高？",
+      "task_kind": "visual",
+      "figure": "2",
+      "panel": "c",
+      "expected_status": "answered",
+      "reference_answer": "ONT 96 标注 F1-score=0.9925。；Porcupine 96 标注 F1-score=0.9891。；SUSTag 96 标注 F1-score=0.9969，三者中最高。",
+      "gold_claims": [
+        {
+          "claim_id": "G1",
+          "statement": "ONT 96 标注 F1-score=0.9925。",
+          "basis": "visual",
+          "evidence_ids": [
+            "E1"
+          ],
+          "required": true
+        },
+        {
+          "claim_id": "G2",
+          "statement": "Porcupine 96 标注 F1-score=0.9891。",
+          "basis": "visual",
+          "evidence_ids": [
+            "E1"
+          ],
+          "required": true
+        },
+        {
+          "claim_id": "G3",
+          "statement": "SUSTag 96 标注 F1-score=0.9969，三者中最高。",
+          "basis": "visual",
+          "evidence_ids": [
+            "E1"
+          ],
+          "required": true
+        }
+      ],
+      "gold_evidence": [
+        {
+          "evidence_id": "E1",
+          "source_kind": "vision",
+          "pdf_page_1_based": 5,
+          "bbox": [
+            65.48036010742187,
+            245.16846862792968,
+            345.2600805664062,
+            340.07239196777346
+          ],
+          "figure": "2",
+          "panel": "c",
+          "verbatim_quote": null,
+          "visual_observation": "三个矩阵左下分别写 0.9925、0.9891、0.9969；标题依次 ONT 96、Porcupine 96、SUSTag 96。",
+          "legibility": "clear"
+        }
+      ],
+      "required_uncertainties": [],
+      "forbidden_inferences": [
+        "不得用 Figure 2d 的 0.9543/0.9852/0.9892 替代 Figure 2c。"
+      ],
+      "absence_check": null
+    },
+    {
+      "candidate_id": "SUS-04",
+      "paper_id": "SUS",
+      "question": "请根据这份 PDF 的 Figure 99a 说明实验结果；如果不存在该图，请明确拒答，不要用其他图替代。",
+      "task_kind": "absence",
+      "figure": "99",
+      "panel": "a",
+      "expected_status": "refused",
+      "reference_answer": "这份 PDF 中不存在 Figure 99a，无法按该图说明实验结果。",
+      "gold_claims": [],
+      "gold_evidence": [],
+      "required_uncertainties": [
+        "指定图不存在，不能用其他图替代。"
+      ],
+      "forbidden_inferences": [
+        "不得编造 Figure 99a 的结果、页码或证据。"
+      ],
+      "absence_check": "已核查本 PDF 第 1–12 页的正文、主图、图注及附带页；没有 Figure 99 或 99a。范围只限这一份 PDF，不推断未提供的独立补充文件。"
+    },
+    {
+      "candidate_id": "RARE-01",
+      "paper_id": "RARE",
+      "question": "DeepRare 的 HPO-wise 平均 Recall@1 与第二名 Claude-3.7-Sonnet-thinking 各是多少？差值应表述为百分比还是百分点？",
+      "task_kind": "numeric",
+      "figure": null,
+      "panel": null,
+      "expected_status": "answered",
+      "reference_answer": "DeepRare 平均 Recall@1 为 57.18%，Claude-3.7-Sonnet-thinking 为 33.39%。；两者相差 23.79 个百分点；这是绝对差值，不是相对提升 23.79%。",
+      "gold_claims": [
+        {
+          "claim_id": "G1",
+          "statement": "DeepRare 平均 Recall@1 为 57.18%，Claude-3.7-Sonnet-thinking 为 33.39%。",
+          "basis": "text",
+          "evidence_ids": [
+            "E1"
+          ],
+          "required": true
+        },
+        {
+          "claim_id": "G2",
+          "statement": "两者相差 23.79 个百分点；这是绝对差值，不是相对提升 23.79%。",
+          "basis": "text",
+          "evidence_ids": [
+            "E1"
+          ],
+          "required": true
+        }
+      ],
+      "gold_evidence": [
+        {
+          "evidence_id": "E1",
+          "source_kind": "text",
+          "pdf_page_1_based": 4,
+          "bbox": [
+            39.685001373291016,
+            477.5956115722656,
+            296.42431640625,
+            745.776123046875
+          ],
+          "figure": null,
+          "panel": null,
+          "verbatim_quote": "Claude-3.7-Sonnet-thinking (33.39%)",
+          "visual_observation": null,
+          "legibility": "clear"
+        }
+      ],
+      "required_uncertainties": [],
+      "forbidden_inferences": [
+        "不得将 23.79 个百分点称为相对提升 23.79%；指标仅对应 HPO-wise 基准。"
+      ],
+      "absence_check": null
+    },
+    {
+      "candidate_id": "RARE-02",
+      "paper_id": "RARE",
+      "question": "DeepRare reasoning chain validation 的 95.4% 到底评价什么？抽查了多少病例，几位专家如何评分？",
+      "task_kind": "numeric",
+      "figure": null,
+      "panel": null,
+      "expected_status": "answered",
+      "reference_answer": "95.4% 是病例级 reference accuracy 的平均值，不是诊断 Recall@1。；从九个数据集抽取 180 个病例，由三位相关专科医生独立评价，病例分数取平均。",
+      "gold_claims": [
+        {
+          "claim_id": "G1",
+          "statement": "95.4% 是病例级 reference accuracy 的平均值，不是诊断 Recall@1。",
+          "basis": "text",
+          "evidence_ids": [
+            "E1"
+          ],
+          "required": true
+        },
+        {
+          "claim_id": "G2",
+          "statement": "从九个数据集抽取 180 个病例，由三位相关专科医生独立评价，病例分数取平均。",
+          "basis": "text",
+          "evidence_ids": [
+            "E2"
+          ],
+          "required": true
+        }
+      ],
+      "gold_evidence": [
+        {
+          "evidence_id": "E1",
+          "source_kind": "text",
+          "pdf_page_1_based": 7,
+          "bbox": [
+            39.685001373291016,
+            542.0956420898438,
+            296.4225158691406,
+            745.776123046875
+          ],
+          "figure": null,
+          "panel": null,
+          "verbatim_quote": "average reference accuracy of 95.4%",
+          "visual_observation": null,
+          "legibility": "clear"
+        },
+        {
+          "evidence_id": "E2",
+          "source_kind": "text",
+          "pdf_page_1_based": 7,
+          "bbox": [
+            39.685001373291016,
+            542.0956420898438,
+            296.4225158691406,
+            745.776123046875
+          ],
+          "figure": null,
+          "panel": null,
+          "verbatim_quote": "A total of 180 cases were sampled randomly",
+          "visual_observation": null,
+          "legibility": "clear"
+        }
+      ],
+      "required_uncertainties": [],
+      "forbidden_inferences": [
+        "不得把 95.4% 说成患者诊断准确率、临床获益率或专家一致诊断比例。"
+      ],
+      "absence_check": null
+    },
+    {
+      "candidate_id": "RARE-03",
+      "paper_id": "RARE",
+      "question": "只看 Figure 4d 的饼图和图例：占比最高的 failure mode 是什么，百分比和病例数各是多少？",
+      "task_kind": "visual",
+      "figure": "4",
+      "panel": "d",
+      "expected_status": "answered",
+      "reference_answer": "最大类别为 Reasoning weighing error（推理权重错误）。；占比为 41.0%，n=82；图中总样本为 200 个失败病例。",
+      "gold_claims": [
+        {
+          "claim_id": "G1",
+          "statement": "最大类别为 Reasoning weighing error（推理权重错误）。",
+          "basis": "visual",
+          "evidence_ids": [
+            "E1"
+          ],
+          "required": true
+        },
+        {
+          "claim_id": "G2",
+          "statement": "占比为 41.0%，n=82；图中总样本为 200 个失败病例。",
+          "basis": "visual",
+          "evidence_ids": [
+            "E1"
+          ],
+          "required": true
+        }
+      ],
+      "gold_evidence": [
+        {
+          "evidence_id": "E1",
+          "source_kind": "vision",
+          "pdf_page_1_based": 7,
+          "bbox": [
+            375.02388061523436,
+            205.62516723632814,
+            559.5594409179687,
+            347.9810522460937
+          ],
+          "figure": "4",
+          "panel": "d",
+          "verbatim_quote": null,
+          "visual_observation": "最大紫色扇区标 41.0%；对应图例 Reasoning weighing error (n=82)；标题 Case failure mode analysis (n=200)。",
+          "legibility": "clear"
+        }
+      ],
+      "required_uncertainties": [],
+      "forbidden_inferences": [
+        "不得把该类别在 200 个失败病例中的占比说成全体诊断的错误率。"
+      ],
+      "absence_check": null
+    },
+    {
+      "candidate_id": "RARE-04",
+      "paper_id": "RARE",
+      "question": "请根据这份 PDF 的 Figure 99a 说明实验结果；如果不存在该图，请明确拒答，不要用其他图替代。",
+      "task_kind": "absence",
+      "figure": "99",
+      "panel": "a",
+      "expected_status": "refused",
+      "reference_answer": "这份 PDF 中不存在 Figure 99a，无法按该图说明实验结果。",
+      "gold_claims": [],
+      "gold_evidence": [],
+      "required_uncertainties": [
+        "指定图不存在，不能用其他图替代。"
+      ],
+      "forbidden_inferences": [
+        "不得编造 Figure 99a 的结果、页码或证据。"
+      ],
+      "absence_check": "已核查本 PDF 第 1–23 页的正文、主图、图注及附带页；没有 Figure 99 或 99a。范围只限这一份 PDF，不推断未提供的独立补充文件。"
+    },
+    {
+      "candidate_id": "ADDUCT-01",
+      "paper_id": "ADDUCT",
+      "question": "DNA adducts 的传统 LC-MS 定量流程是什么？它能否同时保留 genome 上的 site-specific location？",
+      "task_kind": "text",
+      "figure": null,
+      "panel": null,
+      "expected_status": "answered",
+      "reference_answer": "分离 DNA，化学或酶水解释放 DNA adducts，再用 LC-MS 定量释放的核苷/碱基加合物。；该流程具有较高化学特异性，但不能提供原始序列中的位点特异性。",
+      "gold_claims": [
+        {
+          "claim_id": "G1",
+          "statement": "分离 DNA，化学或酶水解释放 DNA adducts，再用 LC-MS 定量释放的核苷/碱基加合物。",
+          "basis": "text",
+          "evidence_ids": [
+            "E1"
+          ],
+          "required": true
+        },
+        {
+          "claim_id": "G2",
+          "statement": "该流程具有较高化学特异性，但不能提供原始序列中的位点特异性。",
+          "basis": "text",
+          "evidence_ids": [
+            "E2"
+          ],
+          "required": true
+        }
+      ],
+      "gold_evidence": [
+        {
+          "evidence_id": "E1",
+          "source_kind": "text",
+          "pdf_page_1_based": 2,
+          "bbox": [
+            166.06500244140625,
+            201.3153533935547,
+            561.0189819335938,
+            361.9841003417969
+          ],
+          "figure": null,
+          "panel": null,
+          "verbatim_quote": "liberate the DNA adducts from DNA by chemical means or enzyme hydrolysis",
+          "visual_observation": null,
+          "legibility": "clear"
+        },
+        {
+          "evidence_id": "E2",
+          "source_kind": "text",
+          "pdf_page_1_based": 3,
+          "bbox": [
+            166.09500122070312,
+            96.99911499023438,
+            559.2719116210938,
+            120.1900863647461
+          ],
+          "figure": null,
+          "panel": null,
+          "verbatim_quote": "chemical specificity but no site-specificity",
+          "visual_observation": null,
+          "legibility": "clear"
+        }
+      ],
+      "required_uncertainties": [],
+      "forbidden_inferences": [
+        "不得声称传统水解后 LC-MS 可以同时追溯完整基因组位点。"
+      ],
+      "absence_check": null
+    },
+    {
+      "candidate_id": "ADDUCT-02",
+      "paper_id": "ADDUCT",
+      "question": "这篇综述是否认为 nanopore DNA adduct 测量的 chemical specificity 已达到 mass spectrometry？未来还需验证哪些测量性能？",
+      "task_kind": "text",
+      "figure": null,
+      "panel": null,
+      "expected_status": "answered",
+      "reference_answer": "综述明确称当时 nanopore 单分子 DNA 测序技术尚未达到质谱的化学特异性。；技术仍在实施阶段，需要评价并建立 chemical specificity、sensitivity 和 accuracy。",
+      "gold_claims": [
+        {
+          "claim_id": "G1",
+          "statement": "综述明确称当时 nanopore 单分子 DNA 测序技术尚未达到质谱的化学特异性。",
+          "basis": "text",
+          "evidence_ids": [
+            "E1"
+          ],
+          "required": true
+        },
+        {
+          "claim_id": "G2",
+          "statement": "技术仍在实施阶段，需要评价并建立 chemical specificity、sensitivity 和 accuracy。",
+          "basis": "text",
+          "evidence_ids": [
+            "E2"
+          ],
+          "required": true
+        }
+      ],
+      "gold_evidence": [
+        {
+          "evidence_id": "E1",
+          "source_kind": "text",
+          "pdf_page_1_based": 7,
+          "bbox": [
+            166.3939971923828,
+            113.14537811279297,
+            559.6677856445312,
+            273.8150939941406
+          ],
+          "figure": null,
+          "panel": null,
+          "verbatim_quote": "do not reach the chemical specificity obtained by mass spectrometry",
+          "visual_observation": null,
+          "legibility": "clear"
+        },
+        {
+          "evidence_id": "E2",
+          "source_kind": "text",
+          "pdf_page_1_based": 7,
+          "bbox": [
+            166.3939971923828,
+            113.14537811279297,
+            559.6677856445312,
+            273.8150939941406
+          ],
+          "figure": null,
+          "panel": null,
+          "verbatim_quote": "chemical specificity, sensitivity, and accuracy",
+          "visual_observation": null,
+          "legibility": "clear"
+        }
+      ],
+      "required_uncertainties": [],
+      "forbidden_inferences": [
+        "这是 2022 年综述的时间范围，不得据此断言 2026 年所有工具仍无变化。"
+      ],
+      "absence_check": null
+    },
+    {
+      "candidate_id": "ADDUCT-03",
+      "paper_id": "ADDUCT",
+      "question": "只看 Figure 1：Position 横轴从左向右递增还是递减？最高红点位于 1000 刻度的哪一侧？",
+      "task_kind": "visual",
+      "figure": "1",
+      "panel": null,
+      "expected_status": "answered",
+      "reference_answer": "横轴从左向右递减，标注依次约为 4000、3000、2000、1000、0。；最高红点在 1000 刻度右侧，即小于 1000 的位置区间。",
+      "gold_claims": [
+        {
+          "claim_id": "G1",
+          "statement": "横轴从左向右递减，标注依次约为 4000、3000、2000、1000、0。",
+          "basis": "visual",
+          "evidence_ids": [
+            "E1"
+          ],
+          "required": true
+        },
+        {
+          "claim_id": "G2",
+          "statement": "最高红点在 1000 刻度右侧，即小于 1000 的位置区间。",
+          "basis": "visual",
+          "evidence_ids": [
+            "E1"
+          ],
+          "required": true
+        }
+      ],
+      "gold_evidence": [
+        {
+          "evidence_id": "E1",
+          "source_kind": "vision",
+          "pdf_page_1_based": 4,
+          "bbox": [
+            113.10244018554688,
+            471.45840820312503,
+            511.93736083984373,
+            614.5797106933594
+          ],
+          "figure": "1",
+          "panel": null,
+          "verbatim_quote": null,
+          "visual_observation": "Position 横轴是倒序；尖峰在 1000 刻度和 0 刻度之间。仅看此图不能精确读出 G640，640 来源于图注。",
+          "legibility": "clear"
+        }
+      ],
+      "required_uncertainties": [],
+      "forbidden_inferences": [
+        "不得用图注 G640 冒充从横轴精确读出的坐标；不得把横轴误读成正序。"
+      ],
+      "absence_check": null
+    },
+    {
+      "candidate_id": "ADDUCT-04",
+      "paper_id": "ADDUCT",
+      "question": "请根据这份 PDF 的 Figure 99a 说明实验结果；如果不存在该图，请明确拒答，不要用其他图替代。",
+      "task_kind": "absence",
+      "figure": "99",
+      "panel": "a",
+      "expected_status": "refused",
+      "reference_answer": "这份 PDF 中不存在 Figure 99a，无法按该图说明实验结果。",
+      "gold_claims": [],
+      "gold_evidence": [],
+      "required_uncertainties": [
+        "指定图不存在，不能用其他图替代。"
+      ],
+      "forbidden_inferences": [
+        "不得编造 Figure 99a 的结果、页码或证据。"
+      ],
+      "absence_check": "已核查本 PDF 第 1–12 页的正文、主图、图注及附带页；没有 Figure 99 或 99a。范围只限这一份 PDF，不推断未提供的独立补充文件。"
+    }
+  ]
+}

@@ -12,6 +12,7 @@
 secrets.*
 config/*.local.json
 config/*secret*.json
+/config/app.json
 
 # Python caches and virtual environments
 __pycache__/
@@ -19,13 +20,12 @@ __pycache__/
 *.pyo
 .venv/
 venv/
-lib/
+/lib/
 
 # Tooling caches and local runtime data
 .uv-cache/
 .cache/
 .data/
-.codex
 *.log
 *.sqlite
 *.sqlite3
@@ -48,10 +48,26 @@ web/playwright-report/
 
 # Large local inputs that often contain private source material
 *.pdf
+/ref_baseline/
+/input/*
+!/input/sample_paper.txt
 
 # Local outputs from repeatable evaluation runs
 evals/runs/
+output/
+# Archives and machine-specific manifests stay local.
+/evals/archive/
+/evals/baselines/**/baseline_manifest.json
 
-# codex related
+# Local coding-agent instructions, plans, and workspace settings.
+# Application agents and prompts under src/ remain versioned.
 .codex
-PLANS.md
+.agents/
+.claude/
+/[Aa][Gg][Ee][Nn][Tt][Ss].md
+/[Aa][Gg][Ee][Tt][Nn][Ss].md
+/[Pp][Ll][Aa][Nn].md
+/[Pp][Ll][Aa][Nn][Ss].md
+
+# Explanatory documents and experiment records are local, not runtime inputs.
+/docs/

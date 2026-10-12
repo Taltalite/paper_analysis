@@ -9,11 +9,31 @@ KIMI_DEFAULT_BASE_URL = "https://api.moonshot.cn/v1"
 KIMI_DEFAULT_MODEL = "kimi-k3"
 
 
+def _vision_max_output_tokens() -> int:
+    try:
+        value = int(os.getenv("VISION_MAX_OUTPUT_TOKENS", "16384"))
+    except ValueError as exc:
+        raise ValueError("VISION_MAX_OUTPUT_TOKENS 必须是 64–100,000 之间的整数。") from exc
+    if not 64 <= value <= 100_000:
+        raise ValueError("VISION_MAX_OUTPUT_TOKENS 必须是 64–100,000 之间的整数。")
+    return value
+
+
+def _kimi_reasoning_effort() -> str | None:
+    value = os.getenv("KIMI_REASONING_EFFORT", "").strip().lower()
+    if not value:
+        return None
+    if value not in {"low", "high", "max", "none"}:
+        raise ValueError("KIMI_REASONING_EFFORT 必须为 low、high、max 或 none；留空使用供应商默认值。")
+    return value
+
+
 def _vision_options(legacy_model: str | None) -> dict[str, str | float | None]:
+    output_limit = _vision_max_output_tokens()
     names = ("VISION_MODEL", "VISION_API_KEY", "VISION_BASE_URL", "VISION_TEMPERATURE")
     values = {name: os.getenv(name, "").strip() for name in names}
     if not any(values.values()):
-        return {"vision_model": legacy_model}
+        return {"vision_model": legacy_model, "vision_max_output_tokens": output_limit}
     # 独立端点必须提供独立密钥，不得将文本供应商密钥发送到新目的地。
     missing = [name for name in names[:3] if not values[name]]
     if missing:
@@ -22,14 +42,15 @@ def _vision_options(legacy_model: str | None) -> dict[str, str | float | None]:
         url = urlsplit(values["VISION_BASE_URL"])
         valid = (url.scheme in {"http", "https"} and bool(url.hostname)
                  and not url.username and not url.password and not url.query and not url.fragment)
-        temperature = float(values["VISION_TEMPERATURE"] or "0.2")
+        temperature = float(values["VISION_TEMPERATURE"] or "0.9")
         valid = valid and math.isfinite(temperature) and 0 <= temperature <= 2
     except ValueError:
         valid = False
     if not valid:
         raise ValueError("VISION_BASE_URL 必须是无内嵌凭据的 HTTP(S) 地址；VISION_TEMPERATURE 必须在 0–2 之间。")
     return {"vision_model": values["VISION_MODEL"], "vision_api_key": values["VISION_API_KEY"],
-            "vision_base_url": values["VISION_BASE_URL"], "vision_temperature": temperature}
+            "vision_base_url": values["VISION_BASE_URL"], "vision_temperature": temperature,
+            "vision_max_output_tokens": output_limit}
 
 
 def _vision_request_timeout() -> float:
@@ -71,6 +92,7 @@ def create_llm_client_from_env() -> LLMClient | None:
         "base_url": os.getenv("KIMI_BASE_URL"),
         "temperature": os.getenv("KIMI_TEMPERATURE"),
         "vision_model": os.getenv("KIMI_VISION_MODEL"),
+        "reasoning_effort": os.getenv("KIMI_REASONING_EFFORT"),
     }
     if any(kimi_vars.values()):
         if not kimi_vars["api_key"]:
@@ -81,7 +103,7 @@ def create_llm_client_from_env() -> LLMClient | None:
         base_url = kimi_vars["base_url"] or KIMI_DEFAULT_BASE_URL
         temperature = kimi_vars["temperature"]
         if temperature is None and "api.kimi.com/coding" in base_url:
-            # Kimi Code 端点（k3 / kimi-for-coding）只允许 temperature=1
+            # 保留已实测的 Code 端点温度默认值；显式配置仍优先。
             temperature = "1"
         return OpenAICompatibleLLM(
             model=kimi_vars["model"] or KIMI_DEFAULT_MODEL,
@@ -89,6 +111,7 @@ def create_llm_client_from_env() -> LLMClient | None:
             base_url=base_url,
             provider="openai",
             temperature=float(temperature or "0.2"),
+            reasoning_effort=_kimi_reasoning_effort(),
             **_vision_options(kimi_vars["vision_model"]),
             request_timeout=_vision_request_timeout(),
         )
